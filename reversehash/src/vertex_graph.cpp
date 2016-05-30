@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QDataStream>
+#include <QTextStream>
 
 namespace reversehash {
 	VertexGraph::VertexGraph(int nInputs){
@@ -223,6 +224,7 @@ namespace reversehash {
                 stream >> nNumber;
                 m_vVertexIn.push_back(pVertexIn);
                 IVertexOut *pVertexOut = dynamic_cast<IVertexOut *>(pVertexIn);
+                pVertexOut->setName(QString(name));
                 m_vVertexes.push_back(pVertexOut);
             }
         }
@@ -246,6 +248,23 @@ namespace reversehash {
         return true;
     }
 
+	// -----------------------------------------------------------------
+
+	bool VertexGraph::saveDot(QString filename){
+        QFile file(filename);
+        if (file.exists()) {
+            file.remove();
+        }
+        if (!file.open(QIODevice::WriteOnly)) {
+            std::cerr << "Could not write file: " << filename.toStdString() << "\n";
+            return false;
+        }
+        QTextStream stream( &file );
+        stream << conv2dot();
+        file.close();
+        return true;
+    }
+    
 	// -----------------------------------------------------------------
 
     bool VertexGraph::load(QString filename){

@@ -26,3 +26,10 @@
 *.exe
 *.out
 *.app
+
+docs/*
+Makefile
+reversehash.bin
+*.dot
+*.vertexgraph
+

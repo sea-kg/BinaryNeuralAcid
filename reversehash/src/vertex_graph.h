@@ -18,7 +18,9 @@ namespace reversehash {
 			bool out();
 			QString conv2dot();
             bool save(QString filename);
+            bool saveDot(QString filename);
             bool load(QString filename);
+           
 		private:
             void writeHeader(QDataStream &stream, int nVersion);
             bool readHeader(QDataStream &stream, int &nVersion);

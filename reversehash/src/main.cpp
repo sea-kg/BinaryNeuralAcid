@@ -77,17 +77,23 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-
-
 	if(vParams.contains("--testvertexgraph")){
 		reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 		pVertexGraph->genBase();
 		pVertexGraph->out();
-		pVertexGraph->randomChanges(50);
+		// pVertexGraph->randomChanges(50);
         pVertexGraph->out();
+        
         pVertexGraph->save("test.vertexgraph");
+		pVertexGraph->saveDot("test.dot");
         pVertexGraph->load("test.vertexgraph");
+        
         pVertexGraph->save("test1.vertexgraph");
+        pVertexGraph->saveDot("test1.dot");
+        pVertexGraph->load("test1.vertexgraph");
+        
+        pVertexGraph->save("test2.vertexgraph");
+        pVertexGraph->saveDot("test2.dot");
         QString result = pVertexGraph->conv2dot();
         // std::cout << result.toStdString() << "\n";
 		return 0;
