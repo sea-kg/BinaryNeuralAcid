@@ -14,10 +14,10 @@
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
-		<< "\t reverse <hash>\n"
-		<< "\t train <hash-folder>\n" 
+		<< "\t --reverse <hash>\n"
 		<< "\t --testvertexgraph\n" 
-        << "\t memory <filename> - generate file with memory\n";
+		<< "\t --run <memoryfile>\n" 
+        << "\t --memory <filename> - generate file with memory\n";
 };
 
 int main(int argc, char* argv[])
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    if(vParams.size() > 2 && vParams[1] == "memory"){
+    if(vParams.size() > 2 && vParams[1] == "--memory"){
         crack_hash::Memory *pMemory = new crack_hash::Memory();
         pMemory->generateData(10000);
         pMemory->save(vParams[2]);
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 	}
 
 	// count of bits in source string
-	if(vParams.size() > 2 && vParams[1] == "run"){
+	if(vParams.size() > 2 && vParams[1] == "--run"){
 		int nCount = 55*8;
 		for (int i = 0; i < nCount; i++) {
 			QString base_filename = "md5/bit" + QString::number(i).rightJustified(3, '0');
