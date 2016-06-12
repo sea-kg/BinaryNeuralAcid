@@ -29,8 +29,11 @@
 
 docs/*
 Makefile
-reversehash.bin
 reversehash
+graphviewer
+tmp/*
+test/*
+md5/*
 *.dot
 *.vertexgraph
 

@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 		reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 		pVertexGraph->genBase();
 		pVertexGraph->out();
-		// pVertexGraph->randomChanges(50);
+		pVertexGraph->randomChanges(50);
         pVertexGraph->out();
         
         pVertexGraph->save("test.vertexgraph");

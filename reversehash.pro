@@ -40,5 +40,4 @@ HEADERS += \
     src/vertex_graph.h \
 
 
-
 OBJECTS_DIR = tmp/
