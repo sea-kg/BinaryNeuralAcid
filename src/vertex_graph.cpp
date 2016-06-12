@@ -13,14 +13,28 @@ namespace reversehash {
 		m_pOut = NULL;
 		m_nInputs = nInputs;
         m_nVersion = 1;
+        m_nLastSuccessPersents = 0;
 	};
 	
+	// -----------------------------------------------------------------
+	
+	void VertexGraph::setLastSuccessPersents(int nVal){
+		m_nLastSuccessPersents = nVal;
+	};
+	
+	// -----------------------------------------------------------------
+	
+	int VertexGraph::lastSuccessPersents(){
+		return m_nLastSuccessPersents;
+	};
+			
 	// -----------------------------------------------------------------
 	
 	void VertexGraph::genBase(){
         m_vVertexIn.clear();
         m_pOut = NULL;
         m_vVertexes.clear();
+		m_nLastSuccessPersents = 0;
 
 		QVector<IVertexOut *> vTmp;
 		for(int i = 0; i < m_nInputs; i++){
@@ -70,6 +84,27 @@ namespace reversehash {
 	
 	// -----------------------------------------------------------------
 	
+	void VertexGraph::setIn(const QVector<bool> &in){
+		int nVertexInSize = m_vVertexIn.size();
+		int nInSize = in.size();
+		if(nInSize > nVertexInSize){
+			std::cerr << "Warning input to so much.";
+			std::cerr << nVertexInSize << " != " << nInSize << "\n";
+		}
+		for(int i = 0; i < nInSize; i++){
+			if(i < nVertexInSize){
+				m_vVertexIn[i]->setValue(in[i]);
+			}
+		}
+		if(nInSize < nVertexInSize){
+			for(int i = nInSize; i < nVertexInSize; i++){
+				m_vVertexIn[i]->setValue(false);
+			}
+		}
+	}
+
+	// -----------------------------------------------------------------
+	
 	void addLine(QString &result, IVertexOut *pTo, IVertexOut *pFrom){
 		
 		if(pTo->type() == "Vertex"){
@@ -105,6 +140,7 @@ namespace reversehash {
     void VertexGraph::writeHeader(QDataStream &stream, int nVersion){
         stream.writeRawData("VERTEXGRAPH", 11);
         stream << nVersion; // version
+        stream << m_nLastSuccessPersents; // lastSuccessPersents
     }
 
     // -----------------------------------------------------------------
@@ -123,6 +159,7 @@ namespace reversehash {
             return false;
         }
         stream >> nVersion;
+        stream >> m_nLastSuccessPersents;
         return true;
     }
 

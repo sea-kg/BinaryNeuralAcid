@@ -16,10 +16,14 @@ namespace reversehash {
 			void genBase();
 			void randomChanges(int n);
 			bool out();
+			void setIn(const QVector<bool> &in);
 			QString conv2dot();
             bool save(QString filename);
             bool saveDot(QString filename);
             bool load(QString filename);
+           
+			void setLastSuccessPersents(int nVal);
+			int lastSuccessPersents();
            
 		private:
             void writeHeader(QDataStream &stream, int nVersion);
@@ -33,6 +37,7 @@ namespace reversehash {
 			IVertexOut *m_pOut;
 			int m_nInputs;
             int m_nVersion;
+            int m_nLastSuccessPersents;
     };
 }
 
