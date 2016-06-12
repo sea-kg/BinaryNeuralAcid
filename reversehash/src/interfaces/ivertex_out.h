@@ -11,6 +11,10 @@ namespace reversehash {
 			virtual QString type() = 0;
 			virtual QString name() = 0;
 			virtual void setName(QString sName) = 0;
+			virtual void setXYZ(float x, float y, float z) = 0;
+			virtual float x() = 0;
+			virtual float y() = 0;
+			virtual float z() = 0;
     };
 }
 

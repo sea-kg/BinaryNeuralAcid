@@ -16,6 +16,10 @@ namespace reversehash {
 			virtual QString type();
 			virtual QString name();
 			virtual void setName(QString sName);
+			virtual void setXYZ(float x, float y, float z);
+			virtual float x();
+			virtual float y();
+			virtual float z();
 			
 			// IVertexIn
             virtual void setNumber(int n);
@@ -26,6 +30,7 @@ namespace reversehash {
             int m_nNumber;
 			QString m_sName;
 			bool m_bValue;
+			float m_nX, m_nY, m_nZ;
     };
 }
 

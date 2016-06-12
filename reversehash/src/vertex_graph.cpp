@@ -134,6 +134,10 @@ namespace reversehash {
             reversehash::IVertexOut *pVertexOut = m_vVertexes[i];
             stream << pVertexOut->type().toUtf8();
             stream << pVertexOut->name().toUtf8();
+            stream << pVertexOut->x();
+            stream << pVertexOut->y();
+            stream << pVertexOut->z();
+            
             if(pVertexOut->type() == "Vertex"){
                 IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
                 stream << pVertexOperation->operation().toUtf8();
@@ -170,11 +174,18 @@ namespace reversehash {
             stream >> type;
             QByteArray name;
             stream >> name;
+            float x,y,z;
+            stream >> x;
+            stream >> y;
+            stream >> z;
+            
+            
             if(type == "Vertex"){
                 IVertexOut *pVertexOut = this->findVertexByName(QString(name));
                 if(pVertexOut == NULL)
                     pVertexOut = new Vertex();
                 pVertexOut->setName(QString(name));
+                pVertexOut->setXYZ(x,y,z);
                 IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
                 QByteArray operation;
                 stream >> operation;
@@ -225,6 +236,7 @@ namespace reversehash {
                 m_vVertexIn.push_back(pVertexIn);
                 IVertexOut *pVertexOut = dynamic_cast<IVertexOut *>(pVertexIn);
                 pVertexOut->setName(QString(name));
+                pVertexOut->setXYZ(x,y,z);
                 m_vVertexes.push_back(pVertexOut);
             }
         }

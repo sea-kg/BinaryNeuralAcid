@@ -7,7 +7,7 @@
 #include <qmath.h>
 #include <iostream>
 #include <QApplication>
-#include "graph.h"
+#include "../vertex_graph.h"
 
 GLWidget::GLWidget(QWidget *parent) :
     QGLWidget(parent)
@@ -21,6 +21,10 @@ GLWidget::GLWidget(QWidget *parent) :
 
     alpha = M_PI / 6;
     theta = M_PI / 6;
+}
+
+void GLWidget::loadGraph(QString filename){
+	// TODO
 }
 
 void GLWidget::initializeGL() {
@@ -130,7 +134,7 @@ void GLWidget::paintGL() {
 	
 	QStringList args = QCoreApplication::arguments();
 	
-	graph::Graph *pGraph = new graph::Graph();
+	/*graph::Graph *pGraph = new graph::Graph();
 	
 	if (args.size() == 2) {
 		// todo load
@@ -148,7 +152,7 @@ void GLWidget::paintGL() {
 		int x = (i % (nSide * nSide)) / nSide;
 		int y = (i % (nSide * nSide)) % nSide;
 		point(x, y, z, name);
-	}
+	}*/
 	
 	/*
 	

@@ -7,6 +7,9 @@ namespace reversehash {
 	VertexIn::VertexIn(){
 		m_bValue = false;
         m_nNumber = -1;
+        m_nX = 0;
+		m_nY = 0;
+		m_nZ = 0;
 	};
 
 	// -----------------------------------------------------------------
@@ -35,6 +38,32 @@ namespace reversehash {
 	
 	// -----------------------------------------------------------------
 	
+	void VertexIn::setXYZ(float x, float y, float z){
+		m_nX = x;
+		m_nY = y;
+		m_nZ = z;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	float VertexIn::x(){
+		return m_nX;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	float VertexIn::y(){
+		return m_nY;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	float VertexIn::z(){
+		return m_nZ;
+	}
+	
+	// -----------------------------------------------------------------
+	
     void VertexIn::setNumber(int n){
         m_nNumber = n;
     }
@@ -50,5 +79,4 @@ namespace reversehash {
 	void VertexIn::setValue(bool bValue){
 		m_bValue = bValue;
     }
-
 }

@@ -2,7 +2,7 @@ QT       += core
 QT       -= gui
 QT       += xml
 
-TARGET = reversehash.bin
+TARGET = reversehash
 CONFIG   += console
 CONFIG   -= app_bundle
 

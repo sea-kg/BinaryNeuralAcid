@@ -23,6 +23,7 @@ class GLWidget : public QGLWidget
     QGLShaderProgram *shaderProgram;
 public:
     explicit GLWidget(QWidget *parent = 0);
+	void loadGraph(QString filename);
 
     void initializeGL();
     void resizeGL(int w, int h);
