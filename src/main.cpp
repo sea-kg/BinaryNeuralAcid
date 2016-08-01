@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 					pVertexGraph->loadFromFile(filename);
 					nPersent = pVertexGraph->lastSuccessPersents();
 					std::cout << " * Last persent result: " << pVertexGraph->lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "] \r";
-					pVertexGraph->randomChanges(50);
+					pVertexGraph->randomChanges(13);
 				}
 			}
 			std::cout << " * Result: " << pVertexGraph->lastSuccessPersents() << "%                              \n";

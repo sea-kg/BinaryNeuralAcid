@@ -30,10 +30,12 @@ namespace reversehash {
 			VertexGraph *clone();
 			void copy(VertexGraph *pVertexGraph);
            
+			bool findCicles();
+           
 			// modifications
 			void randomChanges(int n);
 			void changeRandomOperation();
-			void swapRandomVertexts();
+			void swapRandomVertextIns();
            
 		private:
             void writeHeader(QDataStream &stream, int nVersion);
@@ -41,6 +43,8 @@ namespace reversehash {
             void writeDataAsVersion1(QDataStream &stream);
             void readDataAsVersion1(QDataStream &stream);
             IVertexOut *findVertexByName(QString name);
+			bool findCiclesRecourse(IVertexOut *pVertexOut, QVector<IVertexOut *> &stack);
+
 
 			QVector<IVertexIn *> m_vVertexIn;
 			QVector<IVertexOut *> m_vVertexes;

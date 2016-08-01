@@ -23,6 +23,8 @@ SOURCES += src/main.cpp \
     src/tests/readwrite_test.cpp \
     src/tests/reverse_test.cpp \
     src/tests/changerandomoperation_test.cpp \
+    src/tests/swaprandomvertexins_test.cpp \
+    src/tests/clonecopy_test.cpp \
     
 
 HEADERS += \
@@ -45,6 +47,8 @@ HEADERS += \
     src/tests/readwrite_test.h \
     src/tests/reverse_test.h \
     src/tests/changerandomoperation_test.h \
+    src/tests/swaprandomvertexins_test.h \
+    src/tests/clonecopy_test.h \
    
 
 

@@ -80,6 +80,9 @@ namespace reversehash {
 	// -----------------------------------------------------------------
 	
 	bool VertexGraph::out(){
+		if(this->findCicles()){
+			std::cerr << " !!! Error: Found cicles\n";
+		}
 		return m_pOut->out();
 	}
 	
@@ -376,6 +379,9 @@ namespace reversehash {
         QDataStream stream2( &buffer2 );
         VertexGraph *pVertexGraph = new VertexGraph(m_nInputs);
         pVertexGraph->loadFromStream(stream2);
+        buffer.close();
+        buffer2.close();
+        arr.clear();
         return pVertexGraph;
 	}
 
@@ -392,8 +398,47 @@ namespace reversehash {
         buffer2.open(QIODevice::ReadOnly);
         QDataStream stream2( &buffer2 );
         this->loadFromStream(stream2);
+        buffer.close();
+        buffer2.close();
+        arr.clear();
 	}
 
+    // -----------------------------------------------------------------
+    
+    bool VertexGraph::findCiclesRecourse(IVertexOut *pVertexOut, QVector<IVertexOut *> &stack){
+		if(pVertexOut == NULL){
+			std::cerr << "!!! Error: Some vertext is NULL";
+			return true;
+		}
+		if(pVertexOut->type() == "Vertex"){
+			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
+			for(int i = 0; i < stack.size(); i++){
+				if(pVertexOperation->in1() == stack[i] || pVertexOperation->in2() == stack[i]){
+					return true;
+				}
+			}
+			stack.push_back(pVertexOperation->in1());
+			if(findCiclesRecourse(pVertexOperation->in1(), stack))
+				return true;
+			stack.pop_back();
+			stack.push_back(pVertexOperation->in2());
+			if(findCiclesRecourse(pVertexOperation->in2(), stack))
+				return true;
+			stack.pop_back();
+		}
+		return false;
+	}
+    
+    // -----------------------------------------------------------------
+    
+    bool VertexGraph::findCicles(){
+		QVector<IVertexOut *> stack;
+		stack.push_back(m_pOut);
+		bool bResult = findCiclesRecourse(m_pOut, stack);
+		stack.pop_back();
+		return bResult;
+	}
+    
     // -----------------------------------------------------------------
     
     void VertexGraph::changeRandomOperation(){
@@ -415,35 +460,42 @@ namespace reversehash {
     
     // -----------------------------------------------------------------
     
-    void VertexGraph::swapRandomVertexts(){
+    void VertexGraph::swapRandomVertextIns(){
+		
 		IVertexOperation *pVertexOperation1 = NULL;
 		IVertexOperation *pVertexOperation2 = NULL;
+		IVertexOut *pVertexOut1 = NULL;
+		IVertexOut *pVertexOut2 = NULL;
+		
 		bool bFound = false;
 		while(!bFound){
 			int n = qrand() % (m_vVertexes.size());
-			IVertexOut *pVertexOut = m_vVertexes[n];
-			if(pVertexOut->name() == "Vertex"){
-				pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut);
+			pVertexOut1 = m_vVertexes[n];
+			if(pVertexOut1->type() == "Vertex"){
+				pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut1);
 				bFound = true;
 			}
 		}
 		bFound = false;
 		while(!bFound){
 			int n = qrand() % (m_vVertexes.size());
-			IVertexOut *pVertexOut = m_vVertexes[n];
-			if(pVertexOut->name() == "Vertex"){
-				pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut);
+			pVertexOut2 = m_vVertexes[n];
+			if(pVertexOut2->type() == "Vertex" && pVertexOperation1 != pVertexOperation2){
+				pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut2);
 				bFound = true;
 			}
 		}
-		
+
+		IVertexOut *pOut1 = pVertexOperation1->in1();
+		IVertexOut *pOut2 = pVertexOperation2->in2();
+		pVertexOperation1->setIn1(pOut2);
+		pVertexOperation2->setIn2(pOut1);
 	}
     
     // -----------------------------------------------------------------
     
 	void VertexGraph::randomChanges(int count){
-		
-		int nPossibleRandomChanges = 1;
+		int nPossibleRandomChanges = 2;
 		// replace operations
 		for(int i = 0; i < count; i++){
 			int n = qrand() % (nPossibleRandomChanges);
@@ -452,20 +504,22 @@ namespace reversehash {
 					this->changeRandomOperation();
 					break;
 				case 2:
-					// nothing
-					;
+					bool bFound = false;
+					while(!bFound){
+						VertexGraph *pVertexGraphClone = this->clone();
+						pVertexGraphClone->swapRandomVertextIns();
+						if(!pVertexGraphClone->findCicles()){
+							this->copy(pVertexGraphClone);
+							bFound = true;
+						}
+						delete pVertexGraphClone;
+					};
+					break;
 			}
-		}
-		
-		// swaps mXXX
-		for(int i = 0; i < count; i++){
-			
 		}
 		
 		// TODO: add
 		
 		// TODO: remove mXXX
-
-		// TODO: check to cicles
 	}
 }
