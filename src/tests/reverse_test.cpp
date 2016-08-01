@@ -37,7 +37,7 @@ bool Reverse_Test::run(){
 			QFile file(filename);
 			if(file.exists()){
 				reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-				pVertexGraph->load(filename);
+				pVertexGraph->loadFromFile(filename);
 				pVertexGraph->setIn(vInput);
 				vOutput.push_back(pVertexGraph->out());
 			}else{

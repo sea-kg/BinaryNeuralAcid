@@ -14,16 +14,26 @@ namespace reversehash {
         public:
 			VertexGraph(int nInputs);
 			void genBase();
-			void randomChanges(int n);
+			
 			bool out();
 			void setIn(const QVector<bool> &in);
 			QString conv2dot();
-            bool save(QString filename);
+            bool saveToFile(QString filename);
+            bool saveToStream(QDataStream &stream);
             bool saveDot(QString filename);
-            bool load(QString filename);
+            bool loadFromFile(QString filename);
+			bool loadFromStream(QDataStream &stream);
            
 			void setLastSuccessPersents(int nVal);
 			int lastSuccessPersents();
+			
+			VertexGraph *clone();
+			void copy(VertexGraph *pVertexGraph);
+           
+			// modifications
+			void randomChanges(int n);
+			void changeRandomOperation();
+			void swapRandomVertexts();
            
 		private:
             void writeHeader(QDataStream &stream, int nVersion);

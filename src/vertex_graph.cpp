@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QDataStream>
 #include <QTextStream>
+#include <QBuffer>
 
 namespace reversehash {
 	VertexGraph::VertexGraph(int nInputs){
@@ -281,7 +282,7 @@ namespace reversehash {
 
     // -----------------------------------------------------------------
 
-    bool VertexGraph::save(QString filename){
+    bool VertexGraph::saveToFile(QString filename){
         QFile file(filename);
         if (file.exists()) {
             file.remove();
@@ -291,12 +292,19 @@ namespace reversehash {
             return false;
         }
         QDataStream stream( &file );
-        this->writeHeader(stream, m_nVersion);
-        this->writeDataAsVersion1(stream);
+        this->saveToStream(stream);
         file.close();
         return true;
     }
 
+	// -----------------------------------------------------------------
+
+	bool VertexGraph::saveToStream(QDataStream &stream){
+		this->writeHeader(stream, m_nVersion);
+        this->writeDataAsVersion1(stream);
+        return true;
+	}
+	
 	// -----------------------------------------------------------------
 
 	bool VertexGraph::saveDot(QString filename){
@@ -316,11 +324,7 @@ namespace reversehash {
     
 	// -----------------------------------------------------------------
 
-    bool VertexGraph::load(QString filename){
-        m_vVertexIn.clear();
-        m_pOut = NULL;
-        m_vVertexes.clear();
-
+    bool VertexGraph::loadFromFile(QString filename){
         QFile file(filename);
         if (!file.exists()) {
             std::cerr << "File did not exists: " << filename.toStdString() << "\n";
@@ -330,7 +334,19 @@ namespace reversehash {
             std::cerr << "Could not open file " << filename.toStdString() << "\n";
             return false;
         }
+
         QDataStream stream( &file );
+
+        return this->loadFromStream(stream);
+    }
+    
+
+	// -----------------------------------------------------------------
+
+	bool VertexGraph::loadFromStream(QDataStream &stream){
+        m_vVertexIn.clear();
+        m_pOut = NULL;
+        m_vVertexes.clear();
 
         int nVersion = -1;
         if(!this->readHeader(stream, nVersion)){
@@ -346,18 +362,98 @@ namespace reversehash {
         return true;
     }
 
+	// -----------------------------------------------------------------
+	
+	VertexGraph * VertexGraph::clone(){
+		QByteArray arr;
+		QBuffer buffer(&arr);
+		buffer.open(QIODevice::WriteOnly);
+		QDataStream stream( &buffer );
+        this->saveToStream(stream);
+        
+        QBuffer buffer2(&arr);
+        buffer2.open(QIODevice::ReadOnly);
+        QDataStream stream2( &buffer2 );
+        VertexGraph *pVertexGraph = new VertexGraph(m_nInputs);
+        pVertexGraph->loadFromStream(stream2);
+        return pVertexGraph;
+	}
+
+	// -----------------------------------------------------------------
+
+	void VertexGraph::copy(VertexGraph *pVertexGraph){
+		QByteArray arr;
+		QBuffer buffer(&arr);
+		buffer.open(QIODevice::WriteOnly);
+		QDataStream stream( &buffer );
+        pVertexGraph->saveToStream(stream);
+        
+        QBuffer buffer2(&arr);
+        buffer2.open(QIODevice::ReadOnly);
+        QDataStream stream2( &buffer2 );
+        this->loadFromStream(stream2);
+	}
+
     // -----------------------------------------------------------------
-	void VertexGraph::randomChanges(int count){
-		
-		// replace operations
-		QString opers = "|&^";
-		for(int i = 0; i < count; i++){
+    
+    void VertexGraph::changeRandomOperation(){
+		bool bChanged = false;
+		while(!bChanged){
+			QString opers = "|&^";
 			int n = qrand() % (m_vVertexes.size());
 			IVertexOut *pVertexOut = m_vVertexes[n];
 			if(pVertexOut->name() != "out" && pVertexOut->type() != "VertexIn"){
 				IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
 				QString newOper = QString(opers[qrand() % opers.length()]);
 				pVertexOperation->setOperation(newOper);
+				bChanged = true;
+			}else{
+				bChanged = false;
+			}
+		}
+	}
+    
+    // -----------------------------------------------------------------
+    
+    void VertexGraph::swapRandomVertexts(){
+		IVertexOperation *pVertexOperation1 = NULL;
+		IVertexOperation *pVertexOperation2 = NULL;
+		bool bFound = false;
+		while(!bFound){
+			int n = qrand() % (m_vVertexes.size());
+			IVertexOut *pVertexOut = m_vVertexes[n];
+			if(pVertexOut->name() == "Vertex"){
+				pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut);
+				bFound = true;
+			}
+		}
+		bool bFound = false;
+		while(!bFound){
+			int n = qrand() % (m_vVertexes.size());
+			IVertexOut *pVertexOut = m_vVertexes[n];
+			if(pVertexOut->name() == "Vertex"){
+				pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut);
+				bFound = true;
+			}
+		}
+		
+	}
+    
+    // -----------------------------------------------------------------
+    
+	void VertexGraph::randomChanges(int count){
+		
+		int nPossibleRandomChanges = 1;
+		// replace operations
+		for(int i = 0; i < count; i++){
+			int n = qrand() % (nPossibleRandomChanges);
+			switch(n){
+				case 1: 
+					this->changeRandomOperation();
+					break;
+				case 2:
+					// nothing
+					;
 			}
 		}
 		

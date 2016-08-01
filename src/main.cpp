@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 			QFile file(filename);
 			if(file.exists()){
 				reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-				pVertexGraph->load(filename);
+				pVertexGraph->loadFromFile(filename);
 				pVertexGraph->setIn(vInput);
 				bResult = pVertexGraph->out();
             }else{
@@ -94,14 +94,14 @@ int main(int argc, char* argv[])
 			QFile file(filename);
 			if (!file.exists()) {
 				pVertexGraph->genBase();
-				pVertexGraph->save(filename);
+				pVertexGraph->saveToFile(filename);
 				std::cout << "Created new file: " << filename.toStdString() << "\n";
 			}else{
-				pVertexGraph->load(filename);
+				pVertexGraph->loadFromFile(filename);
 				std::cout << "Loaded file: " << filename.toStdString() << "\n";
 			}
 			pVertexGraph->setLastSuccessPersents(0);
-			pVertexGraph->save(filename);
+			pVertexGraph->saveToFile(filename);
 		}
 		return 0;
 	}
@@ -117,10 +117,10 @@ int main(int argc, char* argv[])
 			QFile file(filename);
 			if (!file.exists()) {
 				pVertexGraph->genBase();
-				pVertexGraph->save(filename);
+				pVertexGraph->saveToFile(filename);
 				std::cout << "Created new file: " << filename.toStdString() << "\n";
 			}else{
-				pVertexGraph->load(filename);
+				pVertexGraph->loadFromFile(filename);
 				std::cout << "Loaded file: " << filename.toStdString() << "\n";
 			}
 			
@@ -146,9 +146,9 @@ int main(int argc, char* argv[])
 				if(nPersent > pVertexGraph->lastSuccessPersents()){
 					std::cout << " * New persent result: " << nPersent << "% [" << nSuccessCount << " / " << nMemorySize << "] \r";
 					pVertexGraph->setLastSuccessPersents(nPersent);
-					pVertexGraph->save(filename);
+					pVertexGraph->saveToFile(filename);
 				}else{
-					pVertexGraph->load(filename);
+					pVertexGraph->loadFromFile(filename);
 					nPersent = pVertexGraph->lastSuccessPersents();
 					std::cout << " * Last persent result: " << pVertexGraph->lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "] \r";
 					pVertexGraph->randomChanges(50);
