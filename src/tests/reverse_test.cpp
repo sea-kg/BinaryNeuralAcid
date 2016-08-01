@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QVector>
 #include <QFile>
+#include <QMap>
 
 QString Reverse_Test::name(){
 	return "Reverse_Test";
@@ -16,23 +17,22 @@ bool Reverse_Test::run(){
 	tests["92BA7B54A295FED5060A2BA44A72E595"] = "66^lvp/-!A";
 	tests["b885ca6d1c4e8231928ef2af5737426c"] = "YN!KAHfPjFU[\">IwHL";
 	
-	/*crack_hash::Memory *pMemory = new crack_hash::Memory();
+	/*reverse_hash::Memory *pMemory = new reverse_hash::Memory();
 	pMemory->load("md5/memory_md5_10000.rhmem");
-	crack_hash::MemoryItem memoryItem = pMemory->at(1);
+	reverse_hash::MemoryItem memoryItem = pMemory->at(1);
 	tests[memoryItem.output.toHex()] = memoryItem.input.toHex();*/
 	
 	foreach(QString key, tests.keys()){
 		QVector<bool> vInput;
-		crack_hash::convertHEXStringToVBool(key, vInput, 128);
+		reverse_hash::convertHEXStringToVBool(key, vInput, 128);
 		
 		QVector<bool> vOutputExpected;
 		QByteArray originalString = tests.value(key).toUtf8();
-		crack_hash::convertArrayToVBool(originalString, vOutputExpected, originalString.size()*8);
+		reverse_hash::convertArrayToVBool(originalString, vOutputExpected, originalString.size()*8);
 	 
 		int nCount = 55*8;
 		QVector<bool> vOutput;
 		for (int i = 0; i < nCount; i++) {
-			bool bResult = false;
 			QString filename = "md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 			QFile file(filename);
 			if(file.exists()){

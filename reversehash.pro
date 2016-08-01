@@ -9,9 +9,7 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 SOURCES += src/main.cpp \
-    src/graph.cpp \
     src/memory.cpp \
-    src/line.cpp \
     src/helpers.cpp \
     src/memoryitem.cpp \
     src/operations/xor.cpp \
@@ -25,11 +23,8 @@ SOURCES += src/main.cpp \
     src/tests/readwrite_test.cpp \
     src/tests/reverse_test.cpp \
 
-
 HEADERS += \
-    src/graph.h \
     src/memory.h \
-    src/line.h \
     src/helpers.h \
     src/memoryitem.h \
     src/interfaces/ioperation.h \

@@ -6,9 +6,9 @@
 #include <QFile>
 #include <QCryptographicHash>
 
-namespace crack_hash {
+namespace reverse_hash {
     Memory::Memory(){
-        m_nInputSize = crack_hash::g_nCountInputMaxChars; // 55 bytes
+        m_nInputSize = 55; // 55 bytes
         m_nOutputSize = 16; // 16 bytes of md5 hash
     }
 
@@ -106,9 +106,27 @@ namespace crack_hash {
         m_vItems.clear();
         for(int i = 0; i < nCount; i++){
             MemoryItem memoryItem;
-            memoryItem.input.append(crack_hash::generateRandomString());
+            memoryItem.input.append(generateRandomString());
             memoryItem.output = QCryptographicHash::hash(memoryItem.input, QCryptographicHash::Md5);
             m_vItems.push_back(memoryItem);
         }
     };
+    
+    // ----------------------------------------------------------------
+    
+    QString Memory::alphabet() {
+        return "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]{}:,.<>/?\"'\\*&^%$#!-+=";
+    }
+    
+    // ----------------------------------------------------------------
+    
+    QString Memory::generateRandomString(){
+        QString sAlphabet = alphabet();
+        int len = qrand() % (m_nInputSize) + 2;
+        QString str = "";
+        for (int i = 0; i < len; i++) {
+            str += sAlphabet[qrand() % sAlphabet.length()];
+        }
+        return str;
+	}
 }

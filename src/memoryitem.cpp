@@ -1,6 +1,6 @@
 #include "memoryitem.h"
 
-namespace crack_hash {
+namespace reverse_hash {
     MemoryItem::MemoryItem()
     {
 

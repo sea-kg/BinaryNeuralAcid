@@ -5,7 +5,7 @@
 #include<QVector>
 #include"memoryitem.h"
 
-namespace crack_hash {
+namespace reverse_hash {
 
     class Memory
     {
@@ -18,6 +18,8 @@ namespace crack_hash {
             void printData();
             void generateData(int nCount);
         private:
+			QString alphabet();
+			QString generateRandomString();
             int m_nInputSize;
             int m_nOutputSize;
             QVector<MemoryItem> m_vItems;

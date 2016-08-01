@@ -4,7 +4,7 @@
 #include <QByteArray>
 #include <QVector>
 
-namespace crack_hash {
+namespace reverse_hash {
     class MemoryItem
     {
         public:
