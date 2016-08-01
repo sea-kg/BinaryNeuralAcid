@@ -4,11 +4,13 @@
 #include "callout_test.h"
 #include "readwrite_test.h"
 #include "reverse_test.h"
+#include "changerandomoperation_test.h"
 
 bool runtests(){
 	QVector<IReverseHashTest *> tests;
 	tests.push_back(new CallOut_Test());
 	tests.push_back(new ReadWrite_Test());
+	tests.push_back(new ChangeRandomOperation_Test());
 	tests.push_back(new Reverse_Test());
 	
 	bool bResult = true;

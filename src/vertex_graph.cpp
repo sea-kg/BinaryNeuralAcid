@@ -427,7 +427,7 @@ namespace reversehash {
 				bFound = true;
 			}
 		}
-		bool bFound = false;
+		bFound = false;
 		while(!bFound){
 			int n = qrand() % (m_vVertexes.size());
 			IVertexOut *pVertexOut = m_vVertexes[n];
