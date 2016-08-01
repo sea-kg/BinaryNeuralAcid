@@ -20,6 +20,10 @@ SOURCES += src/main.cpp \
     src/vertexes/vertex_in.cpp \
     src/vertexes/vertex.cpp \
     src/vertex_graph.cpp \
+    src/tests/tests.cpp \
+    src/tests/callout_test.cpp \
+    src/tests/readwrite_test.cpp \
+    src/tests/reverse_test.cpp \
 
 
 HEADERS += \
@@ -38,6 +42,12 @@ HEADERS += \
     src/vertexes/vertex_in.h \
     src/vertexes/vertex.h \
     src/vertex_graph.h \
+    src/tests/tests.h \
+    src/tests/ireversehashtest.h \
+    src/tests/callout_test.h \
+    src/tests/readwrite_test.h \
+    src/tests/reverse_test.h \
+   
 
 
 OBJECTS_DIR = tmp/
