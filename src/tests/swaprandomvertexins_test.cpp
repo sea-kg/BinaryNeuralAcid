@@ -18,7 +18,7 @@ void printStat(int i, int cicles, int max){
 bool SwapRandomVertexIns_Test::run(){
 	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 	pVertexGraph->genBase();
-	int nMax = 5000;
+	int nMax = 1000;
 	int cicles = 0;
 	std::cout << "\n";
 	printStat(0, cicles, nMax);
