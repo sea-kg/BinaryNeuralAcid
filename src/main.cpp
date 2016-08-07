@@ -9,6 +9,8 @@
 #include <QFile>
 #include <QTime>
 #include <QVector>
+#include <QTextStream>
+
 
 #include <QCryptographicHash>
 #include <QXmlStreamWriter>
@@ -156,6 +158,40 @@ int main(int argc, char* argv[])
 			}
 			std::cout << " * Result: " << pVertexGraph->lastSuccessPersents() << "%                              \n";
 		};
+		return 0;
+	}
+	
+	if(vParams.contains("--convert-to-json")){
+		int nCount = 55*8;
+		for (int i = 0; i < nCount; i++) {
+			QString filename = "md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
+			QFile file(filename);
+			if (!file.exists()) {
+				std::cout << "Not found file: " << filename.toStdString() << "\n";
+				continue;
+			}else{
+				pVertexGraph->loadFromFile(filename);
+				std::cout << "Loaded file: " << filename.toStdString() << "\n";
+			}
+			QString filename_json = "report/data/bit" + QString::number(i).rightJustified(3, '0') + ".json";
+			
+			QFile file_json(filename_json);
+			if (file_json.exists()) {
+				file_json.remove();
+			}
+			if (!file_json.open(QIODevice::WriteOnly)) {
+				std::cerr << "Could not write file: " << filename_json.toStdString() << "\n";
+				return false;
+			}
+			QTextStream stream( &file_json );
+			stream << pVertexGraph->conv2json();
+			// break;
+		
+			// pVertexGraph->lastSuccessPersents(
+		}
+		
+		
 		return 0;
 	}
 

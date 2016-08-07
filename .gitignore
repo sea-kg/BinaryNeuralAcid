@@ -37,3 +37,4 @@ md5/*
 *.dot
 *.vertexgraph
 
+report/data/*
