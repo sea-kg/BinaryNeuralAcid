@@ -39,6 +39,9 @@ namespace reversehash {
 			void changeRandomOperation();
 			void swapRandomVertextIns();
            
+			// visualization
+			void recalculateCoordinates();
+			
 		private:
             void writeHeader(QDataStream &stream, int nVersion);
             bool readHeader(QDataStream &stream, int &nVersion);

@@ -21,6 +21,9 @@ namespace reversehash {
 			virtual float x();
 			virtual float y();
 			virtual float z();
+			virtual void setX(float x);
+			virtual void setY(float y);
+			virtual void setZ(float z);
 			
 			// IVertexOperation
 			virtual void setOperation(QString sOper);

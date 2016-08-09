@@ -67,6 +67,24 @@ namespace reversehash {
 	
 	// -----------------------------------------------------------------
 	
+	void Vertex::setX(float x){
+		m_nX = x;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	void Vertex::setY(float y){
+		m_nY = y;
+	}
+	
+	// -----------------------------------------------------------------
+	
+	void Vertex::setZ(float z){
+		m_nZ = z;
+	}
+	
+	// -----------------------------------------------------------------
+	
 	void Vertex::setOperation(QString sOper){
 		if(sOper == "|"){
 			m_pOperation = new OperationOr();

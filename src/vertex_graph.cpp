@@ -115,23 +115,21 @@ namespace reversehash {
 
 	// -----------------------------------------------------------------
 	
-	void addLineJson_nodes(QString &result, IVertexOut *pFrom, int &k, bool bFirst = false){
+	void addLineJson_nodes(QString &result, IVertexOut *pFrom, bool bFirst = false){
 		if(!bFirst)
 			result += ",\n";
 		result += "\t\t{\n";
 		result += "\t\t\t\"id\": \"" + pFrom->name() + "\",\n";
 		result += "\t\t\t\"label\": \"" + pFrom->name() + "\",\n";
-		result += "\t\t\t\"x\": " + QString::number(k%25) + ",\n";
-		result += "\t\t\t\"y\": " + QString::number((k - k%25)/25) + ",\n";
+		result += "\t\t\t\"x\": " + QString::number(int(pFrom->x())) + ",\n";
+		result += "\t\t\t\"y\": " + QString::number(int(pFrom->y())) + ",\n";
 		result += "\t\t\t\"size\": 2\n";
 		result += "\t\t}";
 			
 		if(pFrom->type() != "VertexIn"){
 			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pFrom);
-			k = k + 1;
-			addLineJson_nodes(result, pVertexOperation->in1(), k);
-			k = k + 1;
-			addLineJson_nodes(result, pVertexOperation->in2(), k);
+			addLineJson_nodes(result, pVertexOperation->in1());
+			addLineJson_nodes(result, pVertexOperation->in2());
 		}
 	}
 	
@@ -163,13 +161,85 @@ namespace reversehash {
 
 	// -----------------------------------------------------------------
 	
+	void VertexGraph::recalculateCoordinates(){
+		for(int i = 0; i < m_vVertexes.size(); i++){
+			float x = i%25;
+			float y = (i - i%25)/25;
+			float z = 0;
+			m_vVertexes[i]->setXYZ(x, y, z);
+		}
+		
+		int perturbation = 1;
+		while(perturbation > 0){
+			perturbation = 0;
+			for(int i = 0; i < m_vVertexes.size(); i++){
+				IVertexOut *pVertex = m_vVertexes[i];
+				if(pVertex->type() != "VertexIn"){
+					IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertex);
+					float y = pVertex->y() + 1;
+					if(pVertexOperation->in1()->y() != y){
+						pVertexOperation->in1()->setY(y);
+						perturbation++;
+					}
+					
+					if(pVertexOperation->in2()->y() != y){
+						pVertexOperation->in2()->setY(y);
+						perturbation++;
+					}
+				}
+			}
+		}
+		
+		/*QMap<int,int> levels;
+		for(int i = 0; i < m_vVertexes.size(); i++){
+			int y = int(m_vVertexes[i]->y());
+			if(!levels.contains(y)){
+				levels[y] = 1;
+			}else{
+				levels[y]++;
+			}
+		}
+
+		int max = 0;
+		foreach(int key, levels.keys()){
+			int count = levels.value(key);
+			if(count > max){
+				max = count;
+			}
+		}*/
+
+		perturbation = 1;
+		while(perturbation > 0){
+			perturbation = 0;
+			QMap<int,int> levels;
+			for(int i = 0; i < m_vVertexes.size(); i++){
+				IVertexOut *pVertex = m_vVertexes[i];
+				int y = pVertex->y();
+				if(!levels.contains(y)){
+					levels[y] = 0;
+				}else{
+					levels[y] = levels[y] + 1;
+				}
+				int x = levels[y];
+				if(pVertex->x() != x){
+					pVertex->setX(x);
+					perturbation++;
+				}
+			}
+		}
+	}
+	
+	// -----------------------------------------------------------------
+	
 	QString VertexGraph::conv2json(){
+		
+		recalculateCoordinates();
 		
 		QString result = "{\n";
 
 		int k = 0;
 		result += "\t\"nodes\": [\n";
-		addLineJson_nodes(result, m_pOut, k, true);
+		addLineJson_nodes(result, m_pOut, true);
 		result += "\n\t],\n";
 		
 		k = 0;

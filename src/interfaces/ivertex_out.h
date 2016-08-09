@@ -15,6 +15,9 @@ namespace reversehash {
 			virtual float x() = 0;
 			virtual float y() = 0;
 			virtual float z() = 0;
+			virtual void setX(float x) = 0;
+			virtual void setY(float y) = 0;
+			virtual void setZ(float z) = 0;
     };
 }
 
