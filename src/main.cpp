@@ -142,17 +142,22 @@ int main(int argc, char* argv[])
 					if(b == memoryItem.inputToVectorBool()[i]){
 						nSuccessCount++;
 					}
+					
+					if(t > 0 && t % 100 == 0){
+						nPersent = (nSuccessCount * 100) / (t);
+						std::cout << " * Processed (Experiment: #" << nExperiments << " [" << pVertexGraph->lastSuccessPersents() << "%])                              \r";
+					}
 				}
 				
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
 				if(nPersent > pVertexGraph->lastSuccessPersents()){
-					std::cout << " * New persent result: " << nPersent << "% [" << nSuccessCount << " / " << nMemorySize << "] \r";
+					std::cout << " * New persent result: " << nPersent << "% [" << nSuccessCount << " / " << nMemorySize << "]                               \r";
 					pVertexGraph->setLastSuccessPersents(nPersent);
 					pVertexGraph->saveToFile(filename);
 				}else{
 					pVertexGraph->loadFromFile(filename);
 					nPersent = pVertexGraph->lastSuccessPersents();
-					std::cout << " * Last persent result: " << pVertexGraph->lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "] \r";
+					std::cout << " * Last persent result: " << pVertexGraph->lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "]                          \r";
 					pVertexGraph->randomChanges(13);
 				}
 			}
