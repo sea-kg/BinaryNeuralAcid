@@ -1,0 +1,4 @@
+[SERVER]
+
+url=http://localhost/rh/upload.php
+password=test
