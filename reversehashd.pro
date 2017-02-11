@@ -1,12 +1,16 @@
-QT       += core
-QT       -= gui
-QT       += xml
+TEMPLATE = app
+TARGET = reversehashd
 
-TARGET = reversehash
+QT       += core xml network websockets
+QT       -= gui
+
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG += c++11 c++14
 
-TEMPLATE = app
+OBJECTS_DIR = tmp/
+MOC_DIR = tmp/
+RCC_DIR = tmp/
 
 SOURCES += src/main.cpp \
     src/memory.cpp \
@@ -25,6 +29,9 @@ SOURCES += src/main.cpp \
     src/tests/changerandomoperation_test.cpp \
     src/tests/swaprandomvertexins_test.cpp \
     src/tests/clonecopy_test.cpp \
+    src/server/websocketserver.cpp \
+    src/server/error.cpp \
+    src/server/cmd_handlers/create_cmd_handlers.cpp \
     
 
 HEADERS += \
@@ -35,6 +42,8 @@ HEADERS += \
     src/interfaces/ivertex_operation.h \
     src/interfaces/ivertex_out.h \
     src/interfaces/ivertex_in.h \
+    src/interfaces/icmdhandler.h \
+    src/interfaces/iwebsocketserver.h \
     src/operations/xor.h \
     src/operations/or.h \
     src/operations/and.h \
@@ -49,7 +58,6 @@ HEADERS += \
     src/tests/changerandomoperation_test.h \
     src/tests/swaprandomvertexins_test.h \
     src/tests/clonecopy_test.h \
-   
-
-
-OBJECTS_DIR = tmp/
+    src/server/websocketserver.h \
+	src/server/error.h \
+    src/server/cmd_handlers/create_cmd_handlers.h \

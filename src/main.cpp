@@ -4,6 +4,7 @@
 #include "memory.h"
 #include "memoryitem.h"
 #include "tests/tests.h"
+#include "server/websocketserver.h"
 #include <QString>
 #include <QList>
 #include <QFile>
@@ -106,6 +107,28 @@ int main(int argc, char* argv[])
 			pVertexGraph->saveToFile(filename);
 		}
 		return 0;
+	}
+
+	if(vParams.contains("--upload")){
+		
+		
+		// SyncronizatonData *pSyncronizatonData = new SyncronizatonData();
+		// pSyncronizatonData->Upload();
+		// "md5/memory_md5_10000.rhmem"
+		
+		return 0;
+	}
+	
+	if(vParams.contains("--server")){
+		qDebug() << "Server starting on 888 port";
+		WebSocketServer *server = new WebSocketServer(888, true);
+		QObject::connect(server, &WebSocketServer::closed, &app, &QCoreApplication::quit);
+
+		// SyncronizatonData *pSyncronizatonData = new SyncronizatonData();
+		// pSyncronizatonData->Upload();
+		// "md5/memory_md5_10000.rhmem"
+		
+		return app.exec();
 	}
 
 	if(vParams.contains("--training")){
