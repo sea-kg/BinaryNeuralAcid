@@ -61,6 +61,7 @@ int main(int argc, char* argv[])
 	}
 
 	if(vParams.size() > 2 && vParams[1] == "--reverse"){
+		// TODO moved to server impl
 		QString hash = vParams[2];
 		std::cout << "Try revert hash: " << hash.toStdString() << "\n";
 		QVector<bool> vOutput;
@@ -71,7 +72,7 @@ int main(int argc, char* argv[])
 		for (int i = 0; i < nCount; i++) {
             std::cout << "bit (" << i << ") ... ";
             bool bResult = false;
-			QString filename = "md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 			QFile file(filename);
 			if(file.exists()){
 				reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
@@ -110,18 +111,17 @@ int main(int argc, char* argv[])
 	}
 
 	if(vParams.contains("--upload")){
-		
-		
+
 		// SyncronizatonData *pSyncronizatonData = new SyncronizatonData();
 		// pSyncronizatonData->Upload();
 		// "md5/memory_md5_10000.rhmem"
-		
+
 		return 0;
 	}
 	
 	if(vParams.contains("--server")){
 		qDebug() << "Server starting on 888 port";
-		WebSocketServer *server = new WebSocketServer(888, true);
+		WebSocketServer *server = new WebSocketServer(43735, true);
 		QObject::connect(server, &WebSocketServer::closed, &app, &QCoreApplication::quit);
 
 		// SyncronizatonData *pSyncronizatonData = new SyncronizatonData();
@@ -133,11 +133,11 @@ int main(int argc, char* argv[])
 
 	if(vParams.contains("--training")){
 		reverse_hash::Memory *pMemory = new reverse_hash::Memory();
-		pMemory->load("md5/memory_md5_10000.rhmem");
+		pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
 
 		int nCount = 55*8;
 		for (int i = 0; i < nCount; i++) {
-			QString filename = "md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 			QFile file(filename);
 			if (!file.exists()) {
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 				pVertexGraph->loadFromFile(filename);
 				std::cout << "Loaded file: " << filename.toStdString() << "\n";
 			}
-			
+
 			std::cout << " * Processing... \r";
 			
 			int nMemorySize = pMemory->size();

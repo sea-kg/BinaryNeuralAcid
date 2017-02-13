@@ -7,6 +7,11 @@
 #include <QHostAddress>
 #include "cmd_handlers/create_cmd_handlers.h"
 
+#include "../vertex_graph.h"
+#include "../helpers.h"
+#include "../memory.h"
+#include "../memoryitem.h"
+
 // QT_USE_NAMESPACE
 
 // ---------------------------------------------------------------------
@@ -15,6 +20,32 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 	m_pWebSocketServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
 	m_debug = debug;
 	m_sFilename = "/etc/reversehashd/conf.ini";
+	
+	if(!QFile::exists("/usr/share/reversehashd")){
+		qDebug() << "Error /usr/share/reversehashd - file does not exists";
+		return;
+	}
+	
+	if(!QFile::exists("/usr/share/reversehashd/md5")){
+		qDebug() << "Error /usr/share/reversehashd/md5 - file does not exists";
+		return;
+	}
+	
+	// init vertexes
+	int nCount = 55*8;
+	for (int i = 0; i < nCount; i++) {
+		bool bResult = false;
+		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+		QFile file(filename);
+		if(!file.exists()){
+			// create new vertex file
+			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
+			pVertexGraph->genBase();
+			pVertexGraph->saveToFile(filename);
+			qDebug() << "Created new file: " << filename;
+		}
+	}
+	
 	if(QFile::exists(m_sFilename)){
 		QSettings sett(m_sFilename, QSettings::IniFormat);
 		m_sPassword = readStringFromSettings(sett, "MAIN/password", "password");

@@ -4,15 +4,18 @@ $(document).ready(function(){
 		if (e.which == 13) {
 			$('#result').html('');
 			showLoading();
-			reversehashd.reverse($('#input_md5').val()).done(function(){
+			reversehashd.reverse($('#input_md5').val()).done(function(r){
 				console.log("done");
-				$('#result').html('done');
+				setTimeout(function(){
+					hideLoading();
+					$('#result').html('');
+				},2000);
 				hideLoading();
-			}).fail(function(){
+			}).fail(function(r){
 				console.log("fail");
 				setTimeout(function(){
 					hideLoading();
-					$('#result').html('fail');	
+					$('#result').html("Error " + r.code + "): " + r.error);
 				},2000);
 			});
 			return false;

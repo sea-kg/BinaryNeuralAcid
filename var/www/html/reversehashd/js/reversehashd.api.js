@@ -62,13 +62,13 @@ window.reversehashd.setWSState = function(s){
 }
 
 window.reversehashd.initWebsocket = function(){
-	reversehashd.socket = new WebSocket("ws://" + window.location.hostname + ":888/");
+	reversehashd.socket = new WebSocket("ws://" + window.location.hostname + ":43735/");
 	// reversehashd.socket = new WebSocket("ws://freehackquest.com:888/api");
 	window.reversehashd.socket.onopen = function() {
 		console.log('WS Opened');
 		reversehashd.setWSState("OK");
 		reversehashd.send({'cmd': 'hello'}).done(function(){
-			reversehashd.login();
+			// reversehashd.login();
 		});
 	};
 
