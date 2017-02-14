@@ -4,6 +4,7 @@
 #include "../../memory.h"
 #include "../../memoryitem.h"
 #include <QFile>
+#include <QJsonDocument>
 
 QString CmdReverseHandler::cmd(){
 	return "reverse";
@@ -51,9 +52,14 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 	jsonData["answer_bin"] = answer_bin;
 	jsonData["answer_text"] = QString(text);
 	jsonData["answer_hex"] = answer_hex;
+	jsonData["answer_base64"] = QString(text.toBase64());
 	jsonData["request_md5"] = hash; // TODO check comeback reverse
 	QByteArray result_md5 = QCryptographicHash::hash(text, QCryptographicHash::Md5);
 	jsonData["result_md5"] = QString(result_md5.toHex());
 
+	QJsonDocument doc(jsonData);
+	QString message = doc.toJson(QJsonDocument::Compact);
+	qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] >>> " << message;
+		
 	pWebSocketServer->sendMessage(pClient, jsonData);
 }

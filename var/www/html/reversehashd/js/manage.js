@@ -23,7 +23,7 @@ $(document).ready(function(){
 
 function loadStatistics(){
 	reversehashd.statistics().done(function(r){
-		console.log(r);
+		// console.log(r);
 		$('.content').html('<div class="statistics-table"></div>');
 		$('.statistics-table').append(''
 			+ '<div class="statistics-row">'
@@ -48,7 +48,7 @@ function loadStatistics(){
 		
 		$('.bittraining').unbind().bind('click',function(){
 			var bitid = $(this).attr('bitid');
-			alert(bitid)
+			reversehashd.training(bitid);
 		});
 		
 	}).fail(function(r){

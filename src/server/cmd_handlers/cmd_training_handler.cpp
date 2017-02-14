@@ -1,4 +1,4 @@
-#include "include/cmd_statistics_handler.h"
+#include "include/cmd_training_handler.h"
 #include "../../vertex_graph.h"
 #include "../../helpers.h"
 #include "../../memory.h"
@@ -7,11 +7,11 @@
 #include <QJsonArray>
 #include <QFileInfo>
 
-QString CmdStatisticsHandler::cmd(){
-	return "statistics";
+QString CmdTrainingHandler::cmd(){
+	return "training";
 }
 
-void CmdStatisticsHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject req){
+void CmdTrainingHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject req){
 	int rid = 0;
 	if(req.contains("id")){
 		rid = req["id"].toInt();
@@ -21,7 +21,7 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSoc
 	jsonData["cmd"] = QJsonValue(cmd());
 	jsonData["rid"] = rid;
 	
-	QJsonArray statistics;
+	/*QJsonArray statistics;
 	int nCount = 55*8;
 	for (int i = 0; i < nCount; i++) {
 		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
@@ -40,6 +40,8 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSoc
 			return;
 		}
 	}
-	jsonData["statistics"] = statistics;
+	jsonData["statistics"] = statistics;*/
+
+	// TODO
 	pWebSocketServer->sendMessage(pClient, jsonData);
 }

@@ -183,10 +183,12 @@ int WebSocketServer::getConnectedUsers(){
 // ---------------------------------------------------------------------
 
 void WebSocketServer::sendMessage(QWebSocket *pClient, QJsonObject obj){
-	 if (pClient) {
+	 if (pClient && m_clients.contains(pClient)) {
 		QJsonDocument doc(obj);
 		QString message = doc.toJson(QJsonDocument::Compact);
-		qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] >>> " << message;
+		QString cmd = obj["cmd"].toString();
+		int rid = obj["rid"].toInt();
+		qDebug().nospace().noquote() << QDateTime::currentDateTimeUtc().toString() << " [WS] <<< (cmd = " << cmd << ", " << rid << ") ";
         pClient->sendTextMessage(message);
     }
 }

@@ -146,3 +146,10 @@ window.reversehashd.statistics = function(){
 		'cmd': 'statistics'
 	});
 }
+
+window.reversehashd.training = function(bitid){
+	return reversehashd.send({
+		'cmd': 'training',
+		'bitid': bitid
+	});
+}

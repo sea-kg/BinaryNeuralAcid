@@ -32,16 +32,3 @@ Author by sea-kg
 ## Try reverse 
 
 	http://localhost/reversehashd/
-	
-
-
-## Build graphviewer
-
-	`qmake graphviewer.pro && make`
-
-### Requirements
-
-solve problem undefined reference to 'gluPerspective'
-	
-	`sudo apt-get install freeglut3 freeglut3-dev`
-

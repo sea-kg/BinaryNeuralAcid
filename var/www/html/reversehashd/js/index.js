@@ -12,9 +12,12 @@ $(document).ready(function(){
 					$('#result').append('Your md5-hash: ' + r.request_md5 + "\n");
 					$('#result').append('Got md5-hash:  ' + r.result_md5 + "\n");
 					if(r.request_md5 == r.result_md5){
-						$('#result').append('Cool! I found it: ' + r.answer_text + "\n");
+						$('#result').append('Cool!!! I found it:\n');
+						$('#result').append('Base64: ' + r.answer_base64 + "\n");
+						$('#result').append('HEX: ' + r.answer_hex + "\n");
+						$('#result').append('Text: ' + r.answer_text + "\n");
 					}else{
-						$('#result').append('Oops! Not match, but result hex is: ' + r.answer_hex + "\n");
+						$('#result').append('Oops!!! Not match, but result hex is: ' + r.answer_hex + "\n");
 					}
 				},2000);
 				hideLoading();
