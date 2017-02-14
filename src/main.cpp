@@ -20,10 +20,8 @@
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
 		<< "  Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
-		<< "\t --reverse <hash>           - try reverse hash\n"
 		<< "\t --run-tests                - run tests\n"
 		<< "\t --resetpersents            - reset last persents from every bit and create missing files\n" 
-        << "\t --memory <filename>        - generate file with memory\n"
         << "\t --training <memoryname>    - generate file with memory\n"
         << "\n";
 };
@@ -47,45 +45,8 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    if(vParams.size() > 2 && vParams[1] == "--memory"){
-        reverse_hash::Memory *pMemory = new reverse_hash::Memory();
-        pMemory->generateData(10000);
-        pMemory->save(vParams[2]);
-        std::cout << "Completed (10000 items)\n\n";
-        return 0;
-    }
-
 	if(vParams.contains("--run-tests")){
 		runtests();
-		return 0;
-	}
-
-	if(vParams.size() > 2 && vParams[1] == "--reverse"){
-		// TODO moved to server impl
-		QString hash = vParams[2];
-		std::cout << "Try revert hash: " << hash.toStdString() << "\n";
-		QVector<bool> vOutput;
-		QVector<bool> vInput;
-		reverse_hash::convertHEXStringToVBool(hash, vInput, 128);
-		// int nCount = 55*8;
-		int nCount = 8;
-		for (int i = 0; i < nCount; i++) {
-            std::cout << "bit (" << i << ") ... ";
-            bool bResult = false;
-			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-			QFile file(filename);
-			if(file.exists()){
-				reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-				pVertexGraph->loadFromFile(filename);
-				pVertexGraph->setIn(vInput);
-				bResult = pVertexGraph->out();
-            }else{
-				std::cerr << "Error: File '" << filename.toStdString() << "'does not exists\n";
-			}
-            vOutput.push_back(bResult);
-            std::cout << "OK " << (bResult ? "1" : "0") << "\n";
-		}
-		std::cout << "Result: " << reverse_hash::convertVBoolHEXString(vOutput).toStdString() << "\n\n";
 		return 0;
 	}
 

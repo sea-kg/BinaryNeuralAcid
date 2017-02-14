@@ -31,6 +31,14 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 		return;
 	}
 	
+	// init memory if not exists
+	if(!QFile::exists("/usr/share/reversehashd/md5/memory_md5_10000.rhmem")){
+		reverse_hash::Memory *pMemory = new reverse_hash::Memory();
+        pMemory->generateData(10000);
+        pMemory->save("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
+		return;
+	}
+	
 	// init vertexes
 	int nCount = 55*8;
 	for (int i = 0; i < nCount; i++) {

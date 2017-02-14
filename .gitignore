@@ -29,13 +29,13 @@
 
 docs/*
 Makefile
-reversehash
-graphviewer
+reversehashd
 tmp/*
 test/*
 md5/*
 *.dot
 *.vertexgraph
+*.rhmem
 
 report/data/*
 www/config.php

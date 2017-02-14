@@ -36,6 +36,14 @@ window.reversehashd.getWSState = function(){
 	return reversehashd.WSState;
 }
 
+window.reversehashd.ready_funcs = []
+window.reversehashd.ready = function(f){
+	reversehashd.ready_funcs.push(f);
+	if(reversehashd.WSState == "OK"){
+		f();
+	}
+}
+
 window.reversehashd.setWSState = function(s){
 	reversehashd.WSState = s;
 	console.log(reversehashd.WSState);
@@ -51,6 +59,10 @@ window.reversehashd.setWSState = function(s){
 			$('.inputform').show();
 			$('.inputform').css({'opacity': 1});
 		},1000);
+		
+		for(var i = 0; i < reversehashd.ready_funcs.length; i++){
+			try{reversehashd.ready_funcs[i]();}catch(e){};
+		}
 	}else{
 		$('.background').css({'opacity': 1});
 		setTimeout(function(){
@@ -123,9 +135,14 @@ window.reversehashd.send = function(obj, def){
 }
 
 window.reversehashd.reverse = function(md5){
-	
 	return reversehashd.send({
 		'cmd': 'reverse',
 		'md5': md5
+	});
+}
+
+window.reversehashd.statistics = function(){
+	return reversehashd.send({
+		'cmd': 'statistics'
 	});
 }

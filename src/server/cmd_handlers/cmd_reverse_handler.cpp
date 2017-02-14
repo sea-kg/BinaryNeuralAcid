@@ -46,10 +46,14 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 		vOutput.push_back(bResult);
 		answer_bin += (bResult ? "1" : "0");
 	}
+	QString answer_hex = reverse_hash::convertVBoolHEXString(vOutput);
+	QByteArray text = QByteArray::fromHex(answer_hex.toLatin1());
 	jsonData["answer_bin"] = answer_bin;
-	jsonData["answer_text"] = "todo";
-	jsonData["answer_hex"] = reverse_hash::convertVBoolHEXString(vOutput);
-	jsonData["check"] = false; // TODO check comeback reverse
+	jsonData["answer_text"] = QString(text);
+	jsonData["answer_hex"] = answer_hex;
+	jsonData["request_md5"] = hash; // TODO check comeback reverse
+	QByteArray result_md5 = QCryptographicHash::hash(text, QCryptographicHash::Md5);
+	jsonData["result_md5"] = QString(result_md5.toHex());
 
 	pWebSocketServer->sendMessage(pClient, jsonData);
 }
