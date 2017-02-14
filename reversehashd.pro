@@ -31,6 +31,7 @@ SOURCES += src/main.cpp \
     src/tests/clonecopy_test.cpp \
     src/server/websocketserver.cpp \
     src/server/error.cpp \
+    src/server/training_thread.cpp \
     src/server/cmd_handlers/create_cmd_handlers.cpp \
     src/server/cmd_handlers/cmd_hello_handler.cpp \
     src/server/cmd_handlers/cmd_reverse_handler.cpp \
@@ -63,6 +64,7 @@ HEADERS += \
     src/tests/clonecopy_test.h \
     src/server/websocketserver.h \
 	src/server/error.h \
+	src/server/training_thread.h \
     src/server/cmd_handlers/create_cmd_handlers.h \
 	src/server/cmd_handlers/include/cmd_hello_handler.h \
 	src/server/cmd_handlers/include/cmd_reverse_handler.h \

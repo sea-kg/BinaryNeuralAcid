@@ -69,6 +69,9 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &WebSocketServer::closed);
         create_cmd_handlers(m_mapCmdHandlers);
     }
+
+    m_pTrainingThread = new TrainingThread(this);
+    m_pTrainingThread->start(QThread::LowestPriority);
 }
 
 // ---------------------------------------------------------------------
@@ -204,4 +207,12 @@ void WebSocketServer::sendMessageError(QWebSocket *pClient, QString cmd, int id,
 	jsonData["code"] = QJsonValue(error.codeError());
 	this->sendMessage(pClient, jsonData);
 	return;
+}
+
+// ---------------------------------------------------------------------
+
+void WebSocketServer::sendToAll(QJsonObject obj){
+	for(int i = 0; i < m_clients.size(); i++){
+		this->sendMessage(m_clients.at(i), obj);
+	}
 }

@@ -12,7 +12,7 @@
 #include "../interfaces/icmdhandler.h"
 #include "../interfaces/iwebsocketserver.h"
 #include "error.h"
-
+#include "training_thread.h"
 
 class WebSocketServer : public QObject, public IWebSocketServer {
 	
@@ -26,7 +26,8 @@ class WebSocketServer : public QObject, public IWebSocketServer {
 		virtual int getConnectedUsers();
 		virtual void sendMessage(QWebSocket *pClient, QJsonObject obj);
 		virtual void sendMessageError(QWebSocket *pClient, QString cmd, int id, Error obj);
-		
+		virtual void sendToAll(QJsonObject obj);
+
 	Q_SIGNALS:
 		void closed();
 
@@ -53,6 +54,7 @@ class WebSocketServer : public QObject, public IWebSocketServer {
 		int m_nEmail_smtpport;
 		QString m_sEmail_username;
 		QString m_sEmail_password;
+		TrainingThread *m_pTrainingThread;
 };
 
 #endif //WEBSOCKETSERVER_H
