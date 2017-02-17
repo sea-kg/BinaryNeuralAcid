@@ -10,6 +10,8 @@
 class TrainingThread : public QThread{
 		Q_OBJECT
 		IWebSocketServer *m_pWebSocketServer;
+		int m_nSleep;
+		void sendMessage(QString bitid, QString message);
 	public:
 		TrainingThread(IWebSocketServer *pWebSocketServer);
 	protected:
