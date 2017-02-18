@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	if(vParams.contains("--resetpersents")){
 		int nCount = 55*8;
 		for (int i = 0; i < nCount; i++) {
-			QString filename = "md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 			QFile file(filename);
 			if (!file.exists()) {

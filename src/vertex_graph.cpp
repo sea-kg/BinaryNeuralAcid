@@ -585,6 +585,12 @@ namespace reversehash {
     
     // -----------------------------------------------------------------
     
+    int VertexGraph::countOfVertextes(){
+		return m_vVertexes.size();
+	}
+    
+    // -----------------------------------------------------------------
+    
     void VertexGraph::changeRandomOperation(){
 		bool bChanged = false;
 		while(!bChanged){
@@ -637,6 +643,69 @@ namespace reversehash {
 	}
     
     // -----------------------------------------------------------------
+    
+    void VertexGraph::randomRemoveVertex(){
+		IVertexOperation *pVertexOperationRemoved = NULL;
+		IVertexOut *pVertexOutRemoved = NULL;
+
+		bool bFound = false;
+		int nVertex = -1;
+		int tries = 0;
+		while(!bFound){
+			nVertex = qrand() % (m_vVertexes.size());
+			pVertexOutRemoved = m_vVertexes[nVertex];
+			if(pVertexOutRemoved->name() != "out" && pVertexOutRemoved->type() != "VertexIn"){
+				pVertexOperationRemoved = dynamic_cast<IVertexOperation *>(pVertexOutRemoved);
+				bFound = true;
+			}
+			tries++;
+			if(tries > 100){
+				return;
+			}
+		}
+		
+		IVertexOut *pVertexOut1 = pVertexOperationRemoved->in1();
+		IVertexOut *pVertexOut2 = pVertexOperationRemoved->in2();
+
+		for(int i = 0; i < m_vVertexes.size(); i++){
+			IVertexOut *pVertexOut = m_vVertexes[i];
+			if(pVertexOut->type() == "Vertex"){
+				IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
+				
+				if(pVertexOperation->in1() == pVertexOutRemoved){
+					int n = qrand() % (2);
+					if(n == 0){
+						pVertexOperation->setIn1(pVertexOut1);
+					}else{
+						pVertexOperation->setIn1(pVertexOut2);
+					}
+				}
+				if(pVertexOperation->in2() == pVertexOutRemoved){
+					int n = qrand() % (2);
+					if(n == 0){
+						pVertexOperation->setIn2(pVertexOut1);
+					}else{
+						pVertexOperation->setIn2(pVertexOut2);
+					}
+				}
+			}
+		}
+		m_vVertexes.remove(nVertex);
+	}
+	
+	// -----------------------------------------------------------------
+	
+	void VertexGraph::randomAddVertex(){
+		// TODO
+	}
+	
+	// -----------------------------------------------------------------
+	
+	void VertexGraph::randomConnectFreeVertex(){
+		// TODO
+	}
+	
+	// -----------------------------------------------------------------
     
 	void VertexGraph::randomChanges(int count){
 		int nPossibleRandomChanges = 2;

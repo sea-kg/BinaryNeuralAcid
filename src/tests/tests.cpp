@@ -7,7 +7,9 @@
 #include "reverse_test.h"
 #include "changerandomoperation_test.h"
 #include "swaprandomvertexins_test.h"
-
+#include "random_remove_vertex_test.h"
+#include "random_add_vertex_test.h"
+#include "random_connect_free_vertex_test.h"
 
 bool runtests(){
 	QVector<IReverseHashTest *> tests;
@@ -16,8 +18,11 @@ bool runtests(){
 	
 	tests.push_back(new ChangeRandomOperation_Test());
 	tests.push_back(new SwapRandomVertexIns_Test());
-	tests.push_back(new Reverse_Test());
-	tests.push_back(new CloneCopy_Test());
+	// tests.push_back(new Reverse_Test());
+	// tests.push_back(new CloneCopy_Test());
+	// tests.push_back(new RandomRemoveVertex_Test());
+	// tests.push_back(new RandomConnectFreeVertex_Test());
+	// tests.push_back(new RandomAddVertex_Test());
 	
 	bool bResult = true;
 	for(int i = 0; i < tests.size(); i++){
