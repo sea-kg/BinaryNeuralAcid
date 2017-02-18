@@ -11,7 +11,7 @@ QString SwapRandomVertexIns_Test::name(){
 	return "SwapRandomVertexIns_Test";
 };
 
-void printStat(int i, int cicles, int max){
+void SwapRandomVertexIns_Test::printStat(int i, int cicles, int max){
 	std::cout << "\r\t Calculates " << i << " (cicles: " << cicles << " / " << max << ") ";
 }
 
