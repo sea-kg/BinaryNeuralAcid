@@ -40,7 +40,7 @@ function loadStatistics(){
 			+ '		<div class="statistics-cell modified">' + sbit.modified + '</div>'
 			+ '		<div class="statistics-cell name p' + sbit.lp + '">' + sbit.name + '</div>' 
 			+ '		<div class="statistics-cell lp p' + sbit.lp + '">' + sbit.lp + ' %</div>'
-			+ '		<div class="statistics-cell info" bitid="' + sbit.name + '"></div>'
+			+ '		<div class="statistics-cell info"></div>'
 			+ '</div>');
 		}
 		
@@ -71,4 +71,12 @@ function hideLoading(){
 		$('.inputform').show();
 		$('.inputform').css({'opacity': 1});
 	},1000);
+}
+
+// overrided
+reversehashd.handlerTrainingThreadInfo = function(response){
+	
+	$('.statistics-cell.name').removeClass("processing");
+	$('#' + response.bitid + " .name").addClass("processing");
+	$('#' + response.bitid + " .info").html(response.status);
 }

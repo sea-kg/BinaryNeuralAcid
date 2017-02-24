@@ -13,8 +13,11 @@ class TrainingThread : public QThread{
 		Q_OBJECT
 		IWebSocketServer *m_pWebSocketServer;
 		int m_nSleep;
+		
 		void sendMessage(QString bitid, QString message);
 		QVector<TrainingThreadItem *> sortedList();
+	private:
+		QString m_sLastMessage;
 	public:
 		TrainingThread(IWebSocketServer *pWebSocketServer);
 	protected:

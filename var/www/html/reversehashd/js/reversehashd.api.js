@@ -2,9 +2,10 @@ if(!window.reversehashd) window.reversehashd = {};
 
 // WebSocket protocol
 
-window.reversehashd.handlerReceivedChatMessage = function(response){
-	reversehashd.handlerReceivedChatMessage(response);
+window.reversehashd.handlerTrainingThreadInfo = function(response){
+	console.warn("Not found hendler for threaning thread message");
 };
+
 window.reversehashd.listeners = {}
 window.reversehashd.addListener = function(id, d){
 	if(!reversehashd.listeners[id]){
@@ -23,8 +24,8 @@ reversehashd.handleCommand = function(response){
 		}
 		// clean listeners
 		reversehashd.listeners.hello = [];
-	}else if(response.cmd == "chat"){
-		reversehashd.handlerReceivedChatMessage(response);
+	}else if(response.cmd == "training_thread_info"){
+		reversehashd.handlerTrainingThreadInfo(response);
 	}else{
 		console.error("Not found handler for '" + response.cmd + "'");
 	}

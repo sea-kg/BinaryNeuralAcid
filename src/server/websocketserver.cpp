@@ -20,7 +20,7 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 	m_pWebSocketServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
 	m_debug = debug;
 	m_sFilename = "/etc/reversehashd/conf.ini";
-	
+
 	if(!QFile::exists("/usr/share/reversehashd")){
 		qDebug() << "Error /usr/share/reversehashd - file does not exists";
 		return;
@@ -67,6 +67,8 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
             qDebug() << "reversehashd listening on port" << port;
         connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this, &WebSocketServer::onNewConnection);
         connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &WebSocketServer::closed);
+        connect(this, &WebSocketServer::sendToAllSignal, this, &WebSocketServer::sendToAllSlot);
+        
         create_cmd_handlers(m_mapCmdHandlers);
     }
 
@@ -212,7 +214,15 @@ void WebSocketServer::sendMessageError(QWebSocket *pClient, QString cmd, int id,
 // ---------------------------------------------------------------------
 
 void WebSocketServer::sendToAll(QJsonObject obj){
+	emit sendToAllSignal(obj);
+}
+
+// ---------------------------------------------------------------------
+
+void WebSocketServer::sendToAllSlot(QJsonObject obj){
 	for(int i = 0; i < m_clients.size(); i++){
 		this->sendMessage(m_clients.at(i), obj);
 	}
 }
+
+// ---------------------------------------------------------------------

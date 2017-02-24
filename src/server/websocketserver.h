@@ -30,12 +30,14 @@ class WebSocketServer : public QObject, public IWebSocketServer {
 
 	Q_SIGNALS:
 		void closed();
+		void sendToAllSignal(QJsonObject obj);
 
 	private Q_SLOTS:
 		void onNewConnection();
 		void processTextMessage(QString message);
 		void processBinaryMessage(QByteArray message);
 		void socketDisconnected();
+		void sendToAllSlot(QJsonObject obj);
 
 	private:
 		QString readStringFromSettings(QSettings &sett, QString settName, QString defaultValue);

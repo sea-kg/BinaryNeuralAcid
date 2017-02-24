@@ -180,7 +180,6 @@ int main(int argc, char* argv[])
 			// pVertexGraph->lastSuccessPersents(
 		}
 		
-		
 		return 0;
 	}
 

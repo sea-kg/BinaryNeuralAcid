@@ -16,8 +16,6 @@ void TrainingThread::run(){
 	reverse_hash::Memory *pMemory = new reverse_hash::Memory();
 	pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
 	
-	
-	
 	while(true){
 		QVector<TrainingThreadItem *> list = this->sortedList();
 		for(int i = 0; i < list.size(); i++){
@@ -54,20 +52,20 @@ void TrainingThread::run(){
 					
 					if(t > 0 && t % 1000 == 0){
 						nPersent = (nSuccessCount * 100) / (t);
-						this->sendMessage(bitid, "Processed experiment: #" + QString::number(nExperiments) + " (" + QString::number(pVertexGraph->lastSuccessPersents()) + "%)");
+						this->sendMessage(bitid, "Processed experiment: #" + QString::number(nExperiments) + "/100 (" + QString::number(pVertexGraph->lastSuccessPersents()) + "%)");
 						QThread::sleep(1);
 					}
 				}
 
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
 				if(nPersent > pVertexGraph->lastSuccessPersents()){
-					this->sendMessage(bitid, "New persent result: " + QString::number(nPersent) + "% [" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + "]");
+					this->sendMessage(bitid, "New persent result: " + QString::number(nPersent) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
 					pVertexGraph->setLastSuccessPersents(nPersent);
 					pVertexGraph->saveToFile(filename);
 				}else{
 					pVertexGraph->loadFromFile(filename);
 					nPersent = pVertexGraph->lastSuccessPersents();
-					this->sendMessage(bitid, "Last persent result: " + QString::number(pVertexGraph->lastSuccessPersents()) + "% {" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + "}");
+					this->sendMessage(bitid, "Last persent result: " + QString::number(pVertexGraph->lastSuccessPersents()) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
 					pVertexGraph->randomChanges(13);
 				}
 			}
@@ -80,15 +78,18 @@ void TrainingThread::run(){
 }
 
 void TrainingThread::sendMessage(QString bitid, QString message){
+	if(m_sLastMessage == message){
+		return;
+	}
+	m_sLastMessage = message;
 	qDebug().noquote().nospace() << "Training Thread: [" << bitid << "] " << message;
 	QJsonObject jsonData;
-	jsonData["cmd"] = QJsonValue("training");
+	jsonData["cmd"] = QJsonValue("training_thread_info");
 	jsonData["rid"] = QJsonValue(0);
 	jsonData["bitid"] = bitid;
 	jsonData["result"] = "OK";
 	jsonData["status"] = message;
-	// Redesign use emit
-	// m_pWebSocketServer->sendToAll(jsonData);
+	m_pWebSocketServer->sendToAll(jsonData);
 }
 
 bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {
