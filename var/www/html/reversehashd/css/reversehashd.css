@@ -19,6 +19,7 @@ body{
      -moz-transition: opacity 1s ease-out 0.5s;
      -o-transition: opacity 1s ease-out 0.5s;
      transition: opacity 1s ease-out 0.5s;
+     z-index: 100;
 }
 
 .copyright{
