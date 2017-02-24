@@ -16,11 +16,14 @@ void TrainingThread::run(){
 	reverse_hash::Memory *pMemory = new reverse_hash::Memory();
 	pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
 	
+	
+	
 	while(true){
-		int nCount = 55*8;
-		for (int i = 0; i < nCount; i++) {
-			QString bitid = "bit" + QString::number(i).rightJustified(3, '0');
-			QString filename = "/usr/share/reversehashd/md5/" + bitid + ".vertexgraph";
+		QVector<TrainingThreadItem *> list = this->sortedList();
+		for(int i = 0; i < list.size(); i++){
+			TrainingThreadItem *item = list[i];
+			QString bitid = item->bitid();
+			QString filename = item->filename();
 			QFile file(filename);
 			if (!file.exists()) {
 				this->sendMessage(bitid, filename + " file did not found");
@@ -32,8 +35,7 @@ void TrainingThread::run(){
 			this->sendMessage(bitid, "Loaded file: " + filename);
 			
 			this->sendMessage(bitid, "Processing... ");
-			
-			
+
 			int nMemorySize = pMemory->size();
 			int nPersent = pVertexGraph->lastSuccessPersents();
 			int nExperiments = 0;
@@ -56,7 +58,7 @@ void TrainingThread::run(){
 						QThread::sleep(1);
 					}
 				}
-				
+
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
 				if(nPersent > pVertexGraph->lastSuccessPersents()){
 					this->sendMessage(bitid, "New persent result: " + QString::number(nPersent) + "% [" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + "]");
@@ -87,4 +89,18 @@ void TrainingThread::sendMessage(QString bitid, QString message){
 	jsonData["status"] = message;
 	// Redesign use emit
 	// m_pWebSocketServer->sendToAll(jsonData);
+}
+
+bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {
+    return e1->percent() < e2->percent();
+}
+
+QVector<TrainingThreadItem *> TrainingThread::sortedList(){
+	QVector<TrainingThreadItem *> result;
+	int nCount = 55*8;
+	for (int i = 0; i < nCount; i++) {
+		result.push_back(new TrainingThreadItem(i));
+	}
+	qSort ( result.begin(), result.end(), sortFunctionTTI );
+	return result;
 }

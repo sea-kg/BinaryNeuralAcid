@@ -5,6 +5,8 @@
 #include <QString>
 #include <QThread>
 #include <QDebug>
+#include <QVector>
+#include "training_thread_item.h"
 #include "../interfaces/iwebsocketserver.h"
 
 class TrainingThread : public QThread{
@@ -12,6 +14,7 @@ class TrainingThread : public QThread{
 		IWebSocketServer *m_pWebSocketServer;
 		int m_nSleep;
 		void sendMessage(QString bitid, QString message);
+		QVector<TrainingThreadItem *> sortedList();
 	public:
 		TrainingThread(IWebSocketServer *pWebSocketServer);
 	protected:

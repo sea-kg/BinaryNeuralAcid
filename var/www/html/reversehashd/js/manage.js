@@ -30,7 +30,6 @@ function loadStatistics(){
 			+ '		<div class="statistics-cell">Modified</div>'
 			+ '		<div class="statistics-cell">Name</div>' 
 			+ '		<div class="statistics-cell">Last Success Percent</div>'
-			+ '		<div class="statistics-cell">Training</div>'
 			+ '		<div class="statistics-cell">Info</div>'
 			+ '</div>');
 		
@@ -41,8 +40,7 @@ function loadStatistics(){
 			+ '		<div class="statistics-cell modified">' + sbit.modified + '</div>'
 			+ '		<div class="statistics-cell name p' + sbit.lp + '">' + sbit.name + '</div>' 
 			+ '		<div class="statistics-cell lp p' + sbit.lp + '">' + sbit.lp + ' %</div>'
-			+ '		<div class="statistics-cell"> <div class="bittraining" bitid="' + sbit.name + '">start</div></div>'
-			+ '		<div class="statistics-cell info"></div>'
+			+ '		<div class="statistics-cell info" bitid="' + sbit.name + '"></div>'
 			+ '</div>');
 		}
 		
@@ -50,7 +48,6 @@ function loadStatistics(){
 			var bitid = $(this).attr('bitid');
 			reversehashd.training(bitid);
 		});
-		
 	}).fail(function(r){
 		console.fail(r);
 		$('.content').html('failed');
