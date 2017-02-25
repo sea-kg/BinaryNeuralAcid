@@ -14,7 +14,7 @@ QString CloneCopy_Test::name(){
 bool CloneCopy_Test::run(){
 	VertexGraph vg(128);
 	vg.genBase();
-	int nMax = 10000;
+	int nMax = 1000;
 	std::cout << "\t Calculates 0";
 	for(int i = 0; i < nMax; i++){
 		std::cout << "\r\t Calculates " << QString::number(i).toStdString();
