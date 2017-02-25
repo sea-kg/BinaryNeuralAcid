@@ -465,6 +465,11 @@ bool VertexGraph::loadFromFile(QString filename){
 bool VertexGraph::loadFromStream(QDataStream &stream){
 	m_vVertexIn.clear();
 	m_pOut = NULL;
+	for(int i = m_vVertexes.size()-1; i >= 0; i--){
+		IVertexOut *pVertex = m_vVertexes[i];
+		m_vVertexes.remove(i);
+		delete pVertex;
+	}
 	m_vVertexes.clear();
 
 	int nVersion = -1;
