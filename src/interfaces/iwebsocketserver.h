@@ -6,7 +6,7 @@
 #include <QWebSocket>
 
 #include "../server/error.h"
-
+ 
 class IWebSocketServer {
 	public:
 		virtual void sendMessage(QWebSocket *pClient, QJsonObject obj) = 0;
