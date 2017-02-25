@@ -10,6 +10,7 @@
 class TrainingThreadItem {
 	public:
 		TrainingThreadItem(int bitid);
+		int id();
 		QString bitid();
 		QString filename();
 		int percent();
@@ -18,6 +19,7 @@ class TrainingThreadItem {
 		QString m_sFilename;
 		int m_nPercent;
 		QString m_sBitid;
+		int m_nBitid;
 		
 };
 

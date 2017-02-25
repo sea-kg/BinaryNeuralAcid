@@ -7,6 +7,7 @@
 #include <QFile>
 
 TrainingThreadItem::TrainingThreadItem(int bitid){
+	m_nBitid = bitid;
 	m_sBitid = "bit" + QString::number(bitid).rightJustified(3, '0');
 	m_sFilename = "/usr/share/reversehashd/md5/" + m_sBitid + ".vertexgraph";
 	VertexGraph vg(128);
@@ -14,6 +15,9 @@ TrainingThreadItem::TrainingThreadItem(int bitid){
 	m_nPercent = vg.lastSuccessPersents();
 }
 
+int TrainingThreadItem::id(){
+	return m_nBitid;
+}
 
 QString TrainingThreadItem::bitid(){
 	return m_sBitid;

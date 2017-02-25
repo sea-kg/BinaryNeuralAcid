@@ -46,7 +46,7 @@ void TrainingThread::run(){
 					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
 					vg.setIn(memoryItem.outputToVectorBool());
 					bool b = vg.out();
-					if(b == memoryItem.inputToVectorBool()[i]){
+					if(b == memoryItem.inputToVectorBool()[item->id()]){
 						nSuccessCount++;
 					}
 					
@@ -77,7 +77,7 @@ void TrainingThread::run(){
 	qDebug().noquote().nospace() << "Stop Training Thread";
 }
 
-void TrainingThread::sendMessage(QString bitid, QString message){
+void TrainingThread::sendMessage(QString bitid, int lp, QString message){
 	if(m_sLastMessage == message){
 		return;
 	}
