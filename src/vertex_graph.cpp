@@ -509,7 +509,12 @@ namespace reversehash {
     
     bool VertexGraph::findCiclesRecourse(IVertexOut *pVertexOut, QVector<IVertexOut *> &stack){
 		if(pVertexOut == NULL){
-			std::cerr << "!!! Error: Some vertext is NULL";
+			std::cerr << "!!! Error: Some vertext is NULL\n";
+			for(int i = 0; i < stack.size(); i++){
+				if(stack[i] != NULL){
+					std::cerr << "Stack " << i << ":" << stack[i]->name().toStdString() << "\n";
+				}
+			}
 			return true;
 		}
 		if(pVertexOut->type() == "Vertex"){
@@ -519,10 +524,17 @@ namespace reversehash {
 					return true;
 				}
 			}
+			if(pVertexOperation->in1() == NULL){
+				std::cerr << "!!! Error: Some vertext is NULL (1) for " << pVertexOut->name().toStdString() << "\n";
+			}
 			stack.push_back(pVertexOperation->in1());
 			if(findCiclesRecourse(pVertexOperation->in1(), stack))
 				return true;
 			stack.pop_back();
+			
+			if(pVertexOperation->in2() == NULL){
+				std::cerr << "!!! Error: Some vertext is NULL (2)\n";
+			}
 			stack.push_back(pVertexOperation->in2());
 			if(findCiclesRecourse(pVertexOperation->in2(), stack))
 				return true;
@@ -576,6 +588,7 @@ namespace reversehash {
 		IVertexOut *pVertexOut2 = NULL;
 		
 		bool bFound = false;
+		int tries = 0;
 		while(!bFound){
 			int n = qrand() % (m_vVertexes.size());
 			pVertexOut1 = m_vVertexes[n];
@@ -583,14 +596,24 @@ namespace reversehash {
 				pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut1);
 				bFound = true;
 			}
+			tries++;
+			if(tries > 100){
+				return;
+			}
 		}
+
 		bFound = false;
+		tries = 0;
 		while(!bFound){
 			int n = qrand() % (m_vVertexes.size());
 			pVertexOut2 = m_vVertexes[n];
 			if(pVertexOut2->type() == "Vertex" && pVertexOperation1 != pVertexOperation2){
 				pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut2);
 				bFound = true;
+			}
+			tries++;
+			if(tries > 100){
+				return;
 			}
 		}
 
@@ -654,43 +677,117 @@ namespace reversehash {
 	// -----------------------------------------------------------------
 	
 	void VertexGraph::randomAddVertex(){
-		// TODO
-	}
+		// std::cout << m_vVertexes.size() << "\n";
+		if(m_vVertexes.size() > 500){
+			return;
+		}
+
+		IVertexOperation *pVertexOperationTop = NULL;
+		IVertexOut *pVertexOutTop = NULL;
+
+		bool bFound = false;
+		int nVertex = -1;
+		int tries = 0;
+		while(!bFound){
+			nVertex = qrand() % (m_vVertexes.size());
+			pVertexOutTop = m_vVertexes[nVertex];
+			if(pVertexOutTop->name() != "out" && pVertexOutTop->type() != "VertexIn"){
+				pVertexOperationTop = dynamic_cast<IVertexOperation *>(pVertexOutTop);
+				bFound = true;
+			}
+			tries++;
+			if(tries > 100){
+				return;
+			}
+		}
+		
+		IVertexOut *pVertexOut1 = pVertexOperationTop->in1();
+		IVertexOut *pVertexOut2 = pVertexOperationTop->in2();
+
+		IVertexOut *pVertexOutAdd = new Vertex();
+		IVertexOperation *pVertexOperationAdd = dynamic_cast<IVertexOperation *>(pVertexOutAdd);
+		
+		int nOper = qrand() % (3);
+		if(nOper == 0){
+			pVertexOperationAdd->setOperation("|");
+		}else if(nOper == 1){
+			pVertexOperationAdd->setOperation("&");
+		}else{
+			pVertexOperationAdd->setOperation("^");
+		}
+
+		// generate vertex name
+		int mI = 1;
+		QString vertexName = "m" + QString::number(mI);
+		IVertexOut *pVertexTest = this->findVertexByName(vertexName);
+		while(pVertexTest != NULL){
+			mI++;
+			vertexName = "m" + QString::number(mI);
+			pVertexTest = this->findVertexByName(vertexName);
+		}
+		pVertexTest = NULL;
+		// std::cout << "\nvertexNamebefore: " << pVertexOutTop->name().toStdString() << "\n";
+		// std::cout << "\nvertexName: " << vertexName.toStdString() << "\n";
+		pVertexOutAdd->setName(vertexName);
+		// std::cout << "\nvertexName 3: " << pVertexOutAdd->name().toStdString() << "\n";
+		// std::cout << "\nvertexName 4: " << pVertexOutTop->name().toStdString() << "\n";
 	
-	// -----------------------------------------------------------------
-	
-	void VertexGraph::randomConnectFreeVertex(){
-		// TODO
+		m_vVertexes.insert(nVertex, pVertexOutAdd);
+
+		// set ins
+		int nIns = qrand() % (2);
+		if(nIns == 0){
+			pVertexOperationAdd->setIn1(pVertexOut1);
+			pVertexOperationAdd->setIn2(pVertexOut2);
+		}else{
+			pVertexOperationAdd->setIn1(pVertexOut2);
+			pVertexOperationAdd->setIn2(pVertexOut1);
+		}
+
+		// broke vertexes connection
+		int nIn = qrand() % (2);
+		if(nIn == 0){
+			pVertexOperationTop->setIn1(pVertexOutAdd);
+		}else{
+			pVertexOperationTop->setIn2(pVertexOutAdd);
+		}
 	}
 	
 	// -----------------------------------------------------------------
     
 	void VertexGraph::randomChanges(int count){
-		int nPossibleRandomChanges = 2;
+		int nPossibleRandomChanges = 4;
 		// replace operations
 		for(int i = 0; i < count; i++){
 			int n = qrand() % (nPossibleRandomChanges);
-			switch(n){
-				case 1: 
-					this->changeRandomOperation();
-					break;
-				case 2:
-					bool bFound = false;
-					while(!bFound){
-						VertexGraph *pVertexGraphClone = this->clone();
+			bool bFound = false;
+			int tries = 0;
+			while(!bFound){
+				VertexGraph *pVertexGraphClone = this->clone();
+				switch(n){
+					case 0: 
+						pVertexGraphClone->changeRandomOperation();
+						break;
+					case 1:
 						pVertexGraphClone->swapRandomVertextIns();
-						if(!pVertexGraphClone->findCicles()){
-							this->copy(pVertexGraphClone);
-							bFound = true;
-						}
-						delete pVertexGraphClone;
-					};
-					break;
+						break;
+					case 2:
+						pVertexGraphClone->randomAddVertex();
+						break;
+					case 3:
+						pVertexGraphClone->randomRemoveVertex();
+						break;
+				}
+				if(!pVertexGraphClone->findCicles()){
+					this->copy(pVertexGraphClone);
+					bFound = true;
+				}
+				delete pVertexGraphClone;
+				tries++;
+				if(tries > 100){
+					return;
+				}
 			}
 		}
-		
-		// TODO: add
-		
-		// TODO: remove mXXX
 	}
 }

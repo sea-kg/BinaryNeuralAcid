@@ -30,7 +30,6 @@ SOURCES += src/main.cpp \
     src/tests/swaprandomvertexins_test.cpp \
     src/tests/clonecopy_test.cpp \
     src/tests/random_remove_vertex_test.cpp \
-    src/tests/random_connect_free_vertex_test.cpp \
     src/tests/random_add_vertex_test.cpp \
     src/server/websocketserver.cpp \
     src/server/error.cpp \
@@ -67,7 +66,6 @@ HEADERS += \
     src/tests/swaprandomvertexins_test.h \
     src/tests/clonecopy_test.h \
     src/tests/random_remove_vertex_test.h \
-    src/tests/random_connect_free_vertex_test.h \
     src/tests/random_add_vertex_test.h \
     src/server/websocketserver.h \
 	src/server/error.h \

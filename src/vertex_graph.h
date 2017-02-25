@@ -44,7 +44,6 @@ namespace reversehash {
 			void swapRandomVertextIns();
             void randomRemoveVertex();
             void randomAddVertex();
-            void randomConnectFreeVertex();
 
 			// visualization
 			void recalculateCoordinates();

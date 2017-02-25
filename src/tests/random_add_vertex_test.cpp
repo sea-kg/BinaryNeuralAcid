@@ -16,10 +16,9 @@ void RandomAddVertex_Test::printStat(int i, int cicles, int max){
 }
 
 bool RandomAddVertex_Test::run(){
-	// TODO
-	/*reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
+	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 	pVertexGraph->genBase();
-	int nMax = 1000;
+	int nMax = 250;
 	int cicles = 0;
 	std::cout << "\n";
 	printStat(0, cicles, nMax);
@@ -28,7 +27,7 @@ bool RandomAddVertex_Test::run(){
 		printStat(i, cicles, nMax);
 		pVertexGraph->changeRandomOperation();
 		reversehash::VertexGraph *pVertexGraphClone = pVertexGraph->clone();
-		pVertexGraphClone->swapRandomVertextIns();
+		pVertexGraphClone->randomAddVertex();
 		if(!pVertexGraphClone->findCicles()){
 			pVertexGraphClone->out();
 			pVertexGraph->copy(pVertexGraphClone);
@@ -38,7 +37,7 @@ bool RandomAddVertex_Test::run(){
 		delete pVertexGraphClone;
 	}
 	printStat(nMax, cicles, nMax);
-	std::cout << "\n";*/
+	std::cout << "\n";
 	return true;
 };
 

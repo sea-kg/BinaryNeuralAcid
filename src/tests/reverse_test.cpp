@@ -33,7 +33,7 @@ bool Reverse_Test::run(){
 		int nCount = 55*8;
 		QVector<bool> vOutput;
 		for (int i = 0; i < nCount; i++) {
-			QString filename = "md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 			QFile file(filename);
 			if(file.exists()){
 				reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
