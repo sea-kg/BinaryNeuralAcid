@@ -14,15 +14,16 @@ QString CloneCopy_Test::name(){
 bool CloneCopy_Test::run(){
 	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
 	pVertexGraph->genBase();
-	int nMax = 1000;
+	int nMax = 10000;
 	std::cout << "\t Calculates 0";
 	for(int i = 0; i < nMax; i++){
 		std::cout << "\r\t Calculates " << QString::number(i).toStdString();
 		reversehash::VertexGraph *pVertexGraphClone = pVertexGraph->clone();
-		pVertexGraphClone->changeRandomOperation();
+		// pVertexGraphClone->changeRandomOperation();
 		pVertexGraph->copy(pVertexGraphClone);
 		delete pVertexGraphClone;
 	}
+	delete pVertexGraph;
 	std::cout << "\r\t Calculates " << nMax << "\n";
 	return true;
 };

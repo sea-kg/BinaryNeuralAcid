@@ -8,6 +8,7 @@ namespace reversehash {
 	class OperationXor : public IOperation
     {
         public:
+			~OperationXor();
 			virtual QString type();
 			virtual bool calc(bool b1, bool b2);
     };

@@ -25,7 +25,7 @@ bool SwapRandomVertexIns_Test::run(){
 	
 	for(int i = 0; i < nMax; i++){
 		printStat(i, cicles, nMax);
-		pVertexGraph->changeRandomOperation();
+		// pVertexGraph->changeRandomOperation();
 		reversehash::VertexGraph *pVertexGraphClone = pVertexGraph->clone();
 		pVertexGraphClone->swapRandomVertextIns();
 		if(!pVertexGraphClone->findCicles()){

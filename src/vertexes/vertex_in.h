@@ -6,10 +6,11 @@
 #include <QString>
 
 namespace reversehash {
-	class VertexIn : public virtual IVertexOut, virtual public IVertexIn
+	class VertexIn : public virtual IVertexOut, public virtual IVertexIn
     {
         public:
 			VertexIn();
+			~VertexIn();
 
 			// IVertexOut
 			virtual bool out();

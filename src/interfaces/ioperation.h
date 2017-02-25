@@ -7,6 +7,7 @@ namespace reversehash {
 	class IOperation
     {
         public:
+			virtual ~IOperation() {};
 			virtual QString type() = 0;
 			virtual bool calc(bool b1, bool b2) = 0;
     };

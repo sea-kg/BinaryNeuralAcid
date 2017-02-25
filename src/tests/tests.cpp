@@ -15,12 +15,12 @@ bool runtests(){
 	// tests.push_back(new CallOut_Test());
 	// tests.push_back(new ReadWrite_Test());
 	
-	tests.push_back(new ChangeRandomOperation_Test());
-	tests.push_back(new SwapRandomVertexIns_Test());
-	tests.push_back(new Reverse_Test());
+	// tests.push_back(new ChangeRandomOperation_Test());
+	// tests.push_back(new SwapRandomVertexIns_Test());
+	// tests.push_back(new Reverse_Test());
 	tests.push_back(new CloneCopy_Test());
-	tests.push_back(new RandomRemoveVertex_Test());
-	tests.push_back(new RandomAddVertex_Test());
+	// tests.push_back(new RandomRemoveVertex_Test());
+	// tests.push_back(new RandomAddVertex_Test());
 	
 	bool bResult = true;
 	for(int i = 0; i < tests.size(); i++){

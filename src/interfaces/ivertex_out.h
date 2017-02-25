@@ -7,6 +7,7 @@ namespace reversehash {
 	class IVertexOut
     {
         public:
+			virtual ~IVertexOut() {};
 			virtual bool out() = 0;
 			virtual QString type() = 0;
 			virtual QString name() = 0;

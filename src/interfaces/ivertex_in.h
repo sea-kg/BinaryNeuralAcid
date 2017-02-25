@@ -7,6 +7,7 @@ namespace reversehash {
 	class IVertexIn
     {
         public:
+			virtual ~IVertexIn() {};
             virtual void setNumber(int n) = 0;
             virtual int number() = 0;
 			virtual void setValue(bool bValue) = 0;

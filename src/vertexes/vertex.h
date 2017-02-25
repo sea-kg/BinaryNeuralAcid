@@ -11,6 +11,7 @@ namespace reversehash {
     {
         public:
 			Vertex();
+			~Vertex();
 			
 			// IVertexOut
 			virtual bool out();

@@ -9,6 +9,7 @@ namespace reversehash {
 	class IVertexOperation
     {
         public:
+			virtual ~IVertexOperation() {};
 			virtual void setOperation(QString sOper) = 0;
 			virtual QString operation() = 0;
 			virtual void setIn1(IVertexOut *pInput) = 0;

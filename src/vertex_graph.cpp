@@ -20,6 +20,18 @@ namespace reversehash {
 	
 	// -----------------------------------------------------------------
 	
+	VertexGraph::~VertexGraph(){
+		m_vVertexIn.clear();
+		m_pOut = NULL;
+		for(int i = m_vVertexes.size()-1; i >= 0; i--){
+			IVertexOut *pVertex = m_vVertexes[i];
+			m_vVertexes.remove(i);
+			delete pVertex;
+		}
+	}
+	
+	// -----------------------------------------------------------------
+	
 	void VertexGraph::setLastSuccessPersents(int nVal){
 		m_nLastSuccessPersents = nVal;
 	};
@@ -83,6 +95,7 @@ namespace reversehash {
 	bool VertexGraph::out(){
 		if(this->findCicles()){
 			std::cerr << " !!! Error: Found cicles\n";
+			return false;
 		}
 		return m_pOut->out();
 	}
@@ -321,12 +334,13 @@ namespace reversehash {
             stream >> x;
             stream >> y;
             stream >> z;
-            
-            
+
             if(type == "Vertex"){
                 IVertexOut *pVertexOut = this->findVertexByName(QString(name));
-                if(pVertexOut == NULL)
+                if(pVertexOut == NULL){
                     pVertexOut = new Vertex();
+                    m_vVertexes.push_back(pVertexOut);
+				}
                 pVertexOut->setName(QString(name));
                 pVertexOut->setXYZ(x,y,z);
                 IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
@@ -354,6 +368,7 @@ namespace reversehash {
                         pVertexIn1 = new VertexIn();
                     }
                     pVertexIn1->setName(QString(in1name));
+                    m_vVertexes.push_back(pVertexIn1);
                 }
 
                 if(pVertexIn2 == NULL){
@@ -363,6 +378,7 @@ namespace reversehash {
                         pVertexIn2 = new VertexIn();
                     }
                     pVertexIn2->setName(QString(in2name));
+                    m_vVertexes.push_back(pVertexIn2);
                 }
 
                 pVertexOperation->setIn1(pVertexIn1);
@@ -371,7 +387,6 @@ namespace reversehash {
                 if(QString(name) == "out"){
                     m_pOut = pVertexOut;
                 }
-                m_vVertexes.push_back(pVertexOut);
             }else if(type == "VertexIn"){
                 IVertexIn *pVertexIn = new VertexIn();
                 int nNumber = -1;
@@ -507,34 +522,43 @@ namespace reversehash {
 
     // -----------------------------------------------------------------
     
+    void VertexGraph::printStackVertexes(QVector<IVertexOut *> &stack){
+		for(int i = 0; i < stack.size(); i++){
+			if(stack[i] != NULL){
+				std::cerr << "Stack " << i << ":" << stack[i]->name().toStdString() << "\n";
+			}
+		}
+	}
+    
+    // -----------------------------------------------------------------
+    
     bool VertexGraph::findCiclesRecourse(IVertexOut *pVertexOut, QVector<IVertexOut *> &stack){
 		if(pVertexOut == NULL){
-			std::cerr << "!!! Error: Some vertext is NULL\n";
-			for(int i = 0; i < stack.size(); i++){
-				if(stack[i] != NULL){
-					std::cerr << "Stack " << i << ":" << stack[i]->name().toStdString() << "\n";
-				}
-			}
+			std::cerr << "Error(findCiclesRecourse): Some vertext is NULL\n";
 			return true;
 		}
 		if(pVertexOut->type() == "Vertex"){
 			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
+			if(pVertexOperation->in1() == NULL){
+				std::cerr << "\nError(findCiclesRecourse): Some vertext is NULL (1) for " << pVertexOut->name().toStdString() << "\n";
+				printStackVertexes(stack);
+			}
+			if(pVertexOperation->in2() == NULL){
+				std::cerr << "\nError(findCiclesRecourse): Some vertext is NULL (2) for " << pVertexOut->name().toStdString() << "\n";
+			}
+			
 			for(int i = 0; i < stack.size(); i++){
 				if(pVertexOperation->in1() == stack[i] || pVertexOperation->in2() == stack[i]){
 					return true;
 				}
 			}
-			if(pVertexOperation->in1() == NULL){
-				std::cerr << "!!! Error: Some vertext is NULL (1) for " << pVertexOut->name().toStdString() << "\n";
-			}
+			
 			stack.push_back(pVertexOperation->in1());
 			if(findCiclesRecourse(pVertexOperation->in1(), stack))
 				return true;
 			stack.pop_back();
 			
-			if(pVertexOperation->in2() == NULL){
-				std::cerr << "!!! Error: Some vertext is NULL (2)\n";
-			}
+			
 			stack.push_back(pVertexOperation->in2());
 			if(findCiclesRecourse(pVertexOperation->in2(), stack))
 				return true;
@@ -580,47 +604,111 @@ namespace reversehash {
     
     // -----------------------------------------------------------------
     
-    void VertexGraph::swapRandomVertextIns(){
-		
-		IVertexOperation *pVertexOperation1 = NULL;
-		IVertexOperation *pVertexOperation2 = NULL;
-		IVertexOut *pVertexOut1 = NULL;
-		IVertexOut *pVertexOut2 = NULL;
-		
+    IVertexOut *VertexGraph::findRandomVertex(){
 		bool bFound = false;
 		int tries = 0;
+		IVertexOut *pVertexOut = NULL;
 		while(!bFound){
-			int n = qrand() % (m_vVertexes.size());
-			pVertexOut1 = m_vVertexes[n];
-			if(pVertexOut1->type() == "Vertex"){
-				pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut1);
+			int nVertex = qrand() % (m_vVertexes.size());
+			pVertexOut = m_vVertexes[nVertex];
+			if(pVertexOut->type() == "Vertex"){
 				bFound = true;
 			}
 			tries++;
 			if(tries > 100){
-				return;
+				return NULL;
 			}
 		}
+		return pVertexOut;
+	}
+	
+	// -----------------------------------------------------------------
+    
+    bool VertexGraph::findIntersectionRecourse(IVertexOut *pVertexStart, IVertexOut *pVertexSearch){
+		if(pVertexStart == pVertexSearch){
+			return true;
+		}
+		
+		if(pVertexStart == NULL){
+			std::cerr << "!!!findIntersectionRecourse Error: Some vertext is NULL\n";
+			return true;
+		}
+		if(pVertexStart->type() == "Vertex"){
+			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexStart);
+			if(pVertexOperation->in1() == pVertexSearch || pVertexOperation->in2() == pVertexSearch){
+				return true;
+			}
+			if(pVertexOperation->in1() == NULL){
+				std::cerr << "!!!findIntersectionRecourse Error: Some vertext is NULL (1) for " << pVertexStart->name().toStdString() << "\n";
+			}
+			if(findIntersectionRecourse(pVertexOperation->in1(), pVertexSearch))
+				return true;
 
-		bFound = false;
-		tries = 0;
-		while(!bFound){
-			int n = qrand() % (m_vVertexes.size());
-			pVertexOut2 = m_vVertexes[n];
-			if(pVertexOut2->type() == "Vertex" && pVertexOperation1 != pVertexOperation2){
-				pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut2);
-				bFound = true;
+			if(pVertexOperation->in2() == NULL){
+				std::cerr << "!!!findIntersectionRecourse Error: Some vertext is NULL (2)" << pVertexStart->name().toStdString() << "\n";
 			}
-			tries++;
-			if(tries > 100){
-				return;
-			}
+			if(findIntersectionRecourse(pVertexOperation->in2(), pVertexSearch))
+				return true;
 		}
+		return false;
+	}
+    
+    // -----------------------------------------------------------------
+    
+    void VertexGraph::swapRandomVertextIns(){
+		
+		IVertexOut *pVertexOut1 = findRandomVertex();
+		IVertexOut *pVertexOut2 = findRandomVertex();
+
+		if(pVertexOut1 == NULL || pVertexOut2 == NULL) return;
+		
+		IVertexOperation *pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut1);
+		IVertexOperation *pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut2);
 
 		IVertexOut *pOut1 = pVertexOperation1->in1();
-		IVertexOut *pOut2 = pVertexOperation2->in2();
+		IVertexOut *pOut2 = pVertexOperation2->in1();
+
+		if(pOut1 == NULL || pOut2 == NULL) {
+			std::cerr << "Some pOut1 or pOut2 is NULL (1)\n";
+			return;
+		}
+		
+		if(pOut1 == pVertexOut1 || pVertexOut1 == pVertexOut2 || pOut2 == pVertexOut2){
+			return;
+		}
+
+		int nTries = 0;
+		bool bIntersec1 = findIntersectionRecourse(pOut1, pVertexOut2);
+		bool bIntersec2 = findIntersectionRecourse(pOut2, pVertexOut1);
+		while(bIntersec1 || bIntersec2 || pVertexOut1 == pVertexOut2) {
+			pVertexOut1 = findRandomVertex();
+			pVertexOut2 = findRandomVertex();
+
+			if(pVertexOut1 == NULL || pVertexOut2 == NULL) return;
+
+			pVertexOperation1 = dynamic_cast<IVertexOperation *>(pVertexOut1);
+			pVertexOperation2 = dynamic_cast<IVertexOperation *>(pVertexOut2);
+
+			pOut1 = pVertexOperation1->in1();
+			pOut2 = pVertexOperation2->in1();
+			
+			if(pOut1 == NULL || pOut2 == NULL) {
+				std::cerr << "Some pOut1 or pOut2 is NULL (2)\n";
+				return;
+			}
+			
+			if(pOut1 == pVertexOut1 || pVertexOut1 == pVertexOut2 || pOut2 == pVertexOut2){
+				return;
+			}
+			
+			nTries++;
+			if(nTries > 100){
+				return;
+			}
+		};
+		
 		pVertexOperation1->setIn1(pOut2);
-		pVertexOperation2->setIn2(pOut1);
+		pVertexOperation2->setIn1(pOut1);
 	}
     
     // -----------------------------------------------------------------

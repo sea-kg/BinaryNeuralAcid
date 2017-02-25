@@ -14,6 +14,12 @@ namespace reversehash {
 	};
 	
 	// -----------------------------------------------------------------
+
+	Vertex::~Vertex(){
+		delete m_pOperation;
+	}
+	
+	// -----------------------------------------------------------------
 	
 	bool Vertex::out(){
 		bool bIn1 = m_pIn1 != NULL ? m_pIn1->out() : false;
