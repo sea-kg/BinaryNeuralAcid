@@ -151,55 +151,41 @@ input{
 	text-shadow: 1px 1px 5px #24aaff;
 }
 
-.statistics-cell.p100{
+.statistics-cell.success{
 	background-color: darkcyan;
 }
 
-.statistics-cell.p0,
-.statistics-cell.p1,
-.statistics-cell.p2,
-.statistics-cell.p3,
-.statistics-cell.p4,
-.statistics-cell.p5,
-.statistics-cell.p6,
-.statistics-cell.p7,
-.statistics-cell.p8,
-.statistics-cell.p9,
-.statistics-cell.p10,
-.statistics-cell.p11,
-.statistics-cell.p12,
-.statistics-cell.p13,
-.statistics-cell.p14,
-.statistics-cell.p15,
-.statistics-cell.p16,
-.statistics-cell.p17,
-.statistics-cell.p18,
-.statistics-cell.p19,
-.statistics-cell.p20,
-.statistics-cell.p21,
-.statistics-cell.p22,
-.statistics-cell.p23,
-.statistics-cell.p24,
-.statistics-cell.p25,
-.statistics-cell.p26,
-.statistics-cell.p27,
-.statistics-cell.p28,
-.statistics-cell.p29,
-.statistics-cell.p30,
-.statistics-cell.p31,
-.statistics-cell.p32,
-.statistics-cell.p33,
-.statistics-cell.p34,
-.statistics-cell.p35,
-.statistics-cell.p36,
-.statistics-cell.p37{
+.statistics-cell.normal{
+	background-color: black;
+}
+
+.statistics-cell.low{
 	background-color: darkred;
 }
 
 .statistics-cell.info{
 	width: 250px;
+	
+}
+
+.statistics-cell.info .status{
+	padding-top: 10px;
 }
 
 .statistics-cell.name.processing{
 	font-size: 30px;
+}
+
+.bitprogress{
+	display: none;
+	height: 10px;
+    border: 1px solid #24aaff;
+    background-color: #000;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.bitprogress-ins{
+	background-color: #24aaff;
+	height: 10px;
 }

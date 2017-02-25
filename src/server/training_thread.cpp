@@ -57,9 +57,12 @@ void TrainingThread::run(){
 					
 					if(t > 0 && t % 1000 == 0){
 						nPersent = (nSuccessCount * 100) / (t);
-						
+
 						TrainingThreadMessage msg(pItem);
-						msg.setMessage("Processed training: #" + QString::number(nExperiments) + "/100 (" + QString::number(nPersent) + "%)");
+						msg.setMessage("Training...");
+						msg.setMaxExperiments(100);
+						msg.setCompletedExperiments(nExperiments);
+						msg.setPercent(nPersent);
 						this->sendMessage(msg);
 						
 						QThread::sleep(1);
@@ -68,11 +71,13 @@ void TrainingThread::run(){
 
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
 				if(nPersent > vg.lastSuccessPersents()){
-
 					TrainingThreadMessage msg(pItem);
-					msg.setMessage("New persent result: " + QString::number(nPersent) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
+					msg.setMessage("New percent result set!");
+					msg.setLastSuccessPersents(nPersent);
+					msg.setMaxExperiments(100);
+					msg.setCompletedExperiments(nExperiments);
 					this->sendMessage(msg);
-				
+					
 					vg.setLastSuccessPersents(nPersent);
 					vg.saveToFile(filename);
 				}else{
@@ -80,14 +85,18 @@ void TrainingThread::run(){
 					nPersent = vg.lastSuccessPersents();
 					
 					TrainingThreadMessage msg(pItem);
-					msg.setMessage("Last persent result: " + QString::number(vg.lastSuccessPersents()) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
+					msg.setMessage("Reloading graph.");
+					msg.setLastSuccessPersents(vg.lastSuccessPersents());
 					this->sendMessage(msg);
-					vg.randomChanges(50);
+					vg.randomChanges(13);
 				}
 			}
+			
 			{
 				TrainingThreadMessage msg(pItem);
 				msg.setMessage("Result: " + QString::number(vg.lastSuccessPersents()) + "%");
+				msg.setMaxExperiments(100);
+				msg.setCompletedExperiments(100);
 				this->sendMessage(msg);
 			}
 			QThread::sleep(m_nSleep);
@@ -104,13 +113,8 @@ void TrainingThread::sendMessage(TrainingThreadMessage &msg){
 	
 	m_lastMessage = msg;
 	qDebug().noquote().nospace() << "Training Thread: [" << msg.bitid() << "] " << msg.message();
-	QJsonObject jsonData;
-	jsonData["cmd"] = QJsonValue("training_thread_info");
-	jsonData["rid"] = QJsonValue(0);
-	jsonData["bitid"] = msg.bitid();
-	jsonData["result"] = "OK";
-	jsonData["status"] = msg.message();
-	m_pWebSocketServer->sendToAll(jsonData);
+
+	m_pWebSocketServer->sendToAll(msg.toJson());
 }
 
 bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {

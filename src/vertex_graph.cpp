@@ -111,8 +111,8 @@ void VertexGraph::setIn(const QVector<bool> &in){
 	int nVertexInSize = m_vVertexIn.size();
 	int nInSize = in.size();
 	if(nInSize > nVertexInSize){
-		std::cerr << "Warning input to so much.";
-		std::cerr << nVertexInSize << " != " << nInSize << "\n";
+		std::cerr << "Warning input to so much. (" << m_sFilename.toStdString() << ")\n";
+		std::cerr << nInSize << " != " << nVertexInSize << "\n";
 	}
 	for(int i = 0; i < nInSize; i++){
 		if(i < nVertexInSize){
@@ -296,8 +296,17 @@ void VertexGraph::writeDataAsVersion1(QDataStream &stream){
 		if(pVertexOut->type() == "Vertex"){
 			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
 			stream << pVertexOperation->operation().toUtf8();
+			if(pVertexOperation->in1() == NULL){
+				std::cerr << "Failed in1 is NULL\n";
+			}
+			
 			stream << pVertexOperation->in1()->type().toUtf8();
 			stream << pVertexOperation->in1()->name().toUtf8();
+			
+			if(pVertexOperation->in2() == NULL){
+				std::cerr << "Failed in2 is NULL\n";
+			}
+			
 			stream << pVertexOperation->in2()->type().toUtf8();
 			stream << pVertexOperation->in2()->name().toUtf8();
 		}else if(pVertexOut->type() == "VertexIn"){
@@ -454,8 +463,9 @@ bool VertexGraph::loadFromFile(QString filename){
 		return false;
 	}
 
+	m_sFilename = filename;
 	QDataStream stream( &file );
-
+	
 	return this->loadFromStream(stream);
 }
 

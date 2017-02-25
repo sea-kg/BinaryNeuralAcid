@@ -67,6 +67,7 @@ class VertexGraph
 		int m_nInputs;
 		int m_nVersion;
 		int m_nLastSuccessPersents;
+		QString m_sFilename;
 };
 
 
