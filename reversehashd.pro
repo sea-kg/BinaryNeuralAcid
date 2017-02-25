@@ -40,7 +40,7 @@ SOURCES += src/main.cpp \
     src/server/cmd_handlers/cmd_hello_handler.cpp \
     src/server/cmd_handlers/cmd_reverse_handler.cpp \
     src/server/cmd_handlers/cmd_statistics_handler.cpp \
-    src/server/cmd_handlers/cmd_training_handler.cpp \
+    src/server/cmd_handlers/cmd_graph_handler.cpp \
 
 HEADERS += \
     src/memory.h \
@@ -77,4 +77,4 @@ HEADERS += \
 	src/server/cmd_handlers/include/cmd_hello_handler.h \
 	src/server/cmd_handlers/include/cmd_reverse_handler.h \
 	src/server/cmd_handlers/include/cmd_statistics_handler.h \
-	src/server/cmd_handlers/include/cmd_training_handler.h \
+	src/server/cmd_handlers/include/cmd_graph_handler.h \

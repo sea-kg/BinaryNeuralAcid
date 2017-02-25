@@ -8,6 +8,7 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QBuffer>
+#include <QJsonObject>
 
 namespace reversehash {
 	VertexGraph::VertexGraph(int nInputs){
@@ -114,53 +115,7 @@ namespace reversehash {
 	}
 
 	// -----------------------------------------------------------------
-	
-	void addLineJson_nodes(QString &result, IVertexOut *pFrom, bool bFirst = false){
-		if(!bFirst)
-			result += ",\n";
-		result += "\t\t{\n";
-		result += "\t\t\t\"id\": \"" + pFrom->name() + "\",\n";
-		result += "\t\t\t\"label\": \"" + pFrom->name() + "\",\n";
-		result += "\t\t\t\"x\": " + QString::number(int(pFrom->x())) + ",\n";
-		result += "\t\t\t\"y\": " + QString::number(int(pFrom->y())) + ",\n";
-		result += "\t\t\t\"size\": 2\n";
-		result += "\t\t}";
-			
-		if(pFrom->type() != "VertexIn"){
-			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pFrom);
-			addLineJson_nodes(result, pVertexOperation->in1());
-			addLineJson_nodes(result, pVertexOperation->in2());
-		}
-	}
-	
-	// -----------------------------------------------------------------
 
-	void addLineJson_edges(QString &result, IVertexOut *pFrom, int &k, bool bFirst = false){
-		if(pFrom->type() != "VertexIn"){
-			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pFrom);
-			
-			if(!bFirst)
-				result += ",\n";
-			
-			k = k + 1;
-			result += "\t\t{\n";
-			result += "\t\t\t\"id\": \"e" + QString::number(k) + "\",\n";
-			result += "\t\t\t\"source\": \"" + pVertexOperation->in1()->name() + "\",\n";
-			result += "\t\t\t\"target\": \"" + pFrom->name() + "\"\n";
-			result += "\t\t},\n";
-			k = k + 1;
-			result += "\t\t{\n";
-			result += "\t\t\t\"id\": \"e" + QString::number(k) + "\",\n";
-			result += "\t\t\t\"source\": \"" + pVertexOperation->in2()->name() + "\",\n";
-			result += "\t\t\t\"target\": \"" + pFrom->name() + "\"\n";
-			result += "\t\t}";
-			addLineJson_edges(result, pVertexOperation->in1(), k);
-			addLineJson_edges(result, pVertexOperation->in2(), k);
-		}
-	}
-
-	// -----------------------------------------------------------------
-	
 	void VertexGraph::recalculateCoordinates(){
 		for(int i = 0; i < m_vVertexes.size(); i++){
 			float x = i%25;
@@ -231,23 +186,26 @@ namespace reversehash {
 	
 	// -----------------------------------------------------------------
 	
-	QString VertexGraph::conv2json(){
+	QJsonArray VertexGraph::conv2json(){
+		QJsonArray result;
 		
-		recalculateCoordinates();
-		
-		QString result = "{\n";
-
-		int k = 0;
-		result += "\t\"nodes\": [\n";
-		addLineJson_nodes(result, m_pOut, true);
-		result += "\n\t],\n";
-		
-		k = 0;
-		result += "\t\"edges\": [\n";
-		addLineJson_edges(result, m_pOut, k, true);
-		result += "\n\t]\n";
-		
-		result += "}";
+		for(int i = 0; i < m_vVertexes.size(); i++){
+			IVertexOut *pVertex = m_vVertexes[i];
+			
+			QJsonObject vertex;
+			QString vertexName = pVertex->name();
+			vertex["id"] = vertexName;
+			if(pVertex->type() == "VertexIn"){
+				vertex["type"] = "in";
+			}else{
+				vertex["type"] = vertexName == "out" ? "out" : "m";
+				IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertex);
+				vertex["in1"] = pVertexOperation->in1()->name();
+				vertex["in2"] = pVertexOperation->in2()->name();
+				vertex["o"] = pVertexOperation->operation();
+			}
+			result.append(vertex);
+		}
 		return result;
 	}
 	

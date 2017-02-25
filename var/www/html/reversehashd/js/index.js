@@ -17,7 +17,7 @@ $(document).ready(function(){
 						$('#result').append('HEX: ' + r.answer_hex + "\n");
 						$('#result').append('Text: ' + r.answer_text + "\n");
 					}else{
-						$('#result').append('Oops!!! Not match, but result hex is: ' + r.answer_hex + "\n");
+						$('#result').append('Oops!!! Not match, but result hex is: \n' + r.answer_hex + "\n");
 					}
 				},2000);
 				hideLoading();

@@ -83,6 +83,8 @@ input{
 	font-size: 24px;
     cursor: pointer;
     padding: 10px;
+	text-decoration: none;
+    color: #24aaff;
 }
 
 .menu-item:hover{
@@ -100,20 +102,53 @@ input{
 	text-align: center;
 }
 
-.statistics-table{
+.visualizer-list{
+	display: inline-block;
+    position: fixed;
+    left: 10px;
+    top: 70px;
+    width: 200px;
+    height: calc(100% - 100px);
+	overflow-y: scroll;
+}
+
+.visualizer-plot{
+	display: inline-block;
+    position: fixed;
+    top: 70px;
+    left: 220px;
+    width: 100%;
+    height: calc(100% - 100px);
+    width: calc(100% - 240px);
+    overflow: scroll;
+}
+
+.statistics-table, .visualizer-table{
 	display: inline-table;
 }
 
-.statistics-row{
+.visualizer-table{
+
+}
+
+.statistics-row, .visualizer-row{
 	display: table-row;
 }
 
-.statistics-cell{
+.statistics-cell, .visualizer-cell{
 	display: table-cell;
 	padding-left: 30px;
 	padding-right: 30px;
 	border-bottom: 1px solid darkslategrey;
 	vertical-align: middle;
+}
+
+.visualizer-cell{
+	cursor: pointer;
+}
+
+.visualizer-cell:hover{
+	text-shadow: 1px 1px 5px #24aaff;
 }
 
 .statistics-cell.p100{
@@ -159,14 +194,6 @@ input{
 .statistics-cell.p36,
 .statistics-cell.p37{
 	background-color: darkred;
-}
-
-.bittraining{
-	cursor: pointer;
-}
-
-.bittraining:hover{
-	text-shadow: 1px 1px 5px #24aaff;
 }
 
 .statistics-cell.info{

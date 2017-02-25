@@ -7,6 +7,8 @@
 
 #include <QString>
 #include <QVector>
+#include <QJsonArray>
+
 
 namespace reversehash {
 	class VertexGraph
@@ -19,7 +21,7 @@ namespace reversehash {
 			IVertexOut *vertexOut();
 			void setIn(const QVector<bool> &in);
 			QString conv2dot();
-			QString conv2json();
+			QJsonArray conv2json();
             bool saveToFile(QString filename);
             bool saveToStream(QDataStream &stream);
             bool saveDot(QString filename);

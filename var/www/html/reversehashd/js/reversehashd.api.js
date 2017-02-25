@@ -148,9 +148,9 @@ window.reversehashd.statistics = function(){
 	});
 }
 
-window.reversehashd.training = function(bitid){
+window.reversehashd.graph = function(bitid){
 	return reversehashd.send({
-		'cmd': 'training',
+		'cmd': 'graph',
 		'bitid': bitid
 	});
 }
