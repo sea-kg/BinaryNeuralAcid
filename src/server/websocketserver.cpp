@@ -47,9 +47,9 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 		QFile file(filename);
 		if(!file.exists()){
 			// create new vertex file
-			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-			pVertexGraph->genBase();
-			pVertexGraph->saveToFile(filename);
+			VertexGraph vg(128);
+			vg.genBase();
+			vg.saveToFile(filename);
 			qDebug() << "Created new file: " << filename;
 		}
 	}

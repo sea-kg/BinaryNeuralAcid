@@ -16,8 +16,8 @@ void SwapRandomVertexIns_Test::printStat(int i, int cicles, int max){
 }
 
 bool SwapRandomVertexIns_Test::run(){
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->genBase();
+	VertexGraph vg(128);
+	vg.genBase();
 	int nMax = 1000;
 	int cicles = 0;
 	std::cout << "\n";
@@ -25,12 +25,11 @@ bool SwapRandomVertexIns_Test::run(){
 	
 	for(int i = 0; i < nMax; i++){
 		printStat(i, cicles, nMax);
-		// pVertexGraph->changeRandomOperation();
-		reversehash::VertexGraph *pVertexGraphClone = pVertexGraph->clone();
+		VertexGraph *pVertexGraphClone = vg.clone();
 		pVertexGraphClone->swapRandomVertextIns();
 		if(!pVertexGraphClone->findCicles()){
 			pVertexGraphClone->out();
-			pVertexGraph->copy(pVertexGraphClone);
+			vg.copy(pVertexGraphClone);
 		}else{
 			cicles++;
 		}

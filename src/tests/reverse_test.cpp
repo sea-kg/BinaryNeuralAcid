@@ -36,10 +36,10 @@ bool Reverse_Test::run(){
 			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 			QFile file(filename);
 			if(file.exists()){
-				reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-				pVertexGraph->loadFromFile(filename);
-				pVertexGraph->setIn(vInput);
-				vOutput.push_back(pVertexGraph->out());
+				VertexGraph pVertexGraph(128);
+				pVertexGraph.loadFromFile(filename);
+				pVertexGraph.setIn(vInput);
+				vOutput.push_back(pVertexGraph.out());
 			}else{
 				std::cerr << "Error: File '" << filename.toStdString() << "'does not exists\n";
 			}

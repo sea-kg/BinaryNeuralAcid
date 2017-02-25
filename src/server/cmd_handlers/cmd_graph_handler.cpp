@@ -47,9 +47,9 @@ void CmdGraphHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketSe
 	QFile file(filename);
 	QFileInfo fi(filename);
 	if(file.exists()){
-		reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-		pVertexGraph->loadFromFile(filename);
-		jsonData["graph"] = pVertexGraph->conv2json();
+		VertexGraph vg(128);
+		vg.loadFromFile(filename);
+		jsonData["graph"] = vg.conv2json();
 	}else{
 		pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
 		return;

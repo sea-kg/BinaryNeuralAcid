@@ -28,14 +28,14 @@ void TrainingThread::run(){
 				QThread::sleep(m_nSleep);
 				continue;
 			}
-			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-			pVertexGraph->loadFromFile(filename);
+			VertexGraph vg(128);
+			vg.loadFromFile(filename);
 			this->sendMessage(bitid, "Loaded file: " + filename);
 			
 			this->sendMessage(bitid, "Training... ");
 
 			int nMemorySize = pMemory->size();
-			int nPersent = pVertexGraph->lastSuccessPersents();
+			int nPersent = vg.lastSuccessPersents();
 			int nExperiments = 0;
 			while(nPersent < 90 && nExperiments < 100){
 				QThread::sleep(m_nSleep);
@@ -44,8 +44,8 @@ void TrainingThread::run(){
 
 				for (int t = 0; t < nMemorySize; t++){
 					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
-					pVertexGraph->setIn(memoryItem.outputToVectorBool());
-					bool b = pVertexGraph->out();
+					vg.setIn(memoryItem.outputToVectorBool());
+					bool b = vg.out();
 					if(b == memoryItem.inputToVectorBool()[i]){
 						nSuccessCount++;
 					}
@@ -58,18 +58,18 @@ void TrainingThread::run(){
 				}
 
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
-				if(nPersent > pVertexGraph->lastSuccessPersents()){
+				if(nPersent > vg.lastSuccessPersents()){
 					this->sendMessage(bitid, "New persent result: " + QString::number(nPersent) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
-					pVertexGraph->setLastSuccessPersents(nPersent);
-					pVertexGraph->saveToFile(filename);
+					vg.setLastSuccessPersents(nPersent);
+					vg.saveToFile(filename);
 				}else{
-					pVertexGraph->loadFromFile(filename);
-					nPersent = pVertexGraph->lastSuccessPersents();
-					this->sendMessage(bitid, "Last persent result: " + QString::number(pVertexGraph->lastSuccessPersents()) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
-					pVertexGraph->randomChanges(13);
+					vg.loadFromFile(filename);
+					nPersent = vg.lastSuccessPersents();
+					this->sendMessage(bitid, "Last persent result: " + QString::number(vg.lastSuccessPersents()) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
+					vg.randomChanges(13);
 				}
 			}
-			this->sendMessage(bitid, "Result: " + QString::number(pVertexGraph->lastSuccessPersents()) + "%");
+			this->sendMessage(bitid, "Result: " + QString::number(vg.lastSuccessPersents()) + "%");
 			QThread::sleep(m_nSleep);
 		}
 		QThread::sleep(m_nSleep);

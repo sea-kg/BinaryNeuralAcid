@@ -7,11 +7,11 @@ QString CallOut_Test::name(){
 };
 
 bool CallOut_Test::run(){
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->genBase();
-	pVertexGraph->out();
-	pVertexGraph->randomChanges(50);
-	pVertexGraph->out();
+	VertexGraph pVertexGraph(128);
+	pVertexGraph.genBase();
+	pVertexGraph.out();
+	pVertexGraph.randomChanges(50);
+	pVertexGraph.out();
 	return true;
 };
 

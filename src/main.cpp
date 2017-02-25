@@ -56,18 +56,18 @@ int main(int argc, char* argv[])
 		int nCount = 55*8;
 		for (int i = 0; i < nCount; i++) {
 			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
+			VertexGraph pVertexGraph(128);
 			QFile file(filename);
 			if (!file.exists()) {
-				pVertexGraph->genBase();
-				pVertexGraph->saveToFile(filename);
+				pVertexGraph.genBase();
+				pVertexGraph.saveToFile(filename);
 				std::cout << "Created new file: " << filename.toStdString() << "\n";
 			}else{
-				pVertexGraph->loadFromFile(filename);
+				pVertexGraph.loadFromFile(filename);
 				std::cout << "Loaded file: " << filename.toStdString() << "\n";
 			}
-			pVertexGraph->setLastSuccessPersents(0);
-			pVertexGraph->saveToFile(filename);
+			pVertexGraph.setLastSuccessPersents(0);
+			pVertexGraph.saveToFile(filename);
 		}
 		return 0;
 	}
@@ -91,14 +91,14 @@ int main(int argc, char* argv[])
 		int nCount = 55*8;
 		for (int i = 0; i < nCount; i++) {
 			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
+			VertexGraph pVertexGraph(128);
 			QFile file(filename);
 			if (!file.exists()) {
-				pVertexGraph->genBase();
-				pVertexGraph->saveToFile(filename);
+				pVertexGraph.genBase();
+				pVertexGraph.saveToFile(filename);
 				std::cout << "Created new file: " << filename.toStdString() << "\n";
 			}else{
-				pVertexGraph->loadFromFile(filename);
+				pVertexGraph.loadFromFile(filename);
 				std::cout << "Loaded file: " << filename.toStdString() << "\n";
 			}
 
@@ -113,31 +113,31 @@ int main(int argc, char* argv[])
 
 				for (int t = 0; t < nMemorySize; t++){
 					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
-					pVertexGraph->setIn(memoryItem.outputToVectorBool());
-					bool b = pVertexGraph->out();
+					pVertexGraph.setIn(memoryItem.outputToVectorBool());
+					bool b = pVertexGraph.out();
 					if(b == memoryItem.inputToVectorBool()[i]){
 						nSuccessCount++;
 					}
 					
 					if(t > 0 && t % 100 == 0){
 						nPersent = (nSuccessCount * 100) / (t);
-						std::cout << " * Processed (Experiment: #" << nExperiments << " [" << pVertexGraph->lastSuccessPersents() << "%])                              \r";
+						std::cout << " * Processed (Experiment: #" << nExperiments << " [" << pVertexGraph.lastSuccessPersents() << "%])                              \r";
 					}
 				}
 				
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
-				if(nPersent > pVertexGraph->lastSuccessPersents()){
+				if(nPersent > pVertexGraph.lastSuccessPersents()){
 					std::cout << " * New persent result: " << nPersent << "% [" << nSuccessCount << " / " << nMemorySize << "]                               \r";
-					pVertexGraph->setLastSuccessPersents(nPersent);
-					pVertexGraph->saveToFile(filename);
+					pVertexGraph.setLastSuccessPersents(nPersent);
+					pVertexGraph.saveToFile(filename);
 				}else{
-					pVertexGraph->loadFromFile(filename);
-					nPersent = pVertexGraph->lastSuccessPersents();
-					std::cout << " * Last persent result: " << pVertexGraph->lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "]                          \r";
-					pVertexGraph->randomChanges(13);
+					pVertexGraph.loadFromFile(filename);
+					nPersent = pVertexGraph.lastSuccessPersents();
+					std::cout << " * Last persent result: " << pVertexGraph.lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "]                          \r";
+					pVertexGraph.randomChanges(13);
 				}
 			}
-			std::cout << " * Result: " << pVertexGraph->lastSuccessPersents() << "%                              \n";
+			std::cout << " * Result: " << pVertexGraph.lastSuccessPersents() << "%                              \n";
 		};
 		return 0;
 	}

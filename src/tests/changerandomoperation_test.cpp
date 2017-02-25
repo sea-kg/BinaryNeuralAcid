@@ -12,11 +12,11 @@ QString ChangeRandomOperation_Test::name(){
 };
 
 bool ChangeRandomOperation_Test::run(){
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->genBase();
+	VertexGraph vg(128);
+	vg.genBase();
 	for(int i = 0; i < 1000; i++){
-		pVertexGraph->changeRandomOperation();
-		pVertexGraph->out();
+		vg.changeRandomOperation();
+		vg.out();
 	}
 	return true;
 };

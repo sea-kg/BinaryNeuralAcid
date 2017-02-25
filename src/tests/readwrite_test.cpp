@@ -9,8 +9,8 @@ QString ReadWrite_Test::name(){
 };
 
 bool ReadWrite_Test::run(){
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->genBase();
+	VertexGraph pVertexGraph(128);
+	pVertexGraph.genBase();
 
 	qint64 size1 = 0, size2 = 0, size3 = 0, size4 = 0;
 
@@ -18,41 +18,41 @@ bool ReadWrite_Test::run(){
 	file1.setAutoRemove(true);
 	if(file1.open()){
 		file1.close();
-		pVertexGraph->saveToFile(file1.fileName());
+		pVertexGraph.saveToFile(file1.fileName());
 		size1 = QFileInfo(file1.fileName()).size();
 		std::cout << "\t" << file1.fileName().toStdString() << " = " << int(size1) << " \n";
-		pVertexGraph->loadFromFile(file1.fileName());
+		pVertexGraph.loadFromFile(file1.fileName());
 	}
 	
 	QTemporaryFile file2;
 	file2.setAutoRemove(true);
 	if(file2.open()){
 		file2.close();
-		pVertexGraph->saveToFile(file2.fileName());
+		pVertexGraph.saveToFile(file2.fileName());
 		size2 = QFileInfo(file2.fileName()).size();
 		std::cout << "\t" << file2.fileName().toStdString() << " = " << int(size2) << " \n";
-		pVertexGraph->loadFromFile(file2.fileName());
+		pVertexGraph.loadFromFile(file2.fileName());
 	}
 	
 	QTemporaryFile file3;
 	file3.setAutoRemove(true);
 	if(file3.open()){
 		file3.close();
-		pVertexGraph->saveToFile(file3.fileName());
-		// pVertexGraph->saveDot("test/test1.dot");
+		pVertexGraph.saveToFile(file3.fileName());
+		// pVertexGraph.saveDot("test/test1.dot");
 		size3 = QFileInfo(file3.fileName()).size();
 		std::cout << "\t" << file3.fileName().toStdString() << " = " << int(size3) << " \n";
-		pVertexGraph->loadFromFile(file3.fileName());
+		pVertexGraph.loadFromFile(file3.fileName());
 	}
 	
 	QTemporaryFile file4;
 	file4.setAutoRemove(true);
 	if(file4.open()){
 		file4.close();
-		pVertexGraph->clone()->saveToFile(file4.fileName());
+		pVertexGraph.clone()->saveToFile(file4.fileName());
 		size4 = QFileInfo(file4.fileName()).size();
 		std::cout << "\t" << file4.fileName().toStdString() << " = " << int(size4) << " \n";
-		pVertexGraph->loadFromFile(file4.fileName());
+		pVertexGraph.loadFromFile(file4.fileName());
 	}
 	
 	

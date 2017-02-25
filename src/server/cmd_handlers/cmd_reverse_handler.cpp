@@ -36,10 +36,10 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 		QFile file(filename);
 		if(file.exists()){
-			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-			pVertexGraph->loadFromFile(filename);
-			pVertexGraph->setIn(vInput);
-			bResult = pVertexGraph->out();
+			VertexGraph vg(128);
+			vg.loadFromFile(filename);
+			vg.setIn(vInput);
+			bResult = vg.out();
 		}else{
 			pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
 			return;

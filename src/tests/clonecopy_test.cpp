@@ -12,18 +12,17 @@ QString CloneCopy_Test::name(){
 };
 
 bool CloneCopy_Test::run(){
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->genBase();
+	VertexGraph vg(128);
+	vg.genBase();
 	int nMax = 10000;
 	std::cout << "\t Calculates 0";
 	for(int i = 0; i < nMax; i++){
 		std::cout << "\r\t Calculates " << QString::number(i).toStdString();
-		reversehash::VertexGraph *pVertexGraphClone = pVertexGraph->clone();
-		// pVertexGraphClone->changeRandomOperation();
-		pVertexGraph->copy(pVertexGraphClone);
+		VertexGraph *pVertexGraphClone = vg.clone();
+		pVertexGraphClone->changeRandomOperation();
+		vg.copy(pVertexGraphClone);
 		delete pVertexGraphClone;
 	}
-	delete pVertexGraph;
 	std::cout << "\r\t Calculates " << nMax << "\n";
 	return true;
 };

@@ -16,17 +16,16 @@ void RandomRemoveVertex_Test::printStat(int i, int cicles, int max){
 }
 
 bool RandomRemoveVertex_Test::run(){
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->genBase();
-	int nMax = pVertexGraph->countOfVertextes() - 128 - 1;
+	VertexGraph vg(128);
+	vg.genBase();
+	int nMax = vg.countOfVertextes() - 128 - 1;
 	int cicles = 0;
 	std::cout << "\n";
 	printStat(0, cicles, nMax);
 	
 	for(int i = 0; i < nMax; i++){
 		this->printStat(i, cicles, nMax);
-		reversehash::VertexGraph *pVertexGraphClone = pVertexGraph->clone();
-		pVertexGraph->countOfVertextes();
+		VertexGraph *pVertexGraphClone = vg.clone();
 		int nBeforeCount = pVertexGraphClone->countOfVertextes();
 		pVertexGraphClone->randomRemoveVertex();
 		int nAfterCount = pVertexGraphClone->countOfVertextes();
@@ -35,7 +34,7 @@ bool RandomRemoveVertex_Test::run(){
 			if(nAfterCount != nBeforeCount-1){
 				std::cout << "\r\tDifferent count of vertexes (expexted " << (nBeforeCount-1) << ", but got: " << nAfterCount << ")\n";
 			}
-			pVertexGraph->copy(pVertexGraphClone);
+			vg.copy(pVertexGraphClone);
 		}else{
 			cicles++;
 		}

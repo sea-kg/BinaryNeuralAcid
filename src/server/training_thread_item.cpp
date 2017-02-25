@@ -9,10 +9,9 @@
 TrainingThreadItem::TrainingThreadItem(int bitid){
 	m_sBitid = "bit" + QString::number(bitid).rightJustified(3, '0');
 	m_sFilename = "/usr/share/reversehashd/md5/" + m_sBitid + ".vertexgraph";
-	reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-	pVertexGraph->loadFromFile(m_sFilename);
-	m_nPercent = pVertexGraph->lastSuccessPersents();
-	delete pVertexGraph;
+	VertexGraph vg(128);
+	vg.loadFromFile(m_sFilename);
+	m_nPercent = vg.lastSuccessPersents();
 }
 
 

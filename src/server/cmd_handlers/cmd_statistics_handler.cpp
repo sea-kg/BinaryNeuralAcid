@@ -28,12 +28,12 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSoc
 		QFile file(filename);
 		QFileInfo fi(filename);
 		if(file.exists()){
-			reversehash::VertexGraph *pVertexGraph = new reversehash::VertexGraph(128);
-			pVertexGraph->loadFromFile(filename);
+			VertexGraph vg(128);
+			vg.loadFromFile(filename);
 			QJsonObject sbit;
 			sbit["modified"] = fi.lastModified().toString("yyyy-MM-dd hh-mm-ss (t)");
 			sbit["name"] = "bit" + QString::number(i).rightJustified(3, '0');
-			sbit["lp"] = pVertexGraph->lastSuccessPersents();
+			sbit["lp"] = vg.lastSuccessPersents();
 			statistics.append(sbit);
 		}else{
 			pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
