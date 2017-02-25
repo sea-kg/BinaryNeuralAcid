@@ -76,10 +76,6 @@ int main(int argc, char* argv[])
 		qDebug() << "Server starting on 888 port";
 		WebSocketServer *server = new WebSocketServer(43735, true);
 		QObject::connect(server, &WebSocketServer::closed, &app, &QCoreApplication::quit);
-
-		// SyncronizatonData *pSyncronizatonData = new SyncronizatonData();
-		// pSyncronizatonData->Upload();
-		// "md5/memory_md5_10000.rhmem"
 		
 		return app.exec();
 	}
