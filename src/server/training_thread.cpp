@@ -32,7 +32,7 @@ void TrainingThread::run(){
 			pVertexGraph->loadFromFile(filename);
 			this->sendMessage(bitid, "Loaded file: " + filename);
 			
-			this->sendMessage(bitid, "Processing... ");
+			this->sendMessage(bitid, "Training... ");
 
 			int nMemorySize = pMemory->size();
 			int nPersent = pVertexGraph->lastSuccessPersents();
@@ -52,7 +52,7 @@ void TrainingThread::run(){
 					
 					if(t > 0 && t % 1000 == 0){
 						nPersent = (nSuccessCount * 100) / (t);
-						this->sendMessage(bitid, "Processed experiment: #" + QString::number(nExperiments) + "/100 (" + QString::number(pVertexGraph->lastSuccessPersents()) + "%)");
+						this->sendMessage(bitid, "Processed training: #" + QString::number(nExperiments) + "/100 (" + QString::number(nPersent) + "%)");
 						QThread::sleep(1);
 					}
 				}
