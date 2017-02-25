@@ -35,6 +35,7 @@ SOURCES += src/main.cpp \
     src/server/error.cpp \
     src/server/training_thread.cpp \
     src/server/training_thread_item.cpp \
+    src/server/training_thread_message.cpp \
     src/server/cmd_handlers/create_cmd_handlers.cpp \
     src/server/cmd_handlers/cmd_hello_handler.cpp \
     src/server/cmd_handlers/cmd_reverse_handler.cpp \
@@ -71,6 +72,7 @@ HEADERS += \
 	src/server/error.h \
 	src/server/training_thread.h \
 	src/server/training_thread_item.h \
+	src/server/training_thread_message.h \
     src/server/cmd_handlers/create_cmd_handlers.h \
 	src/server/cmd_handlers/include/cmd_hello_handler.h \
 	src/server/cmd_handlers/include/cmd_reverse_handler.h \

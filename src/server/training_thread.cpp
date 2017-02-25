@@ -19,20 +19,25 @@ void TrainingThread::run(){
 	while(true){
 		QVector<TrainingThreadItem *> list = this->sortedList();
 		for(int i = 0; i < list.size(); i++){
-			TrainingThreadItem *item = list[i];
-			QString bitid = item->bitid();
-			QString filename = item->filename();
+			TrainingThreadItem *pItem = list[i];
+			QString bitid = pItem->bitid();
+			QString filename = pItem->filename();
 			QFile file(filename);
 			if (!file.exists()) {
-				this->sendMessage(bitid, filename + " file did not found");
+				TrainingThreadMessage msg(pItem);
+				msg.setMessage(filename + " file did not found");
+				this->sendMessage(msg);
 				QThread::sleep(m_nSleep);
 				continue;
 			}
 			VertexGraph vg(128);
 			vg.loadFromFile(filename);
-			this->sendMessage(bitid, "Loaded file: " + filename);
 			
-			this->sendMessage(bitid, "Training... ");
+			{
+				TrainingThreadMessage msg(pItem);
+				msg.setMessage("Training... ");
+				this->sendMessage(msg);
+			}
 
 			int nMemorySize = pMemory->size();
 			int nPersent = vg.lastSuccessPersents();
@@ -46,30 +51,45 @@ void TrainingThread::run(){
 					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
 					vg.setIn(memoryItem.outputToVectorBool());
 					bool b = vg.out();
-					if(b == memoryItem.inputToVectorBool()[item->id()]){
+					if(b == memoryItem.inputToVectorBool()[pItem->id()]){
 						nSuccessCount++;
 					}
 					
 					if(t > 0 && t % 1000 == 0){
 						nPersent = (nSuccessCount * 100) / (t);
-						this->sendMessage(bitid, "Processed training: #" + QString::number(nExperiments) + "/100 (" + QString::number(nPersent) + "%)");
+						
+						TrainingThreadMessage msg(pItem);
+						msg.setMessage("Processed training: #" + QString::number(nExperiments) + "/100 (" + QString::number(nPersent) + "%)");
+						this->sendMessage(msg);
+						
 						QThread::sleep(1);
 					}
 				}
 
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
 				if(nPersent > vg.lastSuccessPersents()){
-					this->sendMessage(bitid, "New persent result: " + QString::number(nPersent) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
+
+					TrainingThreadMessage msg(pItem);
+					msg.setMessage("New persent result: " + QString::number(nPersent) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
+					this->sendMessage(msg);
+				
 					vg.setLastSuccessPersents(nPersent);
 					vg.saveToFile(filename);
 				}else{
 					vg.loadFromFile(filename);
 					nPersent = vg.lastSuccessPersents();
-					this->sendMessage(bitid, "Last persent result: " + QString::number(vg.lastSuccessPersents()) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
-					vg.randomChanges(13);
+					
+					TrainingThreadMessage msg(pItem);
+					msg.setMessage("Last persent result: " + QString::number(vg.lastSuccessPersents()) + "% (" + QString::number(nSuccessCount) + "/" + QString::number(nMemorySize) + ")");
+					this->sendMessage(msg);
+					vg.randomChanges(50);
 				}
 			}
-			this->sendMessage(bitid, "Result: " + QString::number(vg.lastSuccessPersents()) + "%");
+			{
+				TrainingThreadMessage msg(pItem);
+				msg.setMessage("Result: " + QString::number(vg.lastSuccessPersents()) + "%");
+				this->sendMessage(msg);
+			}
 			QThread::sleep(m_nSleep);
 		}
 		QThread::sleep(m_nSleep);
@@ -77,18 +97,19 @@ void TrainingThread::run(){
 	qDebug().noquote().nospace() << "Stop Training Thread";
 }
 
-void TrainingThread::sendMessage(QString bitid, int lp, QString message){
-	if(m_sLastMessage == message){
+void TrainingThread::sendMessage(TrainingThreadMessage &msg){
+	if(m_lastMessage.equals(msg)){
 		return;
 	}
-	m_sLastMessage = message;
-	qDebug().noquote().nospace() << "Training Thread: [" << bitid << "] " << message;
+	
+	m_lastMessage = msg;
+	qDebug().noquote().nospace() << "Training Thread: [" << msg.bitid() << "] " << msg.message();
 	QJsonObject jsonData;
 	jsonData["cmd"] = QJsonValue("training_thread_info");
 	jsonData["rid"] = QJsonValue(0);
-	jsonData["bitid"] = bitid;
+	jsonData["bitid"] = msg.bitid();
 	jsonData["result"] = "OK";
-	jsonData["status"] = message;
+	jsonData["status"] = msg.message();
 	m_pWebSocketServer->sendToAll(jsonData);
 }
 
