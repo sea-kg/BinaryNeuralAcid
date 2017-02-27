@@ -99,7 +99,7 @@ window.reversehashd.initWebsocket = function(){
 		console.log('Code: ' + event.code + ' Reason: ' + event.reason);
 	};
 	reversehashd.socket.onmessage = function(event) {
-		console.log('Received: ' + event.data);
+		// console.log('Received: ' + event.data);
 		try{
 			var response = JSON.parse(event.data);
 			reversehashd.handleCommand(response);
