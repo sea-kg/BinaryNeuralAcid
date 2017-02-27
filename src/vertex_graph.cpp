@@ -297,14 +297,14 @@ void VertexGraph::writeDataAsVersion1(QDataStream &stream){
 			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
 			stream << pVertexOperation->operation().toUtf8();
 			if(pVertexOperation->in1() == NULL){
-				std::cerr << "Failed in1 is NULL\n";
+				std::cerr << "Failed in1 is NULL for " << pVertexOut->name().toStdString() << "\n";
 			}
 			
 			stream << pVertexOperation->in1()->type().toUtf8();
 			stream << pVertexOperation->in1()->name().toUtf8();
 			
 			if(pVertexOperation->in2() == NULL){
-				std::cerr << "Failed in2 is NULL\n";
+				std::cerr << "Failed in2 is NULL for " << pVertexOut->name().toStdString() << "\n";
 			}
 			
 			stream << pVertexOperation->in2()->type().toUtf8();
