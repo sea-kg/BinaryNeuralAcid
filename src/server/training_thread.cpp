@@ -81,13 +81,13 @@ void TrainingThread::run(){
 					vg.setLastSuccessPersents(nPersent);
 					vg.saveToFile(filename);
 				}else{
-					vg.loadFromFile(filename);
-					nPersent = vg.lastSuccessPersents();
-					
 					TrainingThreadMessage msg(pItem);
 					msg.setMessage("Reloading graph.");
 					msg.setLastSuccessPersents(vg.lastSuccessPersents());
 					this->sendMessage(msg);
+					
+					vg.loadFromFile(filename);
+					nPersent = vg.lastSuccessPersents();
 					vg.randomChanges(13);
 				}
 			}

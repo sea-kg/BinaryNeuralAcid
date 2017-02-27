@@ -865,6 +865,7 @@ void VertexGraph::randomChanges(int count){
 		bool bFound = false;
 		int tries = 0;
 		while(!bFound){
+			std::cout << "Clone graph\n";
 			VertexGraph *pVertexGraphClone = this->clone();
 			switch(n){
 				case 0: 
@@ -881,6 +882,7 @@ void VertexGraph::randomChanges(int count){
 					break;
 			}
 			if(!pVertexGraphClone->findCicles()){
+				std::cout << "Copy graph\n";
 				this->copy(pVertexGraphClone);
 				bFound = true;
 			}
