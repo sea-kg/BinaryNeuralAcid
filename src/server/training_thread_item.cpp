@@ -19,6 +19,10 @@ int TrainingThreadItem::id(){
 	return m_nBitid;
 }
 
+int TrainingThreadItem::id() const{
+	return m_nBitid;
+}
+
 QString TrainingThreadItem::bitid(){
 	return m_sBitid;
 }

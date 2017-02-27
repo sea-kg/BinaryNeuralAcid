@@ -11,6 +11,7 @@ class TrainingThreadItem {
 	public:
 		TrainingThreadItem(int bitid);
 		int id();
+		int id() const;
 		QString bitid();
 		QString filename();
 		int percent();

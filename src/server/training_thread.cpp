@@ -118,7 +118,12 @@ void TrainingThread::sendMessage(TrainingThreadMessage &msg){
 }
 
 bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {
-    return e1->percent() < e2->percent();
+	if(e1->percent() < e2->percent()){
+		return false;
+	}else if(e1->percent() > e2->percent()){
+		return false;
+	}
+    return e1->id() < e2->id();
 }
 
 QVector<TrainingThreadItem *> TrainingThread::sortedList(){
