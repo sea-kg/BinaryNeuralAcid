@@ -16,6 +16,12 @@ bool Reverse_Test::run(){
 	tests["202CB962AC59075B964B07152D234B70"] = "123";
 	tests["92BA7B54A295FED5060A2BA44A72E595"] = "66^lvp/-!A";
 	tests["b885ca6d1c4e8231928ef2af5737426c"] = "YN!KAHfPjFU[\">IwHL";
+	tests["21232f297a57a5a743894a0e4a801fc3"] = "admin";
+	tests["f6fdffe48c908deb0f4c3bd36c032e72"] = "adminadmin";
+	tests["098f6bcd4621d373cade4e832627b4f6"] = "test";
+	tests["16d7a4fca7442dda3ad93c9a726597e4"] = "test1234";
+	tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";
+	
 	
 	/*reverse_hash::Memory *pMemory = new reverse_hash::Memory();
 	pMemory->load("md5/memory_md5_10000.rhmem");

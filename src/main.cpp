@@ -16,13 +16,14 @@
 #include <QCryptographicHash>
 #include <QXmlStreamWriter>
 #include <QCoreApplication>
+#include "tests/reverse_test.h"
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
 		<< "  Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
 		<< "\t --run-tests                - run tests\n"
-		<< "\t --resetpersents            - reset last persents from every bit and create missing files\n" 
-        << "\t --training <memoryname>    - generate file with memory\n"
+		<< "\t --run-reverse-test         - run reverse test\n"
+		<< "\t --reset-persents           - reset last persents from every bit and create missing files\n" 
         << "\t --server                   - start server\n"
         << "\n";
 };
@@ -50,9 +51,20 @@ int main(int argc, char* argv[])
 		runtests();
 		return 0;
 	}
+	
+	if(vParams.contains("--run-reverse-test")){
+		IReverseHashTest *pTest = new Reverse_Test();
+		qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
+		if(!pTest->run()){
+			qDebug().nospace().noquote() << "\t  ->  [FAIL] \n";
+		}else{
+			qDebug().nospace().noquote() << "\t  ->  [OK] \n";
+		}
+		return 0;
+	}
 
 	// reset persents
-	if(vParams.contains("--resetpersents")){
+	if(vParams.contains("--reset-persents")){
 		int nCount = 55*8;
 		for (int i = 0; i < nCount; i++) {
 			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
@@ -78,64 +90,6 @@ int main(int argc, char* argv[])
 		QObject::connect(server, &WebSocketServer::closed, &app, &QCoreApplication::quit);
 		
 		return app.exec();
-	}
-
-	if(vParams.contains("--training")){
-		reverse_hash::Memory *pMemory = new reverse_hash::Memory();
-		pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
-
-		int nCount = 55*8;
-		for (int i = 0; i < nCount; i++) {
-			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-			VertexGraph pVertexGraph(128);
-			QFile file(filename);
-			if (!file.exists()) {
-				pVertexGraph.genBase();
-				pVertexGraph.saveToFile(filename);
-				std::cout << "Created new file: " << filename.toStdString() << "\n";
-			}else{
-				pVertexGraph.loadFromFile(filename);
-				std::cout << "Loaded file: " << filename.toStdString() << "\n";
-			}
-
-			std::cout << " * Processing... \r";
-			
-			int nMemorySize = pMemory->size();
-			int nPersent = 0; //pVertexGraph->lastSuccessPersents();
-			int nExperiments = 0;
-			while(nPersent < 90 && nExperiments < 100){
-				nExperiments++;
-				int nSuccessCount = 0;
-
-				for (int t = 0; t < nMemorySize; t++){
-					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
-					pVertexGraph.setIn(memoryItem.outputToVectorBool());
-					bool b = pVertexGraph.out();
-					if(b == memoryItem.inputToVectorBool()[i]){
-						nSuccessCount++;
-					}
-					
-					if(t > 0 && t % 100 == 0){
-						nPersent = (nSuccessCount * 100) / (t);
-						std::cout << " * Processed (Experiment: #" << nExperiments << " [" << pVertexGraph.lastSuccessPersents() << "%])                              \r";
-					}
-				}
-				
-				nPersent = (nSuccessCount * 100) / (nMemorySize);
-				if(nPersent > pVertexGraph.lastSuccessPersents()){
-					std::cout << " * New persent result: " << nPersent << "% [" << nSuccessCount << " / " << nMemorySize << "]                               \r";
-					pVertexGraph.setLastSuccessPersents(nPersent);
-					pVertexGraph.saveToFile(filename);
-				}else{
-					pVertexGraph.loadFromFile(filename);
-					nPersent = pVertexGraph.lastSuccessPersents();
-					std::cout << " * Last persent result: " << pVertexGraph.lastSuccessPersents() << "% [" << nSuccessCount << " / " << nMemorySize << "]                          \r";
-					pVertexGraph.randomChanges(13);
-				}
-			}
-			std::cout << " * Result: " << pVertexGraph.lastSuccessPersents() << "%                              \n";
-		};
-		return 0;
 	}
 
 	print_help(vParams);
