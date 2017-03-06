@@ -8,6 +8,7 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QBuffer>
+#include <QDebug>
 #include <QJsonObject>
 
 VertexGraph::VertexGraph(int nInputs){
@@ -93,7 +94,7 @@ void VertexGraph::genBase(){
 
 bool VertexGraph::out(){
 	if(this->findCicles()){
-		std::cerr << " !!! Error: Found cicles\n";
+		qDebug().noquote().nospace() << " !!! Error: Found cicles";
 		return false;
 	}
 	return m_pOut->out();
@@ -111,8 +112,8 @@ void VertexGraph::setIn(const QVector<bool> &in){
 	int nVertexInSize = m_vVertexIn.size();
 	int nInSize = in.size();
 	if(nInSize > nVertexInSize){
-		std::cerr << "Warning input to so much. (" << m_sFilename.toStdString() << ")\n";
-		std::cerr << nInSize << " != " << nVertexInSize << "\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: Warning input to so much. (" << m_sFilename << ")";
+		qDebug().noquote().nospace() << nInSize << " != " << nVertexInSize << "\n";
 	}
 	for(int i = 0; i < nInSize; i++){
 		if(i < nVertexInSize){
@@ -269,11 +270,11 @@ bool VertexGraph::readHeader(QDataStream &stream, int &nVersion){
 	int nReaded = stream.readRawData(pFileType, 11);
 	if(nReaded > 0){
 		if(QString(pFileType) != "VERTEXGRAPH"){
-			std::cerr << "VERTEXGRAPH: File type did not match with VERTEXGRAPH.\n";
+			qDebug().noquote().nospace() << "VERTEXGRAPH: File type did not match with VERTEXGRAPH.\n";
 			return false;
 		}
 	}else{
-		std::cerr << "VERTEXGRAPH: Could not read file (1)\n";
+		qDebug().noquote().nospace() << "VERTEXGRAPH: Could not read file (1)\n";
 		return false;
 	}
 	stream >> nVersion;
@@ -297,14 +298,14 @@ void VertexGraph::writeDataAsVersion1(QDataStream &stream){
 			IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
 			stream << pVertexOperation->operation().toUtf8();
 			if(pVertexOperation->in1() == NULL){
-				std::cerr << "Failed in1 is NULL for " << pVertexOut->name().toStdString() << "\n";
+				qDebug().noquote().nospace() << "VERTEX_GRAPH (writeDataAsVersion1): Failed in1 is NULL for " << pVertexOut->name();
 			}
 			
 			stream << pVertexOperation->in1()->type().toUtf8();
 			stream << pVertexOperation->in1()->name().toUtf8();
 			
 			if(pVertexOperation->in2() == NULL){
-				std::cerr << "Failed in2 is NULL for " << pVertexOut->name().toStdString() << "\n";
+				qDebug().noquote().nospace() << "VERTEX_GRAPH (writeDataAsVersion1): Failed in2 is NULL for " << pVertexOut->name();
 			}
 			
 			stream << pVertexOperation->in2()->type().toUtf8();
@@ -416,7 +417,7 @@ bool VertexGraph::saveToFile(QString filename){
 		file.remove();
 	}
 	if (!file.open(QIODevice::WriteOnly)) {
-		std::cerr << "Could not write file: " << filename.toStdString() << "\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: Could not write file: " << filename;
 		return false;
 	}
 	QDataStream stream( &file );
@@ -441,7 +442,7 @@ bool VertexGraph::saveDot(QString filename){
 		file.remove();
 	}
 	if (!file.open(QIODevice::WriteOnly)) {
-		std::cerr << "Could not write file: " << filename.toStdString() << "\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: Could not write file: " << filename;
 		return false;
 	}
 	QTextStream stream( &file );
@@ -455,11 +456,11 @@ bool VertexGraph::saveDot(QString filename){
 bool VertexGraph::loadFromFile(QString filename){
 	QFile file(filename);
 	if (!file.exists()) {
-		std::cerr << "File did not exists: " << filename.toStdString() << "\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: File did not exists: " << filename;
 		return false;
 	}
 	if ( !file.open(QIODevice::ReadOnly) ) {
-		std::cerr << "Could not open file " << filename.toStdString() << "\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: Could not open file " << filename;
 		return false;
 	}
 
@@ -539,7 +540,7 @@ void VertexGraph::copy(VertexGraph *pVertexGraph){
 void VertexGraph::printStackVertexes(QVector<reversehash::IVertexOut *> &stack){
 	for(int i = 0; i < stack.size(); i++){
 		if(stack[i] != NULL){
-			std::cerr << "Stack " << i << ":" << stack[i]->name().toStdString() << "\n";
+			qDebug().noquote().nospace() << "VERTEX_GRAPH: Stack " << i << ":" << stack[i]->name();
 		}
 	}
 }
@@ -548,17 +549,17 @@ void VertexGraph::printStackVertexes(QVector<reversehash::IVertexOut *> &stack){
 
 bool VertexGraph::findCiclesRecourse(reversehash::IVertexOut *pVertexOut, QVector<reversehash::IVertexOut *> &stack){
 	if(pVertexOut == NULL){
-		std::cerr << "Error(findCiclesRecourse): Some vertext is NULL\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: Error(findCiclesRecourse): Some vertext is NULL";
 		return true;
 	}
 	if(pVertexOut->type() == "Vertex"){
 		IVertexOperation *pVertexOperation = dynamic_cast<IVertexOperation *>(pVertexOut);
 		if(pVertexOperation->in1() == NULL){
-			std::cerr << "\nError(findCiclesRecourse): Some vertext is NULL (1) for " << pVertexOut->name().toStdString() << "\n";
+			qDebug().noquote().nospace() << "VERTEX_GRAPH: Error(findCiclesRecourse): Some vertext is NULL (1) for " << pVertexOut->name();
 			printStackVertexes(stack);
 		}
 		if(pVertexOperation->in2() == NULL){
-			std::cerr << "\nError(findCiclesRecourse): Some vertext is NULL (2) for " << pVertexOut->name().toStdString() << "\n";
+			qDebug().noquote().nospace() << "VERTEX_GRAPH: Error(findCiclesRecourse): Some vertext is NULL (2) for " << pVertexOut->name();
 		}
 		
 		for(int i = 0; i < stack.size(); i++){
@@ -644,7 +645,7 @@ bool VertexGraph::findIntersectionRecourse(IVertexOut *pVertexStart, IVertexOut 
 	}
 	
 	if(pVertexStart == NULL){
-		std::cerr << "!!!findIntersectionRecourse Error: Some vertext is NULL\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: !!!findIntersectionRecourse Error: Some vertext is NULL";
 		return true;
 	}
 	if(pVertexStart->type() == "Vertex"){
@@ -653,13 +654,13 @@ bool VertexGraph::findIntersectionRecourse(IVertexOut *pVertexStart, IVertexOut 
 			return true;
 		}
 		if(pVertexOperation->in1() == NULL){
-			std::cerr << "!!!findIntersectionRecourse Error: Some vertext is NULL (1) for " << pVertexStart->name().toStdString() << "\n";
+			qDebug().noquote().nospace() << "VERTEX_GRAPH: !!!findIntersectionRecourse Error: Some vertext is NULL (1) for " << pVertexStart->name();
 		}
 		if(findIntersectionRecourse(pVertexOperation->in1(), pVertexSearch))
 			return true;
 
 		if(pVertexOperation->in2() == NULL){
-			std::cerr << "!!!findIntersectionRecourse Error: Some vertext is NULL (2)" << pVertexStart->name().toStdString() << "\n";
+			qDebug().noquote().nospace() << "VERTEX_GRAPH: !!!findIntersectionRecourse Error: Some vertext is NULL (2)" << pVertexStart->name();
 		}
 		if(findIntersectionRecourse(pVertexOperation->in2(), pVertexSearch))
 			return true;
@@ -683,7 +684,7 @@ void VertexGraph::swapRandomVertextIns(){
 	IVertexOut *pOut2 = pVertexOperation2->in1();
 
 	if(pOut1 == NULL || pOut2 == NULL) {
-		std::cerr << "Some pOut1 or pOut2 is NULL (1)\n";
+		qDebug().noquote().nospace() << "VERTEX_GRAPH: Some pOut1 or pOut2 is NULL (1)";
 		return;
 	}
 	
@@ -707,7 +708,7 @@ void VertexGraph::swapRandomVertextIns(){
 		pOut2 = pVertexOperation2->in1();
 		
 		if(pOut1 == NULL || pOut2 == NULL) {
-			std::cerr << "Some pOut1 or pOut2 is NULL (2)\n";
+			qDebug().noquote().nospace() << "Some pOut1 or pOut2 is NULL (2)\n";
 			return;
 		}
 		
@@ -865,7 +866,7 @@ void VertexGraph::randomChanges(int count){
 		bool bFound = false;
 		int tries = 0;
 		while(!bFound){
-			std::cout << "Clone graph " << i << "\n";
+			qDebug().noquote().nospace() << "Clone graph " << i;
 			VertexGraph *pVertexGraphClone = this->clone();
 			switch(n){
 				case 0: 

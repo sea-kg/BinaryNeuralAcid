@@ -5,6 +5,7 @@
 #include <QDataStream>
 #include <QFile>
 #include <QCryptographicHash>
+#include <QDebug>
 
 namespace reverse_hash {
     Memory::Memory(){
@@ -18,11 +19,11 @@ namespace reverse_hash {
         m_vItems.clear();
         QFile file(filename);
         if (!file.exists()) {
-            std::cerr << "File did not exists: " << filename.toStdString() << "\n";
+            qDebug().noquote().nospace() << "RHMEMORY:  File did not exists: " << filename;
             return;
         }
         if ( !file.open(QIODevice::ReadOnly) ) {
-            std::cerr << "Could not open file " << filename.toStdString() << "\n";
+            qDebug().noquote().nospace() << "RHMEMORY: Could not open file " << filename;
             return;
         }
 
@@ -32,11 +33,11 @@ namespace reverse_hash {
         int nReaded = stream.readRawData(pFileType, 8);
         if(nReaded > 0){
             if(QString(pFileType) != "RHMEMORY"){
-                std::cerr << "File type did not match with RHMEMORY. " << filename.toStdString() << "\n";
+                qDebug().noquote().nospace() << "RHMEMORY: File type did not match with RHMEMORY. " << filename;
                 return;
             }
         }else{
-            std::cerr << "Could not read file (1) " << filename.toStdString() << "\n";
+            qDebug().noquote().nospace() << "RHMEMORY: Could not read file (1) " << filename;
             return;
         }
 
@@ -60,7 +61,7 @@ namespace reverse_hash {
             file.remove();
         }
         if ( !file.open(QIODevice::WriteOnly) ) {
-            std::cerr << "Could not write file: " << filename.toStdString() << "\n";
+            qDebug().noquote().nospace() << "Could not write file: " << filename;
             return;
         }
         QDataStream stream( &file );
