@@ -94,11 +94,10 @@ namespace reverse_hash {
     // ----------------------------------------------------------------
 
     void Memory::printData(){
-        std::cout <<  " --- Reverse Hash Memory --- \n";
+        qDebug().noquote().nospace() <<  " --- Reverse Hash Memory --- ";
         for (int i = 0; i < m_vItems.size(); i++) {
-            std::cout << m_vItems[i].input.toHex().toStdString() << " => " << m_vItems[i].output.toHex().toStdString() << "\n";
+            qDebug().noquote().nospace() << m_vItems[i].input.toHex().toStdString() << " => " << m_vItems[i].output.toHex().toStdString() << "\n";
         }
-        std::cout << "\n";
     }
 
     // ----------------------------------------------------------------

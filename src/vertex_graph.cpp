@@ -505,7 +505,7 @@ VertexGraph * VertexGraph::clone(){
 	buffer.open(QIODevice::WriteOnly);
 	QDataStream stream( &buffer );
 	this->saveToStream(stream);
-	
+
 	QBuffer buffer2(&arr);
 	buffer2.open(QIODevice::ReadOnly);
 	QDataStream stream2( &buffer2 );
@@ -780,7 +780,6 @@ void VertexGraph::randomRemoveVertex(){
 // -----------------------------------------------------------------
 
 void VertexGraph::randomAddVertex(){
-	// std::cout << m_vVertexes.size() << "\n";
 	if(m_vVertexes.size() > 500){
 		return;
 	}
@@ -829,11 +828,7 @@ void VertexGraph::randomAddVertex(){
 		pVertexTest = this->findVertexByName(vertexName);
 	}
 	pVertexTest = NULL;
-	// std::cout << "\nvertexNamebefore: " << pVertexOutTop->name().toStdString() << "\n";
-	// std::cout << "\nvertexName: " << vertexName.toStdString() << "\n";
 	pVertexOutAdd->setName(vertexName);
-	// std::cout << "\nvertexName 3: " << pVertexOutAdd->name().toStdString() << "\n";
-	// std::cout << "\nvertexName 4: " << pVertexOutTop->name().toStdString() << "\n";
 
 	m_vVertexes.insert(nVertex, pVertexOutAdd);
 
@@ -866,7 +861,7 @@ void VertexGraph::randomChanges(int count){
 		bool bFound = false;
 		int tries = 0;
 		while(!bFound){
-			qDebug().noquote().nospace() << "Clone graph " << i;
+			qDebug().noquote().nospace() << "VERTEX_GRAPH: Clone graph " << i;
 			VertexGraph *pVertexGraphClone = this->clone();
 			switch(n){
 				case 0: 
@@ -883,7 +878,7 @@ void VertexGraph::randomChanges(int count){
 					break;
 			}
 			if(!pVertexGraphClone->findCicles()){
-				std::cout << "Copy graph " << i << "\n";
+				qDebug().noquote().nospace() << "VERTEX_GRAPH: Copy graph " << i << "\n";
 				this->copy(pVertexGraphClone);
 				bFound = true;
 			}
