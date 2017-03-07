@@ -864,21 +864,25 @@ void VertexGraph::randomChanges(int count){
 			qDebug().noquote().nospace() << "VERTEX_GRAPH: Clone graph " << i;
 			VertexGraph *pVertexGraphClone = this->clone();
 			switch(n){
-				case 0: 
+				case 0:
+					qDebug().noquote().nospace() << "VERTEX_GRAPH: Random operation " << i;
 					pVertexGraphClone->changeRandomOperation();
 					break;
 				case 1:
+					qDebug().noquote().nospace() << "VERTEX_GRAPH: Swap Random Vertext Ins " << i;
 					pVertexGraphClone->swapRandomVertextIns();
 					break;
 				case 2:
+					qDebug().noquote().nospace() << "VERTEX_GRAPH: Random Add Vertext " << i;
 					pVertexGraphClone->randomAddVertex();
 					break;
 				case 3:
+					qDebug().noquote().nospace() << "VERTEX_GRAPH: Random Remove Vertext " << i;
 					pVertexGraphClone->randomRemoveVertex();
 					break;
 			}
 			if(!pVertexGraphClone->findCicles()){
-				qDebug().noquote().nospace() << "VERTEX_GRAPH: Copy graph " << i << "\n";
+				qDebug().noquote().nospace() << "VERTEX_GRAPH: Copy graph " << i;
 				this->copy(pVertexGraphClone);
 				bFound = true;
 			}
