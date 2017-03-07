@@ -17,14 +17,16 @@
 #include <QXmlStreamWriter>
 #include <QCoreApplication>
 #include "tests/reverse_test.h"
+#include "tests/random_remove_vertex_test.h"
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
 		<< "  Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
-		<< "\t --run-tests                - run tests\n"
-		<< "\t --run-reverse-test         - run reverse test\n"
-		<< "\t --reset-persents           - reset last persents from every bit and create missing files\n" 
-        << "\t --server                   - start server\n"
+		<< "\t --run-tests                           - run tests\n"
+		<< "\t --run-reverse-test                    - run reverse test\n"
+		<< "\t --run-random-remove-vertex-test       - run random remove vertex test\n"
+		<< "\t --reset-persents                      - reset last persents from every bit and create missing files\n" 
+        << "\t --server                              - start server\n"
         << "\n";
 };
 
@@ -59,6 +61,19 @@ int main(int argc, char* argv[])
 			qDebug().nospace().noquote() << "\t  ->  [FAIL] \n";
 		}else{
 			qDebug().nospace().noquote() << "\t  ->  [OK] \n";
+		}
+		return 0;
+	}
+	
+	if(vParams.contains("--run-random-remove-vertex-test")){
+		IReverseHashTest *pTest = new RandomRemoveVertex_Test();
+		qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
+		for(int i = 0; i < 5; i++){
+			if(!pTest->run()){
+				qDebug().nospace().noquote() << "\t  ->  [FAIL] \n";
+			}else{
+				qDebug().nospace().noquote() << "\t  ->  [OK] \n";
+			}
 		}
 		return 0;
 	}
