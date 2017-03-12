@@ -62,6 +62,7 @@ namespace reverse_hash {
 			}
 			c = (c << 1) | (vars[i] ? 0x01 : 0x00);
 		}
+		result += convertCharToHexCode(c);
         return result;
     }
 
