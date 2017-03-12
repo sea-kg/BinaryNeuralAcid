@@ -47,6 +47,7 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 		vOutput.push_back(bResult);
 		answer_bin += (bResult ? "1" : "0");
 	}
+	jsonData["output_count"] = vOutput.size();
 	QString answer_hex = reverse_hash::convertVBoolHEXString(vOutput);
 	QByteArray text = QByteArray::fromHex(answer_hex.toLatin1());
 	jsonData["answer_bin"] = answer_bin;

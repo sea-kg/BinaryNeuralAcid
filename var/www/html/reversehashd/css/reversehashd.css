@@ -189,3 +189,9 @@ input{
 	background-color: #24aaff;
 	height: 10px;
 }
+
+.equals-char{
+	background: red;
+    color: black;
+	display: inline-block;
+}
