@@ -119,7 +119,7 @@ void TrainingThread::sendMessage(TrainingThreadMessage &msg){
 
 bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {
 	if(e1->percent() < e2->percent()){
-		return false;
+		return true;
 	}else if(e1->percent() > e2->percent()){
 		return false;
 	}
