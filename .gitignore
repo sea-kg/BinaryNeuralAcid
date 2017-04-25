@@ -37,3 +37,5 @@ test/*
 
 etc/reversehashd/conf.ini
 !var/www/html/reversehashd/
+reversehashd.pro.user
+.qmake.stash
