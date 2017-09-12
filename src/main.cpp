@@ -69,6 +69,12 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 		
+	if(vParams.contains("--bna-prepare-md5")){
+		QDir dir(".");
+		dir.mkpath("bna/md5");
+		return 0;
+	}
+		
 	if(vParams.contains("--test-bna")){
 		BNA bna;
 		bna.randomGenerate(16,2,100);
