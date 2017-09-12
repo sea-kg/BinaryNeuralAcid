@@ -9,6 +9,7 @@
 #include <QList>
 #include <QFile>
 #include <QTime>
+#include <QDir>
 #include <QVector>
 #include <QTextStream>
 
@@ -18,6 +19,7 @@
 #include <QCoreApplication>
 #include "tests/reverse_test.h"
 #include "tests/random_remove_vertex_test.h"
+#include "bna.h"
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
@@ -27,6 +29,8 @@ void print_help(QVector<QString> &vParams) {
 		<< "\t --run-random-remove-vertex-test       - run random remove vertex test\n"
 		<< "\t --reset-persents                      - reset last persents from every bit and create missing files\n" 
         << "\t --server                              - start server\n"
+        << "\t --test-bna                            - test bna\n"
+        << "\t --sin-learning                        - sin learning\n"
         << "\n";
 };
 
@@ -38,7 +42,7 @@ int main(int argc, char* argv[])
 
 	QCoreApplication app(argc, argv);
     QCoreApplication::setApplicationName("reversehash");
-
+	
 	QVector<QString> vParams;
 	for(int i = 0; i < argc; i++){
 		vParams.push_back(QString(argv[i]));
@@ -62,6 +66,15 @@ int main(int argc, char* argv[])
 		}else{
 			qDebug().nospace().noquote() << "\t  ->  [OK] \n";
 		}
+		return 0;
+	}
+		
+	if(vParams.contains("--test-bna")){
+		BNA bna;
+		bna.randomGenerate(16,2,100);
+		bna.save("test/test.bna");
+		bna.exportToDot("test/test.dot", "func16");
+		bna.exportToCpp("test/test.cpp", "func16");
 		return 0;
 	}
 	

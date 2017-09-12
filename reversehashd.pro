@@ -22,6 +22,7 @@ SOURCES += src/main.cpp \
     src/vertexes/vertex_in.cpp \
     src/vertexes/vertex.cpp \
     src/vertex_graph.cpp \
+    src/bna.cpp \
     src/tests/tests.cpp \
     src/tests/callout_test.cpp \
     src/tests/readwrite_test.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
     src/vertexes/vertex_in.h \
     src/vertexes/vertex.h \
     src/vertex_graph.h \
+    src/bna.h \
     src/tests/tests.h \
     src/tests/ireversehashtest.h \
     src/tests/callout_test.h \
