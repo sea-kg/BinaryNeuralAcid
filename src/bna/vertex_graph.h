@@ -2,8 +2,8 @@
 #define VERTEX_GRAPH_H
 
 
-#include "interfaces/ivertex_in.h"
-#include "interfaces/ivertex_out.h"
+#include <ivertex_in.h>
+#include <ivertex_out.h>
 
 #include <QString>
 #include <QVector>

@@ -1,8 +1,8 @@
-#include "include/cmd_statistics_handler.h"
-#include "../../vertex_graph.h"
-#include "../../helpers.h"
-#include "../../memory.h"
-#include "../../memoryitem.h"
+#include <cmd_statistics_handler.h>
+#include <vertex_graph.h>
+#include <helpers.h>
+#include <memory.h>
+#include <memoryitem.h>
 #include <QFile>
 #include <QJsonArray>
 #include <QFileInfo>

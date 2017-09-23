@@ -5,13 +5,13 @@
 #include <QDateTime>
 
 #include <QHostAddress>
-#include "cmd_handlers/create_cmd_handlers.h"
+#include <create_cmd_handlers.h>
 
-#include "../vertex_graph.h"
+#include <vertex_graph.h>
 #include <bna.h>
-#include "../helpers.h"
-#include "../memory.h"
-#include "../memoryitem.h"
+#include <helpers.h>
+#include <memory.h>
+#include <memoryitem.h>
 #include <QDir>
 
 // QT_USE_NAMESPACE

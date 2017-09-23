@@ -1,9 +1,9 @@
 #include "training_thread_message.h"
 
-#include "../vertex_graph.h"
-#include "../helpers.h"
-#include "../memory.h"
-#include "../memoryitem.h"
+#include <vertex_graph.h>
+#include <helpers.h>
+#include <memory.h>
+#include <memoryitem.h>
 #include <QFile>
 
 TrainingThreadMessage::TrainingThreadMessage(){

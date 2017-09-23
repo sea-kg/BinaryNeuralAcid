@@ -1,9 +1,9 @@
 #include "training_thread.h"
 
-#include "../vertex_graph.h"
-#include "../helpers.h"
-#include "../memory.h"
-#include "../memoryitem.h"
+#include <vertex_graph.h>
+#include <helpers.h>
+#include <memory.h>
+#include <memoryitem.h>
 #include <QFile>
 
 TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
