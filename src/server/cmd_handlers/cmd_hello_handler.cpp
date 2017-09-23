@@ -4,7 +4,7 @@ QString CmdHelloHandler::cmd(){
 	return "hello";
 }
 
-void CmdHelloHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject req){
+void CmdHelloHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseHashDServer, QJsonObject req){
 	int rid = 0;
 	if(req.contains("id")){
 		rid = req["id"].toInt();
@@ -12,5 +12,5 @@ void CmdHelloHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketSe
 	QJsonObject jsonData;
 	jsonData["cmd"] = QJsonValue(cmd());
 	jsonData["rid"] = rid;
-	pWebSocketServer->sendMessage(pClient, jsonData);
+	pReverseHashDServer->sendMessage(pClient, jsonData);
 }

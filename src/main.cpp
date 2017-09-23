@@ -130,9 +130,9 @@ int main(int argc, char* argv[])
 	}
 	
 	if(vParams.contains("--server")){
-		qDebug() << "Server starting on 888 port";
-		WebSocketServer *server = new WebSocketServer(43735, true);
-		QObject::connect(server, &WebSocketServer::closed, &app, &QCoreApplication::quit);
+		qDebug() << "Server starting on 43735 port";
+		ReverseHashDServer *server = new ReverseHashDServer(43735, true);
+		QObject::connect(server, &ReverseHashDServer::closed, &app, &QCoreApplication::quit);
 		
 		return app.exec();
 	}

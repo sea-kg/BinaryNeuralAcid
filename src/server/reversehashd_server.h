@@ -1,5 +1,5 @@
-#ifndef WEBSOCKETSERVER_H
-#define WEBSOCKETSERVER_H
+#ifndef REVERSEHASHD_SERVER_H
+#define REVERSEHASHD_SERVER_H
 
 #include <QObject>
 #include <QString>
@@ -9,20 +9,20 @@
 #include <QFile>
 #include <QSettings>
 
-#include "../interfaces/icmdhandler.h"
-#include "../interfaces/iwebsocketserver.h"
-#include "error.h"
-#include "training_thread.h"
+#include <icmdhandler.h>
+#include <ireversehashdserver.h>
+#include <error.h>
+#include <training_thread.h>
 
-class WebSocketServer : public QObject, public IWebSocketServer {
+class ReverseHashDServer : public QObject, public IReverseHashDServer {
 	
 	private:
 		Q_OBJECT
 	public:
-		explicit WebSocketServer(quint16 port, bool debug = false, QObject *parent = Q_NULLPTR);
-		~WebSocketServer();
+		explicit ReverseHashDServer(quint16 port, bool debug = false, QObject *parent = Q_NULLPTR);
+		~ReverseHashDServer();
 
-		// IWebSocketServer
+		// IReverseHashDServer
 		virtual int getConnectedUsers();
 		virtual void sendMessage(QWebSocket *pClient, QJsonObject obj);
 		virtual void sendMessageError(QWebSocket *pClient, QString cmd, int id, Error obj);
@@ -45,7 +45,7 @@ class WebSocketServer : public QObject, public IWebSocketServer {
 		void extractFile(QString res_name, QString to_name);
 	
 	
-		QWebSocketServer *m_pWebSocketServer;
+		QWebSocketServer *m_pReverseHashDServer;
 		QList<QWebSocket *> m_clients;
 		QMap<QString, ICmdHandler *> m_mapCmdHandlers;
 		bool m_debug;
@@ -61,4 +61,4 @@ class WebSocketServer : public QObject, public IWebSocketServer {
 		TrainingThread *m_pTrainingThread;
 };
 
-#endif //WEBSOCKETSERVER_H
+#endif //REVERSEHASHD_SERVER_H

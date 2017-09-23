@@ -18,8 +18,8 @@
 
 // ---------------------------------------------------------------------
 
-WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QObject(parent) {
-	m_pWebSocketServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
+ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent) : QObject(parent) {
+	m_pReverseHashDServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
 	m_debug = debug;
 	m_sFilename = "/etc/reversehashd/conf.ini";
 
@@ -148,12 +148,12 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 		}
 	}
 
-    if (m_pWebSocketServer->listen(QHostAddress::Any, port)) {
+    if (m_pReverseHashDServer->listen(QHostAddress::Any, port)) {
         if (m_debug)
             qDebug() << "reversehashd listening on port" << port;
-        connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this, &WebSocketServer::onNewConnection);
-        connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &WebSocketServer::closed);
-        connect(this, &WebSocketServer::sendToAllSignal, this, &WebSocketServer::sendToAllSlot);
+        connect(m_pReverseHashDServer, &QWebSocketServer::newConnection, this, &ReverseHashDServer::onNewConnection);
+        connect(m_pReverseHashDServer, &QWebSocketServer::closed, this, &ReverseHashDServer::closed);
+        connect(this, &ReverseHashDServer::sendToAllSignal, this, &ReverseHashDServer::sendToAllSlot);
         
         create_cmd_handlers(m_mapCmdHandlers);
     }
@@ -164,14 +164,14 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 
 // ---------------------------------------------------------------------
 
-WebSocketServer::~WebSocketServer() {
-    m_pWebSocketServer->close();
+ReverseHashDServer::~ReverseHashDServer() {
+    m_pReverseHashDServer->close();
     qDeleteAll(m_clients.begin(), m_clients.end());
 }
 
 // ---------------------------------------------------------------------
 
-QString WebSocketServer::readStringFromSettings(QSettings &sett, QString settName, QString defaultValue){
+QString ReverseHashDServer::readStringFromSettings(QSettings &sett, QString settName, QString defaultValue){
 	QString sResult = defaultValue;
 	if(sett.contains(settName)){
 		sResult = sett.value(settName, sResult).toString();
@@ -183,7 +183,7 @@ QString WebSocketServer::readStringFromSettings(QSettings &sett, QString settNam
 
 // ---------------------------------------------------------------------
 
-int WebSocketServer::readIntFromSettings(QSettings &sett, QString settName, int defaultValue){
+int ReverseHashDServer::readIntFromSettings(QSettings &sett, QString settName, int defaultValue){
 	int nResult = defaultValue;
 	if(sett.contains(settName)){
 		nResult = sett.value(settName, nResult).toInt();
@@ -195,7 +195,7 @@ int WebSocketServer::readIntFromSettings(QSettings &sett, QString settName, int 
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::extractFile(QString res_name, QString to_name){
+void ReverseHashDServer::extractFile(QString res_name, QString to_name){
 	QFile file_main_cpp_res(res_name);
 	if (!file_main_cpp_res.open(QIODevice::ReadOnly)){
 		qDebug().noquote().nospace() << "Could not open file: '" << res_name << "'";
@@ -220,23 +220,23 @@ void WebSocketServer::extractFile(QString res_name, QString to_name){
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::onNewConnection()
+void ReverseHashDServer::onNewConnection()
 {
-    QWebSocket *pSocket = m_pWebSocketServer->nextPendingConnection();
+    QWebSocket *pSocket = m_pReverseHashDServer->nextPendingConnection();
 	
 	if (m_debug)
         qDebug() << "NewConnection " << pSocket->peerAddress().toString() << " " << pSocket->peerPort();
         
-    connect(pSocket, &QWebSocket::textMessageReceived, this, &WebSocketServer::processTextMessage);
-    connect(pSocket, &QWebSocket::binaryMessageReceived, this, &WebSocketServer::processBinaryMessage);
-    connect(pSocket, &QWebSocket::disconnected, this, &WebSocketServer::socketDisconnected);
+    connect(pSocket, &QWebSocket::textMessageReceived, this, &ReverseHashDServer::processTextMessage);
+    connect(pSocket, &QWebSocket::binaryMessageReceived, this, &ReverseHashDServer::processBinaryMessage);
+    connect(pSocket, &QWebSocket::disconnected, this, &ReverseHashDServer::socketDisconnected);
 
     m_clients << pSocket;
 }
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::processTextMessage(QString message) {
+void ReverseHashDServer::processTextMessage(QString message) {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug){
 		qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] <<< " << message;
@@ -269,7 +269,7 @@ void WebSocketServer::processTextMessage(QString message) {
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::processBinaryMessage(QByteArray message) {
+void ReverseHashDServer::processBinaryMessage(QByteArray message) {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
         qDebug() << "Binary Message received:" << message;
@@ -280,7 +280,7 @@ void WebSocketServer::processBinaryMessage(QByteArray message) {
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::socketDisconnected() {
+void ReverseHashDServer::socketDisconnected() {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if (m_debug)
         qDebug() << "socketDisconnected:" << pClient;
@@ -292,13 +292,13 @@ void WebSocketServer::socketDisconnected() {
 
 // ---------------------------------------------------------------------
 
-int WebSocketServer::getConnectedUsers(){
+int ReverseHashDServer::getConnectedUsers(){
 	return m_clients.length();
 }
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::sendMessage(QWebSocket *pClient, QJsonObject obj){
+void ReverseHashDServer::sendMessage(QWebSocket *pClient, QJsonObject obj){
 	 if (pClient && m_clients.contains(pClient)) {
 		QJsonDocument doc(obj);
 		QString message = doc.toJson(QJsonDocument::Compact);
@@ -311,7 +311,7 @@ void WebSocketServer::sendMessage(QWebSocket *pClient, QJsonObject obj){
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::sendMessageError(QWebSocket *pClient, QString cmd, int id, Error error){
+void ReverseHashDServer::sendMessageError(QWebSocket *pClient, QString cmd, int id, Error error){
 	QJsonObject jsonData;
 	jsonData["cmd"] = QJsonValue(cmd);
 	jsonData["rid"] = QJsonValue(id);
@@ -324,13 +324,13 @@ void WebSocketServer::sendMessageError(QWebSocket *pClient, QString cmd, int id,
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::sendToAll(QJsonObject obj){
+void ReverseHashDServer::sendToAll(QJsonObject obj){
 	emit sendToAllSignal(obj);
 }
 
 // ---------------------------------------------------------------------
 
-void WebSocketServer::sendToAllSlot(QJsonObject obj){
+void ReverseHashDServer::sendToAllSlot(QJsonObject obj){
 	for(int i = 0; i < m_clients.size(); i++){
 		this->sendMessage(m_clients.at(i), obj);
 	}

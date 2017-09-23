@@ -8,11 +8,11 @@
 #include <QVector>
 #include "training_thread_item.h"
 #include "training_thread_message.h"
-#include "../interfaces/iwebsocketserver.h"
+#include <ireversehashdserver.h>
 
 class TrainingThread : public QThread{
 		Q_OBJECT
-		IWebSocketServer *m_pWebSocketServer;
+		IReverseHashDServer *m_pReverseHashDServer;
 		int m_nSleep;
 		
 		void sendMessage(TrainingThreadMessage &msg);
@@ -20,7 +20,7 @@ class TrainingThread : public QThread{
 	private:
 		TrainingThreadMessage m_lastMessage;
 	public:
-		TrainingThread(IWebSocketServer *pWebSocketServer);
+		TrainingThread(IReverseHashDServer *pReverseHashDServer);
 	protected:
 		void run();
 };

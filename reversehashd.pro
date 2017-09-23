@@ -14,6 +14,7 @@ RCC_DIR = tmp/
 
 INCLUDEPATH += src/bna
 INCLUDEPATH += src/server
+INCLUDEPATH += src/interfaces
 
 RESOURCES = reversehashd.qrc
 
@@ -57,7 +58,7 @@ HEADERS += \
     src/interfaces/ivertex_out.h \
     src/interfaces/ivertex_in.h \
     src/interfaces/icmdhandler.h \
-    src/interfaces/iwebsocketserver.h \
+    src/interfaces/ireversehashdserver.h \
     src/operations/xor.h \
     src/operations/or.h \
     src/operations/and.h \

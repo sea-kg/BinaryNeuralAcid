@@ -6,8 +6,8 @@
 #include "../memoryitem.h"
 #include <QFile>
 
-TrainingThread::TrainingThread(IWebSocketServer *pWebSocketServer){
-	m_pWebSocketServer = pWebSocketServer;
+TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
+	m_pReverseHashDServer = pReverseHashDServer;
 	m_nSleep = 5;
 }
 
@@ -114,7 +114,7 @@ void TrainingThread::sendMessage(TrainingThreadMessage &msg){
 	m_lastMessage = msg;
 	qDebug().noquote().nospace() << "Training Thread: [" << msg.bitid() << "] " << msg.message();
 
-	m_pWebSocketServer->sendToAll(msg.toJson());
+	m_pReverseHashDServer->sendToAll(msg.toJson());
 }
 
 bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {

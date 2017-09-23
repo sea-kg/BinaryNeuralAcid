@@ -3,12 +3,12 @@
 
 #include <QString>
 #include <QJsonObject>
-#include "iwebsocketserver.h"
+#include "ireversehashdserver.h"
 
 class ICmdHandler {
 	public:
 		virtual QString cmd() = 0;
-		virtual void handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject obj) = 0;
+		virtual void handle(QWebSocket *pClient, IReverseHashDServer *pReverseHashDServer, QJsonObject obj) = 0;
 };
 
 #endif // INTERFACES_ICMDHANDLER_H

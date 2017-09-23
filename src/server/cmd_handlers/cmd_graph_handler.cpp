@@ -11,14 +11,14 @@ QString CmdGraphHandler::cmd(){
 	return "graph";
 }
 
-void CmdGraphHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject req){
+void CmdGraphHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseHashDServer, QJsonObject req){
 	int rid = 0;
 	if(req.contains("id")){
 		rid = req["id"].toInt();
 	}
 	
 	if(!req.contains("bitid")){
-		pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(400, "Not found parameter 'bitid'"));
+		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(400, "Not found parameter 'bitid'"));
 		return;
 	}
 	
@@ -39,7 +39,7 @@ void CmdGraphHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketSe
 	}
 
 	if(bInvalid){
-		pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(400, "Invalid value for 'bitid'"));
+		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(400, "Invalid value for 'bitid'"));
 		return;
 	}
 
@@ -51,8 +51,8 @@ void CmdGraphHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketSe
 		vg.loadFromFile(filename);
 		jsonData["graph"] = vg.conv2json();
 	}else{
-		pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
+		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
 		return;
 	}
-	pWebSocketServer->sendMessage(pClient, jsonData);
+	pReverseHashDServer->sendMessage(pClient, jsonData);
 }

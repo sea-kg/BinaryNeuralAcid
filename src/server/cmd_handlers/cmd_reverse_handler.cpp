@@ -10,7 +10,7 @@ QString CmdReverseHandler::cmd(){
 	return "reverse";
 }
 
-void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject req){
+void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseHashDServer, QJsonObject req){
 	int rid = 0;
 	if(req.contains("id")){
 		rid = req["id"].toInt();
@@ -21,7 +21,7 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 	jsonData["rid"] = rid;
 	
 	if(!req.contains("md5")){
-		pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(400, "Not found parameter 'md5'"));
+		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(400, "Not found parameter 'md5'"));
 		return;
 	}
 	
@@ -41,7 +41,7 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 			vg.setIn(vInput);
 			bResult = vg.out();
 		}else{
-			pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
+			pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
 			return;
 		}
 		vOutput.push_back(bResult);
@@ -62,5 +62,5 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocket
 	QString message = doc.toJson(QJsonDocument::Compact);
 	qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] >>> " << message;
 		
-	pWebSocketServer->sendMessage(pClient, jsonData);
+	pReverseHashDServer->sendMessage(pClient, jsonData);
 }

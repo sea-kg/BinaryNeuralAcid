@@ -11,7 +11,7 @@ QString CmdStatisticsHandler::cmd(){
 	return "statistics";
 }
 
-void CmdStatisticsHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSocketServer, QJsonObject req){
+void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseHashDServer, QJsonObject req){
 	int rid = 0;
 	if(req.contains("id")){
 		rid = req["id"].toInt();
@@ -36,10 +36,10 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IWebSocketServer *pWebSoc
 			sbit["lp"] = vg.lastSuccessPersents();
 			statistics.append(sbit);
 		}else{
-			pWebSocketServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
+			pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
 			return;
 		}
 	}
 	jsonData["statistics"] = statistics;
-	pWebSocketServer->sendMessage(pClient, jsonData);
+	pReverseHashDServer->sendMessage(pClient, jsonData);
 }
