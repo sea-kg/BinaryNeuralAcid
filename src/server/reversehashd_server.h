@@ -42,6 +42,8 @@ class WebSocketServer : public QObject, public IWebSocketServer {
 	private:
 		QString readStringFromSettings(QSettings &sett, QString settName, QString defaultValue);
 		int readIntFromSettings(QSettings &sett, QString settName, int defaultValue);
+		void extractFile(QString res_name, QString to_name);
+	
 	
 		QWebSocketServer *m_pWebSocketServer;
 		QList<QWebSocket *> m_clients;

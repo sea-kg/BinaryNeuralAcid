@@ -12,6 +12,11 @@ OBJECTS_DIR = tmp/
 MOC_DIR = tmp/
 RCC_DIR = tmp/
 
+INCLUDEPATH += src/bna
+INCLUDEPATH += src/server
+
+RESOURCES = reversehashd.qrc
+
 SOURCES += src/main.cpp \
     src/memory.cpp \
     src/helpers.cpp \
@@ -22,7 +27,7 @@ SOURCES += src/main.cpp \
     src/vertexes/vertex_in.cpp \
     src/vertexes/vertex.cpp \
     src/vertex_graph.cpp \
-    src/bna.cpp \
+    src/bna/bna.cpp \
     src/tests/tests.cpp \
     src/tests/callout_test.cpp \
     src/tests/readwrite_test.cpp \
@@ -32,7 +37,7 @@ SOURCES += src/main.cpp \
     src/tests/clonecopy_test.cpp \
     src/tests/random_remove_vertex_test.cpp \
     src/tests/random_add_vertex_test.cpp \
-    src/server/websocketserver.cpp \
+    src/server/reversehashd_server.cpp \
     src/server/error.cpp \
     src/server/training_thread.cpp \
     src/server/training_thread_item.cpp \
@@ -59,7 +64,7 @@ HEADERS += \
     src/vertexes/vertex_in.h \
     src/vertexes/vertex.h \
     src/vertex_graph.h \
-    src/bna.h \
+    src/bna/bna.h \
     src/tests/tests.h \
     src/tests/ireversehashtest.h \
     src/tests/callout_test.h \
@@ -70,7 +75,7 @@ HEADERS += \
     src/tests/clonecopy_test.h \
     src/tests/random_remove_vertex_test.h \
     src/tests/random_add_vertex_test.h \
-    src/server/websocketserver.h \
+    src/server/reversehashd_server.h \
 	src/server/error.h \
 	src/server/training_thread.h \
 	src/server/training_thread_item.h \

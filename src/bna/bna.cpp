@@ -1,8 +1,8 @@
 #include "bna.h"
 #include <QDataStream>
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
-
 
 BNA::BNA(){
 	m_nInput = 1; // Default
@@ -124,26 +124,59 @@ bool BNA::exportToDot(QString filename, QString graphname){
 
 bool BNA::exportToCpp(QString filename, QString funcname){
 	QFile file(filename);
+	QFileInfo fi(filename);
+	if(fi.suffix() != "cpp"){
+		qDebug().noquote().nospace() << "[ERROR]" << filename << " file must be have suffix 'cpp'";
+		return false;
+	}
+	
+	QString filename_h = filename.left(filename.length() - 3);
+	filename_h += "h";
+	
 	if (file.exists()) {
 		file.remove();
 	}
+	
+	QFile file_h(filename_h);
+	if (file_h.exists()) {
+		file_h.remove();
+	}
+	
 	if ( !file.open(QIODevice::WriteOnly) ) {
 		qDebug().noquote().nospace() << "Could not write file: " << filename;
 		return false;
 	}
+	
+	if ( !file_h.open(QIODevice::WriteOnly) ) {
+		qDebug().noquote().nospace() << "Could not write file: " << filename_h;
+		return false;
+	}
+	
+	QTextStream stream_h( &file_h );
+	stream_h << "#ifndef BNA_MD5_" << funcname.toUpper() << "_H\r\n";
+	stream_h << "#define BNA_MD5_" << funcname.toUpper() << "_H\r\n\r\n";
+	stream_h << "void " << funcname << "(";
+	
 	QTextStream stream( &file );
+	stream << "#include \"" << fi.baseName() << ".h\"\r\n";
 	stream << "void " << funcname << "(";
 	for(unsigned int i = 0; i < m_nInput; i++){
-		stream << "bool in" << i << ", ";
+		stream << "\r\n\tbool in" << i << ", ";
+		stream_h << "\r\n\tbool in" << i << ", ";
 	}
 	
 	for(unsigned  int i = 0; i < m_nOutput; i++){
-		stream << "bool &out" << i;
+		stream << "\r\n\tbool &out" << i;
+		stream_h << "\r\n\tbool &out" << i;
 		if(i < m_nOutput-1){
 			stream << ", ";
+			stream_h << ", ";
 		}
 	}
-	stream << ") {\n";
+	stream << "\r\n) {\r\n";
+	stream_h << "\r\n);\r\n\r\n";
+	stream_h << "#endif //BNA_MD5_" << funcname.toUpper() << "_H\r\n";
+	
 	
 	int nodes = m_nInput;
 	for(int i = 0; i < m_vItems.size(); i++){
@@ -167,3 +200,4 @@ bool BNA::exportToCpp(QString filename, QString funcname){
 }
 
 // ----------------------------------------------------------------
+

@@ -4,7 +4,7 @@
 #include "memory.h"
 #include "memoryitem.h"
 #include "tests/tests.h"
-#include "server/websocketserver.h"
+#include <reversehashd_server.h>
 #include <QString>
 #include <QList>
 #include <QFile>
@@ -19,7 +19,6 @@
 #include <QCoreApplication>
 #include "tests/reverse_test.h"
 #include "tests/random_remove_vertex_test.h"
-#include "bna.h"
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
@@ -29,8 +28,7 @@ void print_help(QVector<QString> &vParams) {
 		<< "\t --run-random-remove-vertex-test       - run random remove vertex test\n"
 		<< "\t --reset-persents                      - reset last persents from every bit and create missing files\n" 
         << "\t --server                              - start server\n"
-        << "\t --test-bna                            - test bna\n"
-        << "\t --sin-learning                        - sin learning\n"
+        << "\t --generate-md5-bna                    - test bna\n"
         << "\n";
 };
 
@@ -58,6 +56,34 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	
+	if(vParams.contains("--gencode")){
+		
+		/*for(int i = 0; i < 128; i++){
+			qDebug().noquote().nospace() << "\tbool in" + QString::number(i) + " = hash_bool[" + QString::number(i) + "];";
+		}*/
+		
+		for(int i = 0; i < 440; i++){
+			QString name = QString::number(i).rightJustified(3, '0');
+			qDebug().noquote().nospace() << "\tbool out" << name << ";";
+			
+			QString args_ = "";
+			for(int i_ = 0; i_ < 128; i_++){
+				args_ += "in" + QString::number(i_) + ", ";
+			}
+			args_ += "out" + name;
+			qDebug().noquote().nospace() << "\tfunc" << name << "(" << args_ << ");";
+			qDebug().noquote().nospace() << "\tresult_bool[" << QString::number(i) << "] = out" << name << ";";
+		}
+		
+		/*for(int i = 0; i < 440; i++){
+			QString name = QString::number(i).rightJustified(3, '0');
+			QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+			qDebug().noquote().nospace() << "#include \"" << subdir << "/" << name << ".h\"";
+		}*/
+		
+		return 0;
+	}
+	
 	if(vParams.contains("--run-reverse-test")){
 		IReverseHashTest *pTest = new Reverse_Test();
 		qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
@@ -68,22 +94,7 @@ int main(int argc, char* argv[])
 		}
 		return 0;
 	}
-		
-	if(vParams.contains("--bna-prepare-md5")){
-		QDir dir(".");
-		dir.mkpath("bna/md5");
-		return 0;
-	}
-		
-	if(vParams.contains("--test-bna")){
-		BNA bna;
-		bna.randomGenerate(16,2,100);
-		bna.save("test/test.bna");
-		bna.exportToDot("test/test.dot", "func16");
-		bna.exportToCpp("test/test.cpp", "func16");
-		return 0;
-	}
-	
+
 	if(vParams.contains("--run-random-remove-vertex-test")){
 		IReverseHashTest *pTest = new RandomRemoveVertex_Test();
 		qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
@@ -129,3 +140,4 @@ int main(int argc, char* argv[])
 	print_help(vParams);
     return 0;
 }
+

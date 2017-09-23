@@ -1,4 +1,4 @@
-#include "websocketserver.h"
+#include "reversehashd_server.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -8,9 +8,11 @@
 #include "cmd_handlers/create_cmd_handlers.h"
 
 #include "../vertex_graph.h"
+#include <bna.h>
 #include "../helpers.h"
 #include "../memory.h"
 #include "../memoryitem.h"
+#include <QDir>
 
 // QT_USE_NAMESPACE
 
@@ -39,6 +41,7 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 		return;
 	}
 	
+	// deprecated
 	// init vertexes
 	int nCount = 55*8;
 	for (int i = 0; i < nCount; i++) {
@@ -53,6 +56,89 @@ WebSocketServer::WebSocketServer(quint16 port, bool debug, QObject *parent) : QO
 			qDebug() << "Created new file: " << filename;
 		}
 	}
+	
+	// init bna
+	QString path = "/usr/share/reversehashd/md5";
+	QDir dir(".");
+	dir.mkpath(path);
+	
+	QString pro_file_content_sources = "SOURCES += \\\r\n";
+	pro_file_content_sources += "\tmd5revert_helpers.h \\\r\n";
+	
+	QString pro_file_content_headers = "HEADERS += \\\r\n";
+	pro_file_content_sources += "\tmd5revert_main.cpp \\\r\n";
+	pro_file_content_sources += "\tmd5revert_helpers.cpp \\\r\n";
+	
+	for(int i = 0; i < 440; i++){
+		QString name = QString::number(i).rightJustified(3, '0');
+		QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+		QString d = path + "/" + subdir;
+		dir.mkpath(d);
+		QString filename_bna = d + "/" + name + ".bna";
+		QString filename_cpp = d + "/" + name + ".cpp";
+		QString filename_h = d + "/" + name + ".h";
+		QString filename_dot = d + "/" + name + ".dot";
+		
+		QFile file(filename_bna);
+		if(!file.exists()){
+			BNA bna;
+			bna.randomGenerate(128,1,256);
+			bna.save(filename_bna);
+			qDebug() << filename_bna << " - created";
+		}
+		
+		if(QFile(filename_bna).exists()){
+			BNA bna;
+			bna.load(filename_bna);
+			bna.exportToCpp(filename_cpp, "func" + name);
+		}
+		
+		if(QFile(filename_bna).exists()){
+			BNA bna;
+			bna.load(filename_bna);
+			bna.exportToDot(filename_dot, "func" + name);
+		}
+		
+		pro_file_content_sources += "\t" + subdir + "/" + name + ".cpp \\\r\n";
+		pro_file_content_headers += "\t" + subdir + "/" + name + ".h \\\r\n";
+	}
+	
+	// write pro file
+	{
+		pro_file_content_sources += "\r\n";
+		pro_file_content_headers += "\r\n";
+
+		QString sDilenameProFile = path + "/md5revert.pro";
+		QFile file(sDilenameProFile);
+		if (file.exists()) {
+			file.remove();
+		}
+		if ( !file.open(QIODevice::WriteOnly) ) {
+			qDebug().noquote().nospace() << "Could not write file: " << sDilenameProFile;
+		}else{
+			QTextStream stream( &file );
+			stream << "TEMPLATE = app\r\n";
+			stream << "TARGET = md5revert\r\n";
+			stream << "QT += core\r\n";
+			stream << "QT -= gui\r\n";
+			stream << "\r\n";
+			stream << "CONFIG += console\r\n";
+			stream << "CONFIG -= app_bundle\r\n";
+			stream << "CONFIG += c++11 c++14\r\n";
+			stream << "\r\n";
+			stream << "OBJECTS_DIR = tmp/\r\n";
+			stream << "MOC_DIR = tmp/\r\n";
+			stream << "RCC_DIR = tmp/\r\n";
+			stream << "\r\n";
+			stream << pro_file_content_sources;
+			stream << pro_file_content_headers;
+		}
+	}
+
+	// init main.cpp
+	this->extractFile(":/res/md5revert_main.cpp", path + "/md5revert_main.cpp");
+	this->extractFile(":/res/md5revert_helpers.h", path + "/md5revert_helpers.h");
+	this->extractFile(":/res/md5revert_helpers.cpp", path + "/md5revert_helpers.cpp");
 	
 	if(QFile::exists(m_sFilename)){
 		QSettings sett(m_sFilename, QSettings::IniFormat);
@@ -90,7 +176,7 @@ QString WebSocketServer::readStringFromSettings(QSettings &sett, QString settNam
 	if(sett.contains(settName)){
 		sResult = sett.value(settName, sResult).toString();
 	}else{
-		qDebug() << "[WARNING] " << settName << " - not found in " << m_sFilename << "\n\t Will be used default value: " << defaultValue;
+		qDebug().noquote().nospace() << "[WARNING] " << settName << " - not found in " << m_sFilename << "\n\t Will be used default value: " << defaultValue;
 	}
 	return sResult;
 }
@@ -102,9 +188,34 @@ int WebSocketServer::readIntFromSettings(QSettings &sett, QString settName, int 
 	if(sett.contains(settName)){
 		nResult = sett.value(settName, nResult).toInt();
 	}else{
-		qDebug() << "[WARNING] " << settName << " - not found in " << m_sFilename << "\n\t Will be used default value: " << defaultValue;
+		qDebug().noquote().nospace() << "[WARNING] " << settName << " - not found in " << m_sFilename << "\n\t Will be used default value: " << defaultValue;
 	}
 	return nResult;
+}
+
+// ---------------------------------------------------------------------
+
+void WebSocketServer::extractFile(QString res_name, QString to_name){
+	QFile file_main_cpp_res(res_name);
+	if (!file_main_cpp_res.open(QIODevice::ReadOnly)){
+		qDebug().noquote().nospace() << "Could not open file: '" << res_name << "'";
+		return;
+	}
+	QTextStream res_main_cpp_file( &file_main_cpp_res );
+	QString main_cpp_contents;
+	main_cpp_contents.append(res_main_cpp_file.readAll());
+	file_main_cpp_res.close();
+	QString sFilenameMainCpp = to_name;
+	QFile file_main_cpp(sFilenameMainCpp);
+	if (file_main_cpp.exists()) {
+		file_main_cpp.remove();
+	}
+	if ( !file_main_cpp.open(QIODevice::WriteOnly) ) {
+		qDebug().noquote().nospace() << "Could not write file: " << to_name;
+	}else{
+		QTextStream stream_main_cpp( &file_main_cpp );
+		stream_main_cpp << main_cpp_contents;
+	}
 }
 
 // ---------------------------------------------------------------------
