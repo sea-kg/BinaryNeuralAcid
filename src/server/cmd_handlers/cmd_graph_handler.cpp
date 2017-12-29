@@ -1,11 +1,11 @@
 #include <cmd_graph_handler.h>
-#include <vertex_graph.h>
 #include <helpers.h>
 #include <memory.h>
 #include <memoryitem.h>
 #include <QFile>
 #include <QJsonArray>
 #include <QFileInfo>
+#include <bna.h>
 
 QString CmdGraphHandler::cmd(){
 	return "graph";
@@ -26,13 +26,11 @@ void CmdGraphHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseH
 	QJsonObject jsonData;
 	jsonData["cmd"] = QJsonValue(cmd());
 	jsonData["rid"] = rid;
-	
-	
+
 	QString bitid = req["bitid"].toString();
 	bool bInvalid = true;
-	int nCount = 55*8;
-	for (int i = 0; i < nCount; i++) {
-		QString tmpBitid = "bit" + QString::number(i).rightJustified(3, '0');
+	for (int nBitid = 0; nBitid < 440; nBitid++) {
+		QString tmpBitid = QString::number(nBitid).rightJustified(3, '0');
 		if(tmpBitid == bitid){
 			bInvalid = false;
 		}
@@ -43,16 +41,15 @@ void CmdGraphHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseH
 		return;
 	}
 
-	QString filename = "/usr/share/reversehashd/md5/" + bitid + ".vertexgraph";
-	QFile file(filename);
-	QFileInfo fi(filename);
-	if(file.exists()){
-		VertexGraph vg(128);
-		vg.loadFromFile(filename);
-		jsonData["graph"] = vg.conv2json();
-	}else{
-		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
-		return;
+	QString name = bitid;
+	QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+	QString filename_statistics = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".statistics";
+	QString filename_bna = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".bna";
+
+	BNA bna;
+	if(!bna.load(filename_bna)){
+		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename_bna + "'does not exists"));	
 	}
+	jsonData["graph"] = bna.toJson();
 	pReverseHashDServer->sendMessage(pClient, jsonData);
 }

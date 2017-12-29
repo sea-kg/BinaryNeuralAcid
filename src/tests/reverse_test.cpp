@@ -1,5 +1,4 @@
 #include "reverse_test.h"
-#include "../vertex_graph.h"
 #include "../helpers.h"
 #include <iostream>
 #include <QByteArray>
@@ -12,7 +11,7 @@ QString Reverse_Test::name(){
 };
 
 bool Reverse_Test::run(){
-	QMap<QString, QString> tests;
+    /*QMap<QString, QString> tests;
 	tests["202CB962AC59075B964B07152D234B70"] = "123";
 	tests["92BA7B54A295FED5060A2BA44A72E595"] = "66^lvp/-!A";
 	tests["b885ca6d1c4e8231928ef2af5737426c"] = "YN!KAHfPjFU[\">IwHL";
@@ -20,7 +19,7 @@ bool Reverse_Test::run(){
 	tests["f6fdffe48c908deb0f4c3bd36c032e72"] = "adminadmin";
 	tests["098f6bcd4621d373cade4e832627b4f6"] = "test";
 	tests["16d7a4fca7442dda3ad93c9a726597e4"] = "test1234";
-	tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";
+    tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";*/
 	
 	
 	/*reverse_hash::Memory *pMemory = new reverse_hash::Memory();
@@ -28,7 +27,7 @@ bool Reverse_Test::run(){
 	reverse_hash::MemoryItem memoryItem = pMemory->at(1);
 	tests[memoryItem.output.toHex()] = memoryItem.input.toHex();*/
 	
-	foreach(QString key, tests.keys()){
+    /*foreach(QString key, tests.keys()){
 		QVector<bool> vInput;
 		reverse_hash::convertHEXStringToVBool(key, vInput, 128);
 		
@@ -63,7 +62,7 @@ bool Reverse_Test::run(){
 		}
 		int  nPersent = (nCheck * 100) / nCount;
 		std::cout << "\t " << key.toStdString() << " => " << tests.value(key).toStdString() << "; reverted " << nPersent << "% [" << nCheck << "/" << nCount << " bits]\n";
-	}
+    }*/
 	return false;
 };
 

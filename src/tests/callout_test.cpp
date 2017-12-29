@@ -1,5 +1,5 @@
 #include "callout_test.h"
-#include "../vertex_graph.h"
+#include <bna.h>
 #include <iostream>
 
 QString CallOut_Test::name(){
@@ -7,11 +7,14 @@ QString CallOut_Test::name(){
 };
 
 bool CallOut_Test::run(){
-	VertexGraph pVertexGraph(128);
-	pVertexGraph.genBase();
-	pVertexGraph.out();
-	pVertexGraph.randomChanges(50);
-	pVertexGraph.out();
-	return true;
-};
+    BNA bna;
+    bna.randomGenerate(15, 1, 100);
+    QVector<bool> vInputs;
+    for(int i = 0; i < 15; i++){
+        vInputs.push_back(true);
+    }
+
+    bool bResult = bna.calc(vInputs, 1);
+    return bResult;
+}
 

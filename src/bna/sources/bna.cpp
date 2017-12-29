@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <bna_expr.h>
 
 BNA::BNA(){
 	m_nInput = 1; // Default
@@ -28,9 +29,7 @@ bool BNA::load(QString filename){
 
 	while(!stream.atEnd()){
 		BNAItem item;
-		stream >> item.X;
-		stream >> item.Y;
-		stream >> item.T;
+        item.readXYT(stream);
 		m_vItems.push_back(item);
 	}
 	normalize();
@@ -51,7 +50,7 @@ bool BNA::save(QString filename){
 	QDataStream stream( &file );
 	stream << m_nInput << m_nOutput;
 	for (int i = 0; i < m_vItems.size(); i++) {
-		stream << m_vItems[i].X << m_vItems[i].Y << m_vItems[i].T;
+        m_vItems[i].writeXYT(stream);
 	}
 	file.close();
 	return true;
@@ -62,11 +61,13 @@ bool BNA::save(QString filename){
 void BNA::normalize(){
 	int nodes = m_nInput;
 	for(int i = 0; i < m_vItems.size(); i++){
-		m_vItems[i].X = m_vItems[i].X % nodes;
-		m_vItems[i].Y = m_vItems[i].Y % nodes;
-		m_vItems[i].T = m_vItems[i].T % 3;
+        m_vItems[i].setX(m_vItems[i].getX() % nodes);
+        m_vItems[i].setY(m_vItems[i].getY() % nodes);
+        m_vItems[i].setT(m_vItems[i].getT() % 3);
 		nodes++;
 	}
+    // prepare for calculations
+    updateExprs();
 }
 
 // ----------------------------------------------------------------
@@ -78,9 +79,9 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
 	m_vItems.clear();
 	for(int i = 0; i < nSize; i++){
 		BNAItem item;
-		item.X = qrand();
-		item.Y = qrand();
-		item.T = qrand();
+        item.setX(qrand());
+        item.setY(qrand());
+        item.setT(qrand());
 		m_vItems.push_back(item);
 	}
 	normalize();
@@ -102,8 +103,8 @@ bool BNA::exportToDot(QString filename, QString graphname){
 	int nodes = m_nInput;
 
 	for(int i = 0; i < m_vItems.size(); i++){
-		QString sX = (m_vItems[i].X < m_nInput ? "in" : "node") + QString::number(m_vItems[i].X);
-		QString sY = (m_vItems[i].Y < m_nInput ? "in" : "node") + QString::number(m_vItems[i].Y);
+        QString sX = (m_vItems[i].getX() < m_nInput ? "in" : "node") + QString::number(m_vItems[i].getX());
+        QString sY = (m_vItems[i].getY() < m_nInput ? "in" : "node") + QString::number(m_vItems[i].getY());
 		QString sNode = "node" + QString::number(nodes); 
 		stream << "\t" << sX << " -> " << sNode << ";\n";
 		stream << "\t" << sY << " -> " << sNode << ";\n";
@@ -180,8 +181,8 @@ bool BNA::exportToCpp(QString filename, QString funcname){
 	
 	int nodes = m_nInput;
 	for(int i = 0; i < m_vItems.size(); i++){
-		QString sX = (m_vItems[i].X < m_nInput ? "in" : "node") + QString::number(m_vItems[i].X);
-		QString sY = (m_vItems[i].Y < m_nInput ? "in" : "node") + QString::number(m_vItems[i].Y);
+        QString sX = (m_vItems[i].getX() < m_nInput ? "in" : "node") + QString::number(m_vItems[i].getX());
+        QString sY = (m_vItems[i].getY() < m_nInput ? "in" : "node") + QString::number(m_vItems[i].getY());
 		QString sNode = "node" + QString::number(nodes); 
 		stream << "\tbool " << sNode << " = " << sX << "|" << sY << ";\n";
 		nodes++;
@@ -201,3 +202,71 @@ bool BNA::exportToCpp(QString filename, QString funcname){
 
 // ----------------------------------------------------------------
 
+void BNA::generateRandomMutations(){
+	// TODO random changes
+}
+
+// ----------------------------------------------------------------
+
+QJsonObject BNA::toJson(){
+	
+}
+
+// ----------------------------------------------------------------
+
+void BNA::updateExprs(){
+
+    // TODO delete vars
+    m_vCalcVars.clear();
+    m_vCalcExprs.clear();
+    m_vCalcOutVars.clear();
+
+    for(unsigned int i  = 0; i < m_nInput; i++){
+        BNAVar *pVar = new BNAVar();
+        pVar->val(false);
+        m_vCalcVars.push_back(pVar);
+    }
+
+    int nodes = m_nInput;
+    for(int i = 0; i < m_vItems.size(); i++){
+        int x = m_vItems[i].getX();
+        int y = m_vItems[i].getY();
+        BNAExpr *pExpr = new BNAExpr();
+        pExpr->op1(m_vCalcVars[x]);
+        pExpr->op2(m_vCalcVars[y]);
+        BNAVar *pVar = new BNAVar();
+        m_vCalcVars.push_back(pVar);
+        pExpr->out(m_vCalcVars[nodes]);
+        m_vCalcExprs.push_back(pExpr);
+        nodes++;
+    }
+
+    int out_nodes = nodes-m_nOutput;
+
+    for(int i = out_nodes; i < nodes; i++){
+        m_vCalcOutVars.push_back(m_vCalcVars[i-out_nodes]);
+    }
+}
+
+// ----------------------------------------------------------------
+
+bool BNA::calc(const QVector<bool> &vInputs, int nOutput){
+    // prepare calculate exprs
+
+    if((unsigned int)vInputs.size() != m_nInput){
+        qDebug() << "[ERROR] invalid input count";
+        return false;
+    }
+
+    for(unsigned int i  = 0; i < m_nInput; i++){
+        m_vCalcVars[i]->val(vInputs[i]);
+    }
+
+    for(int i = 0; i < m_vCalcExprs.size(); i++){
+        m_vCalcExprs[i]->exec();
+    }
+
+    return m_vCalcOutVars[nOutput]->val();
+}
+
+// ----------------------------------------------------------------

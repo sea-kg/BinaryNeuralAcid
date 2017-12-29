@@ -1,6 +1,6 @@
 #include "training_thread.h"
 
-#include <vertex_graph.h>
+#include <bna.h>
 #include <helpers.h>
 #include <memory.h>
 #include <memoryitem.h>
@@ -20,6 +20,7 @@ void TrainingThread::run(){
 		QVector<TrainingThreadItem *> list = this->sortedList();
 		for(int i = 0; i < list.size(); i++){
 			TrainingThreadItem *pItem = list[i];
+			
 			QString bitid = pItem->bitid();
 			QString filename = pItem->filename();
 			QFile file(filename);
@@ -30,9 +31,12 @@ void TrainingThread::run(){
 				QThread::sleep(m_nSleep);
 				continue;
 			}
-			VertexGraph vg(128);
-			vg.loadFromFile(filename);
-			
+			BNA bna;
+			if(!bna.load(filename)){
+				qDebug().noquote().nospace() << "Could not load file " << filename;
+				continue;
+			}
+
 			{
 				TrainingThreadMessage msg(pItem);
 				msg.setMessage("Training... ");
@@ -40,7 +44,8 @@ void TrainingThread::run(){
 			}
 
 			int nMemorySize = pMemory->size();
-			int nPersent = vg.lastSuccessPersents();
+			
+			int nPersent = pItem->percent();
 			int nExperiments = 0;
 			while(nPersent < 90 && nExperiments < 100){
 				QThread::sleep(m_nSleep);
@@ -49,8 +54,9 @@ void TrainingThread::run(){
 
 				for (int t = 0; t < nMemorySize; t++){
 					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
-					vg.setIn(memoryItem.outputToVectorBool());
-					bool b = vg.out();
+                    QVector<bool> vInputs = memoryItem.outputToVectorBool();
+
+                    bool b = bna.calc(vInputs, 0);
 					if(b == memoryItem.inputToVectorBool()[pItem->id()]){
 						nSuccessCount++;
 					}
@@ -70,7 +76,7 @@ void TrainingThread::run(){
 				}
 
 				nPersent = (nSuccessCount * 100) / (nMemorySize);
-				if(nPersent > vg.lastSuccessPersents()){
+				if(nPersent > pItem->percent()){
 					TrainingThreadMessage msg(pItem);
 					msg.setMessage("New percent result set!");
 					msg.setLastSuccessPersents(nPersent);
@@ -78,23 +84,22 @@ void TrainingThread::run(){
 					msg.setCompletedExperiments(nExperiments);
 					this->sendMessage(msg);
 					
-					vg.setLastSuccessPersents(nPersent);
-					vg.saveToFile(filename);
+					pItem->savePercent(nPersent);
 				}else{
 					TrainingThreadMessage msg(pItem);
 					msg.setMessage("Reloading graph.");
-					msg.setLastSuccessPersents(vg.lastSuccessPersents());
+					msg.setLastSuccessPersents(pItem->percent());
 					this->sendMessage(msg);
 					
-					vg.loadFromFile(filename);
-					nPersent = vg.lastSuccessPersents();
-					vg.randomChanges(13);
+					bna.load(filename);
+					nPersent = pItem->percent();
+					bna.generateRandomMutations();
 				}
 			}
 			
 			{
 				TrainingThreadMessage msg(pItem);
-				msg.setMessage("Result: " + QString::number(vg.lastSuccessPersents()) + "%");
+				msg.setMessage("Result: " + QString::number(pItem->percent()) + "%");
 				msg.setMaxExperiments(100);
 				msg.setCompletedExperiments(100);
 				this->sendMessage(msg);

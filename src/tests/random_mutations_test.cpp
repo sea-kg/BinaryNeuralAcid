@@ -1,5 +1,4 @@
-#include "random_remove_vertex_test.h"
-#include "../vertex_graph.h"
+#include "random_mutations_test.h"
 #include "../helpers.h"
 #include <iostream>
 #include <QByteArray>
@@ -7,16 +6,16 @@
 #include <QFile>
 #include <QMap>
 
-QString RandomRemoveVertex_Test::name(){
+QString RandomMutations_Test::name(){
 	return "RemoveRandomVertex_Test";
 };
 
-void RandomRemoveVertex_Test::printStat(int i, int cicles, int max){
+void RandomMutations_Test::printStat(int i, int cicles, int max){
 	std::cout << "\r\t Calculates " << i << " (cicles: " << cicles << " / " << max << ") ";
 }
 
-bool RandomRemoveVertex_Test::run(){
-	VertexGraph vg(128);
+bool RandomMutations_Test::run(){
+    /*VertexGraph vg(128);
 	vg.genBase();
 	int nMax = vg.countOfVertextes() - 128 - 1;
 	int cicles = 0;
@@ -41,7 +40,7 @@ bool RandomRemoveVertex_Test::run(){
 		delete pVertexGraphClone;
 	}
 	this->printStat(nMax, cicles, nMax);
-	std::cout << "\n";
+    std::cout << "\n";*/
 	return true;
 };
 

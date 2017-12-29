@@ -1,18 +1,20 @@
 #include "training_thread_item.h"
 
-#include <vertex_graph.h>
-#include <helpers.h>
-#include <memory.h>
-#include <memoryitem.h>
 #include <QFile>
+#include <QDebug>
+#include <QDataStream>
+#include <helpers.h>
 
 TrainingThreadItem::TrainingThreadItem(int bitid){
 	m_nBitid = bitid;
-	m_sBitid = "bit" + QString::number(bitid).rightJustified(3, '0');
-	m_sFilename = "/usr/share/reversehashd/md5/" + m_sBitid + ".vertexgraph";
-	VertexGraph vg(128);
-	vg.loadFromFile(m_sFilename);
-	m_nPercent = vg.lastSuccessPersents();
+	QString name = QString::number(bitid).rightJustified(3, '0');
+	QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+	m_sBitid = name;
+	m_sFilename = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".bna";
+	m_sFilenameStats = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".statistics";
+	m_nPercent = 0;
+	
+	m_nPercent = loadPersent(m_sFilenameStats);
 }
 
 int TrainingThreadItem::id(){
@@ -31,10 +33,11 @@ QString TrainingThreadItem::filename(){
 	return m_sFilename;
 }
 
-int TrainingThreadItem::percent(){
+int TrainingThreadItem::percent() const{
 	return m_nPercent;
 }
 
-int TrainingThreadItem::percent() const{
-	return m_nPercent;
+void TrainingThreadItem::savePercent(int v){
+	m_nPercent = v;
+	savePersent(m_sFilenameStats, m_nPercent);
 }

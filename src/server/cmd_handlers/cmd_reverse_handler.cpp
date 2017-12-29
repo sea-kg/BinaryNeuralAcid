@@ -1,5 +1,5 @@
 #include <cmd_reverse_handler.h>
-#include <vertex_graph.h>
+#include <bna.h>
 #include <helpers.h>
 #include <memory.h>
 #include <memoryitem.h>
@@ -27,19 +27,18 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	
 	QString hash = req["md5"].toString();
 	QVector<bool> vOutput;
-	QVector<bool> vInput;
+    QVector<bool> vInputs;
 	QString answer_bin = "";
-	reverse_hash::convertHEXStringToVBool(hash, vInput, 128);
+    reverse_hash::convertHEXStringToVBool(hash, vInputs, 128);
 	int nCount = 55*8;
 	for (int i = 0; i < nCount; i++) {
 		bool bResult = false;
 		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
 		QFile file(filename);
 		if(file.exists()){
-			VertexGraph vg(128);
-			vg.loadFromFile(filename);
-			vg.setIn(vInput);
-			bResult = vg.out();
+			BNA bna;
+			bna.load(filename);
+            bResult = bna.calc(vInputs, 0);
 		}else{
 			pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
 			return;

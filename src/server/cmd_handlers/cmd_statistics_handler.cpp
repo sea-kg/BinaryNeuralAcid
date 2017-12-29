@@ -1,5 +1,5 @@
 #include <cmd_statistics_handler.h>
-#include <vertex_graph.h>
+#include <bna.h>
 #include <helpers.h>
 #include <memory.h>
 #include <memoryitem.h>
@@ -22,18 +22,18 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRev
 	jsonData["rid"] = rid;
 	
 	QJsonArray statistics;
-	int nCount = 55*8;
-	for (int i = 0; i < nCount; i++) {
-		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
+	for (int bitid = 0; bitid < 440; bitid++) {
+		QString name = QString::number(bitid).rightJustified(3, '0');
+		QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+
+		QString filename = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".statistics";
 		QFile file(filename);
 		QFileInfo fi(filename);
 		if(file.exists()){
-			VertexGraph vg(128);
-			vg.loadFromFile(filename);
 			QJsonObject sbit;
 			sbit["modified"] = fi.lastModified().toString("yyyy-MM-dd hh-mm-ss (t)");
-			sbit["name"] = "bit" + QString::number(i).rightJustified(3, '0');
-			sbit["lp"] = vg.lastSuccessPersents();
+			sbit["name"] = "bit" + QString::number(bitid).rightJustified(3, '0');
+			sbit["lp"] = loadPersent(filename);
 			statistics.append(sbit);
 		}else{
 			pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));

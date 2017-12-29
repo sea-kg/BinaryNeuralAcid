@@ -9,4 +9,7 @@ namespace reverse_hash {
     QString convertVBoolHEXString(QVector<bool> &vars);
 };
 
+int loadPersent(QString filename);
+void savePersent(QString filename, int nPersent);
+
 #endif // HELPERS_H

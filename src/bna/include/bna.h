@@ -1,8 +1,11 @@
 #ifndef BNA_H
 #define BNA_H
 
-#include<QString>
-#include<QVector>
+#include <QString>
+#include <QVector>
+#include <QJsonObject>
+#include <bna_expr.h>
+#include <bna_item.h>
 
 class BNA {
 	public:
@@ -12,19 +15,20 @@ class BNA {
 		void randomGenerate(int nInput, int nOutput, int nSize);
 		bool exportToDot(QString filename, QString graphname);
 		bool exportToCpp(QString filename, QString funcname);
-
+		QJsonObject toJson();
+		void generateRandomMutations();
+        bool calc(const QVector<bool> &vInputs, int nOutput);
 	private:
+
 		unsigned int m_nInput;
 		unsigned int m_nOutput;
 		void normalize();
-		struct BNAItem{
-			BNAItem(unsigned short x, unsigned short y, unsigned char t) : X(x), Y(y), T(t){};
-			BNAItem() : X(0), Y(0), T(0){};
-			unsigned short X;
-			unsigned short Y;
-			unsigned char T;
-		};
 		QVector<BNAItem> m_vItems;
+
+        void updateExprs();
+        QVector<BNAExpr *> m_vCalcExprs;
+        QVector<BNAVar *> m_vCalcVars;
+        QVector<BNAVar *> m_vCalcOutVars;
 };
 
 #endif // BNA_H

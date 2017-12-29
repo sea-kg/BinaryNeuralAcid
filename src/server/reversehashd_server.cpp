@@ -7,7 +7,6 @@
 #include <QHostAddress>
 #include <create_cmd_handlers.h>
 
-#include <vertex_graph.h>
 #include <bna.h>
 #include <helpers.h>
 #include <memory.h>
@@ -43,7 +42,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
 	
 	// deprecated
 	// init vertexes
-	int nCount = 55*8;
+	/*int nCount = 55*8;
 	for (int i = 0; i < nCount; i++) {
 		bool bResult = false;
 		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
@@ -55,7 +54,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
 			vg.saveToFile(filename);
 			qDebug() << "Created new file: " << filename;
 		}
-	}
+	}*/
 	
 	// init bna
 	QString path = "/usr/share/reversehashd/md5";

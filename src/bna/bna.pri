@@ -1,22 +1,16 @@
-INCLUDEPATH += src/bna
-INCLUDEPATH += src/bna/operations
-INCLUDEPATH += src/bna/vertexes
-INCLUDEPATH += src/bna/interfaces
+
+INCLUDEPATH += src/bna/include
 
 HEADERS += \
-	src/bna/bna.h \
-	src/bna/vertex_graph.h \
-    src/bna/operations/xor.h \
-    src/bna/operations/or.h \
-    src/bna/operations/and.h \
-    src/bna/vertexes/vertex_in.h \
-    src/bna/vertexes/vertex.h \
+    src/bna/include/bna_opers.h \
+    src/bna/include/bna_var.h \
+    src/bna/include/bna_expr.h \
+    src/bna/include/bna_item.h \
+    src/bna/include/bna.h \
 
 SOURCES += \
-	src/bna/bna.cpp \
-	src/bna/vertex_graph.cpp \
-    src/bna/operations/xor.cpp \
-    src/bna/operations/or.cpp \
-    src/bna/operations/and.cpp \
-    src/bna/vertexes/vertex_in.cpp \
-    src/bna/vertexes/vertex.cpp \
+    src/bna/sources/bna_opers.cpp \
+    src/bna/sources/bna_var.cpp \
+    src/bna/sources/bna_expr.cpp \
+    src/bna/sources/bna_item.cpp \
+    src/bna/sources/bna.cpp \
