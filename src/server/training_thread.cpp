@@ -13,7 +13,7 @@ TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
 
 void TrainingThread::run(){
 	qDebug().noquote().nospace() << "Start Training Thread";
-	reverse_hash::Memory *pMemory = new reverse_hash::Memory();
+    RHMemory *pMemory = new RHMemory();
 	pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
 	
 	while(true){
@@ -53,7 +53,7 @@ void TrainingThread::run(){
 				int nSuccessCount = 0;
 
 				for (int t = 0; t < nMemorySize; t++){
-					reverse_hash::MemoryItem memoryItem = pMemory->at(t);
+                    RHMemoryItem memoryItem = pMemory->at(t);
                     QVector<bool> vInputs = memoryItem.outputToVectorBool();
 
                     bool b = bna.calc(vInputs, 0);

@@ -11,6 +11,17 @@ QString Reverse_Test::name(){
 };
 
 bool Reverse_Test::run(){
+    QVector<QString> tests;
+    tests.push_back("123");
+    tests.push_back("66^lvp/-!A");
+    tests.push_back("YN!KAHfPjFU[\">IwHL");
+    tests.push_back("admin");
+    tests.push_back("adminadmin");
+    tests.push_back("test");
+    tests.push_back("test1234");
+    tests.push_back("1234");
+
+
     /*QMap<QString, QString> tests;
 	tests["202CB962AC59075B964B07152D234B70"] = "123";
 	tests["92BA7B54A295FED5060A2BA44A72E595"] = "66^lvp/-!A";
@@ -22,6 +33,10 @@ bool Reverse_Test::run(){
     tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";*/
 	
 	
+    RHMemory *pMemory = new RHMemory();
+    pMemory->dataFrom(tests);
+
+
 	/*reverse_hash::Memory *pMemory = new reverse_hash::Memory();
 	pMemory->load("md5/memory_md5_10000.rhmem");
 	reverse_hash::MemoryItem memoryItem = pMemory->at(1);
