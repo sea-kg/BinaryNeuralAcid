@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QTemporaryFile>
+#include <QFile>
 #include <QCryptographicHash>
 #include <bna.h>
 
@@ -17,6 +18,8 @@ bool ReadWrite_Test::run(){
 
     qint64 size1 = 0, size2 = 0, size3 = 0, size4 = 0;
 
+	
+
     QTemporaryFile file1;
     file1.setAutoRemove(false);
     if(file1.open()){
@@ -29,20 +32,18 @@ bool ReadWrite_Test::run(){
 
     QString hash1;
     QFile file1_(file1.fileName());
-    if (file1_.open()) {
+    if (file1_.open(QIODevice::ReadOnly)) {
         QCryptographicHash hash(QCryptographicHash::Md5);
         if (hash.addData(&file1_)) {
             hash1 = hash.result().toHex();
         }
+        std::cout << "\t" << hash1.toStdString() << " = " << int(size1) << " \n";
         // file1.close();
     }
     qDebug() << hash1;
 
     /*VertexGraph pVertexGraph(128);
 	pVertexGraph.genBase();
-
-
-
 
 	if(file1.open()){
 		file1.close();
