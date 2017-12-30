@@ -3,7 +3,154 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
-#include <bna_expr.h>
+
+// -----------------------------------------------------------------
+// BNA Var just contains boolean variable
+
+BNAVar::BNAVar() {
+   m_bVal = false;
+}
+
+// -----------------------------------------------------------------
+
+bool BNAVar::val(){
+    return m_bVal;
+}
+
+// -----------------------------------------------------------------
+
+void BNAVar::val(bool bVal){
+    m_bVal = bVal;
+}
+
+// -----------------------------------------------------------------
+// BNA Expr class for calculation by operation
+
+BNAExpr::BNAExpr(){
+    m_pVar1 = NULL;
+    m_pVar2 = NULL;
+    m_pVarOut = NULL;
+}
+
+// -----------------------------------------------------------------
+
+void BNAExpr::op1(BNAVar *pVar1){
+    m_pVar1 = pVar1;
+}
+
+// -----------------------------------------------------------------
+
+void BNAExpr::op2(BNAVar *pVar2){
+    m_pVar2 = pVar2;
+}
+
+// -----------------------------------------------------------------
+
+void BNAExpr::out(BNAVar *pVarOut){
+    m_pVarOut = pVarOut;
+}
+
+// -----------------------------------------------------------------
+
+void BNAExpr::exec(){
+    if(m_pVar1 == NULL){
+        qDebug() << "[ERROR] m_pVar1 is NULL";
+        return;
+    }
+
+    if(m_pVar2 == NULL){
+        qDebug() << "[ERROR] m_pVar2 is NULL";
+        return;
+    }
+
+    if(m_pVarOut == NULL){
+        qDebug() << "[ERROR] m_pVarOut is NULL";
+        return;
+    }
+
+    // TODO oper
+    m_pVarOut->val(m_pVar1->val() ^ m_pVar2->val());
+}
+
+// -----------------------------------------------------------------
+// Phisicly assotiation with expressions
+
+BNAItem::BNAItem(unsigned short x, unsigned short y, unsigned char t){
+    m_nX = x;
+    m_nY = y;
+    m_cT = t;
+}
+
+// -----------------------------------------------------------------
+
+BNAItem::BNAItem() {
+    m_nX = 0;
+    m_nY = 0;
+    m_cT = 0;
+}
+
+// -----------------------------------------------------------------
+
+unsigned short BNAItem::getX(){
+    return m_nX;
+}
+
+// -----------------------------------------------------------------
+
+unsigned short BNAItem::getY(){
+    return m_nY;
+}
+
+// -----------------------------------------------------------------
+
+unsigned char BNAItem::getT(){
+    return m_cT;
+}
+
+// -----------------------------------------------------------------
+
+void BNAItem::setX(unsigned short x){
+    m_nX = x;
+}
+
+// -----------------------------------------------------------------
+
+void BNAItem::setY(unsigned short y){
+    m_nY = y;
+}
+
+// -----------------------------------------------------------------
+
+void BNAItem::setT(unsigned char t){
+    m_cT = t;
+}
+
+// -----------------------------------------------------------------
+
+void BNAItem::readXYT(QDataStream &stream){
+    stream >> m_nX;
+    stream >> m_nY;
+    stream >> m_cT;
+}
+
+// -----------------------------------------------------------------
+
+void BNAItem::writeXYT(QDataStream &stream){
+    stream << m_nX << m_nY << m_cT;
+}
+
+// -----------------------------------------------------------------
+
+QString BNAOperXor::type(){ return QString("^"); }
+bool BNAOperXor::calc(bool b1, bool b2){ return b1^b2; }
+
+QString BNAOperAnd::type(){ return QString("&"); }
+bool BNAOperAnd::calc(bool b1, bool b2){ return b1&b2; }
+
+QString BNAOperOr::type(){ return QString("|"); }
+bool BNAOperOr::calc(bool b1, bool b2){ return b1|b2; }
+
+// -----------------------------------------------------------------
 
 BNA::BNA(){
 	m_nInput = 1; // Default
