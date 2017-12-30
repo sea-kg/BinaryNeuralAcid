@@ -23,6 +23,7 @@ bool BNA::load(QString filename){
 		return false;
 	}
 	QDataStream stream(&file);
+    m_vItems.clear();
 
 	stream >> m_nInput;
 	stream >> m_nOutput;

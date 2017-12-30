@@ -18,72 +18,45 @@ bool ReadWrite_Test::run(){
 
     qint64 size1 = 0, size2 = 0, size3 = 0, size4 = 0;
 
-	
-
     QTemporaryFile file1;
-    file1.setAutoRemove(false);
+    file1.setAutoRemove(true);
     if(file1.open()){
         file1.close();
         bna.save(file1.fileName());
         size1 = QFileInfo(file1.fileName()).size();
-        std::cout << "\t" << file1.fileName().toStdString() << " = " << int(size1) << " \n";
+        // std::cout << "\t" << file1.fileName().toStdString() << " = " << int(size1) << " \n";
         bna.load(file1.fileName());
     }
-
-    QString hash1;
-    QFile file1_(file1.fileName());
-    if (file1_.open(QIODevice::ReadOnly)) {
-        QCryptographicHash hash(QCryptographicHash::Md5);
-        if (hash.addData(&file1_)) {
-            hash1 = hash.result().toHex();
-        }
-        std::cout << "\t" << hash1.toStdString() << " = " << int(size1) << " \n";
-        // file1.close();
+    
+    QTemporaryFile file2;
+    file2.setAutoRemove(true);
+    if(file2.open()){
+        file2.close();
+        bna.save(file2.fileName());
+        size2 = QFileInfo(file2.fileName()).size();
+        // std::cout << "\t" << file2.fileName().toStdString() << " = " << int(size2) << " \n";
+        bna.load(file2.fileName());
     }
-    qDebug() << hash1;
-
-    /*VertexGraph pVertexGraph(128);
-	pVertexGraph.genBase();
-
-	if(file1.open()){
-		file1.close();
-		pVertexGraph.saveToFile(file1.fileName());
-		size1 = QFileInfo(file1.fileName()).size();
-		std::cout << "\t" << file1.fileName().toStdString() << " = " << int(size1) << " \n";
-		pVertexGraph.loadFromFile(file1.fileName());
-	}
-	
-	QTemporaryFile file2;
-	file2.setAutoRemove(true);
-	if(file2.open()){
-		file2.close();
-		pVertexGraph.saveToFile(file2.fileName());
-		size2 = QFileInfo(file2.fileName()).size();
-		std::cout << "\t" << file2.fileName().toStdString() << " = " << int(size2) << " \n";
-		pVertexGraph.loadFromFile(file2.fileName());
-	}
-	
-	QTemporaryFile file3;
-	file3.setAutoRemove(true);
-	if(file3.open()){
-		file3.close();
-		pVertexGraph.saveToFile(file3.fileName());
-		// pVertexGraph.saveDot("test/test1.dot");
-		size3 = QFileInfo(file3.fileName()).size();
-		std::cout << "\t" << file3.fileName().toStdString() << " = " << int(size3) << " \n";
-		pVertexGraph.loadFromFile(file3.fileName());
-	}
-	
-	QTemporaryFile file4;
-	file4.setAutoRemove(true);
-	if(file4.open()){
-		file4.close();
-		pVertexGraph.clone()->saveToFile(file4.fileName());
-		size4 = QFileInfo(file4.fileName()).size();
-		std::cout << "\t" << file4.fileName().toStdString() << " = " << int(size4) << " \n";
-		pVertexGraph.loadFromFile(file4.fileName());
-	}
-	
+    
+    QTemporaryFile file3;
+    file3.setAutoRemove(true);
+    if(file3.open()){
+        file3.close();
+        bna.save(file3.fileName());
+        size3 = QFileInfo(file3.fileName()).size();
+        // std::cout << "\t" << file3.fileName().toStdString() << " = " << int(size3) << " \n";
+        bna.load(file3.fileName());
+    }
+    
+    QTemporaryFile file4;
+    file4.setAutoRemove(true);
+    if(file4.open()){
+        file4.close();
+        bna.save(file4.fileName());
+        size4 = QFileInfo(file4.fileName()).size();
+        // std::cout << "\t" << file4.fileName().toStdString() << " = " << int(size4) << " \n";
+        bna.load(file4.fileName());
+    }    
 	
 	if(size1 == 0 || size2 == 0 || size3 == 0 || size4 == 0){
 		return false;
@@ -92,7 +65,7 @@ bool ReadWrite_Test::run(){
 	if(size1 != size2 || size2 != size3 || size1 != size3 || size1 != size4 || size2 != size4 || size3 != size4){
 		return false;
 	}
- */
+ 
 	return true;
 };
 
