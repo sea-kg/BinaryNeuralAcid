@@ -108,6 +108,7 @@ class BNAItem{
 class BNA {
 	public:
 		BNA();
+        ~BNA();
 		bool load(QString filename);
 		bool save(QString filename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
@@ -128,6 +129,7 @@ class BNA {
         QVector<IBNAOper *> m_vOpers;
         int m_nOperSize;
 
+        void clearResources();
         void updateExprs();
         QVector<BNAExpr *> m_vCalcExprs;
         QVector<BNAVar *> m_vCalcVars;

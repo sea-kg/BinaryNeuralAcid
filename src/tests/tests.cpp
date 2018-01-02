@@ -4,6 +4,7 @@
 #include "callout_test.h"
 #include "readwrite_test.h"
 #include "reverse_test.h"
+#include "learning_test.h"
 #include "random_mutations_test.h"
 
 bool runtests(){
@@ -11,6 +12,7 @@ bool runtests(){
 	tests.push_back(new CallOut_Test());
 	tests.push_back(new ReadWrite_Test());
 	tests.push_back(new Reverse_Test());
+    tests.push_back(new Learning_Test());
     tests.push_back(new RandomMutations_Test());
 
 	bool bResult = true;

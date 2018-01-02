@@ -17,6 +17,7 @@
 #include <QXmlStreamWriter>
 #include <QCoreApplication>
 #include "tests/reverse_test.h"
+#include "tests/learning_test.h"
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
@@ -92,6 +93,17 @@ int main(int argc, char* argv[])
 		}
 		return 0;
 	}
+
+    if(vParams.contains("--run-learning-test")){
+        IReverseHashTest *pTest = new Learning_Test();
+        qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
+        if(!pTest->run()){
+            qDebug().nospace().noquote() << "\t  ->  [FAIL] \n";
+        }else{
+            qDebug().nospace().noquote() << "\t  ->  [OK] \n";
+        }
+        return 0;
+    }
 	
 	if(vParams.contains("--server")){
 		qDebug() << "Server starting on 43735 port";

@@ -24,11 +24,6 @@ bool Reverse_Test::run(){
 	tests["16d7a4fca7442dda3ad93c9a726597e4"] = "test1234";
     tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";
 
-	/*reverse_hash::Memory *pMemory = new reverse_hash::Memory();
-	pMemory->load("md5/memory_md5_10000.rhmem");
-	reverse_hash::MemoryItem memoryItem = pMemory->at(1);
-	tests[memoryItem.output.toHex()] = memoryItem.input.toHex();*/
-
     foreach(QString key, tests.keys()){
 		QVector<bool> vInput;
 		reverse_hash::convertHEXStringToVBool(key, vInput, 128);
@@ -74,5 +69,5 @@ bool Reverse_Test::run(){
 		std::cout << "\t " << key.toStdString() << " => " << tests.value(key).toStdString() << "; reverted " << nPersent << "% [" << nCheck << "/" << nCount << " bits]\n";
     }
 	return false;
-};
+}
 

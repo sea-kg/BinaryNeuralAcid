@@ -180,6 +180,14 @@ BNA::BNA(){
 
 // ----------------------------------------------------------------
 
+BNA::~BNA(){
+    m_vOpers.clear();
+    m_vItems.clear();
+    clearResources();
+}
+
+// ----------------------------------------------------------------
+
 bool BNA::load(QString filename){
 	QFile file(filename);
 	if (!file.exists()) {
@@ -203,7 +211,7 @@ bool BNA::load(QString filename){
 	}
 	normalize();
 	return true;
-};
+}
 
 // ----------------------------------------------------------------
 
@@ -441,12 +449,24 @@ QJsonObject BNA::toJson(){
 
 // ----------------------------------------------------------------
 
-void BNA::updateExprs(){
-
-    // TODO delete vars
-    m_vCalcVars.clear();
+void BNA::clearResources(){
+    for(int i = 0; i < m_vCalcExprs.size(); i++){
+        delete m_vCalcExprs[i];
+    }
     m_vCalcExprs.clear();
+
+    for(int i = 0; i < m_vCalcVars.size(); i++){
+        delete m_vCalcVars[i];
+    }
+    m_vCalcVars.clear();
     m_vCalcOutVars.clear();
+
+}
+
+// ----------------------------------------------------------------
+
+void BNA::updateExprs(){
+    clearResources();
 
     for(unsigned int i  = 0; i < m_nInput; i++){
         BNAVar *pVar = new BNAVar();
