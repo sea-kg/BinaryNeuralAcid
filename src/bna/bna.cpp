@@ -281,33 +281,6 @@ bool BNA::exportToDot(QString filename, QString graphname){
         }
     }
 
-    /*
-    for(int i = 0; i < m_vItems.size(); i++){
-        IBNAOper *pOper = m_vOpers[m_vItems[i].getT()];
-        QString sID = "node" + QString::number(i);
-        if(i < m_nInput){
-            stream << "\t" << sID << " [label=\"" << sID << " (IN" << QString::number(i) << ")\"];\n";
-        }else{
-            stream << "\t" << sID << " [label=\"" << sID << " (" << pOper->type() << ")\"];\n";
-        }
-    }
-
-    for(int i = m_nInput; i < m_vItems.size(); i++){
-        QString sX = "node" + QString::number(m_vItems[i].getX());
-        QString sY = "node" + QString::number(m_vItems[i].getY());
-        QString sNode = "node" + QString::number(i);
-		stream << "\t" << sX << " -> " << sNode << ";\n";
-		stream << "\t" << sY << " -> " << sNode << ";\n";
-    }
-
-    int out = 0;
-    for(int i = m_vItems.size() - m_nOutput; i < m_vItems.size(); i++){
-        QString sOut = "out" + QString::number(out);
-        QString sNode = "node" + QString::number(i);
-        stream << "\t" << sNode << " -> " << sOut << ";\n";
-        out++;
-	}
-    */
     stream << "}\n";
 	file.close();
 	return true;

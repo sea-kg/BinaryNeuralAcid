@@ -5,23 +5,16 @@
 #include <QVector>
 #include <QFile>
 #include <QMap>
+#include <QDir>
+#include <bna.h>
 
 QString Reverse_Test::name(){
 	return "Reverse_Test";
 };
 
 bool Reverse_Test::run(){
-    QVector<QString> tests;
-    tests.push_back("123");
-    tests.push_back("66^lvp/-!A");
-    tests.push_back("YN!KAHfPjFU[\">IwHL");
-    tests.push_back("admin");
-    tests.push_back("adminadmin");
-    tests.push_back("test");
-    tests.push_back("test1234");
-    tests.push_back("1234");
 
-    /*QMap<QString, QString> tests;
+    QMap<QString, QString> tests;
 	tests["202CB962AC59075B964B07152D234B70"] = "123";
 	tests["92BA7B54A295FED5060A2BA44A72E595"] = "66^lvp/-!A";
 	tests["b885ca6d1c4e8231928ef2af5737426c"] = "YN!KAHfPjFU[\">IwHL";
@@ -29,19 +22,14 @@ bool Reverse_Test::run(){
 	tests["f6fdffe48c908deb0f4c3bd36c032e72"] = "adminadmin";
 	tests["098f6bcd4621d373cade4e832627b4f6"] = "test";
 	tests["16d7a4fca7442dda3ad93c9a726597e4"] = "test1234";
-    tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";*/
-	
-	
-    RHMemory *pMemory = new RHMemory();
-    pMemory->dataFrom(tests);
-
+    tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";
 
 	/*reverse_hash::Memory *pMemory = new reverse_hash::Memory();
 	pMemory->load("md5/memory_md5_10000.rhmem");
 	reverse_hash::MemoryItem memoryItem = pMemory->at(1);
 	tests[memoryItem.output.toHex()] = memoryItem.input.toHex();*/
-	
-    /*foreach(QString key, tests.keys()){
+
+    foreach(QString key, tests.keys()){
 		QVector<bool> vInput;
 		reverse_hash::convertHEXStringToVBool(key, vInput, 128);
 		
@@ -51,17 +39,25 @@ bool Reverse_Test::run(){
 	 
 		int nCount = 55*8;
 		QVector<bool> vOutput;
-		for (int i = 0; i < nCount; i++) {
-			QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-			QFile file(filename);
-			if(file.exists()){
-				VertexGraph pVertexGraph(128);
-				pVertexGraph.loadFromFile(filename);
-				pVertexGraph.setIn(vInput);
-				vOutput.push_back(pVertexGraph.out());
-			}else{
-				std::cerr << "Error: File '" << filename.toStdString() << "'does not exists\n";
+        for (int bitid = 0; bitid < nCount; bitid++) {
+            QString name = QString::number(bitid).rightJustified(3, '0');
+            QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+            QString m_sBitid = name;
+            QString m_sDir = "tests_bna_md5/" + subdir;
+            QString m_sFilename = m_sDir + "/" + name + ".bna";
+            QFile file(m_sFilename);
+            QDir dir(".");
+            dir.mkpath(m_sDir);
+            BNA bna;
+            if(!file.exists()){
+                std::cerr << "Error: File '" << m_sFilename.toStdString() << "'does not exists\n";
+                bna.randomGenerate(128,1,100);
+                bna.save(m_sFilename);
+            }else{
+                bna.load(m_sFilename);
             }
+            bool bResult = bna.calc(vInput, 0);
+            vOutput.push_back(bResult);
 		}
 
 		int min = std::min(vOutputExpected.size(), vOutput.size());
@@ -76,7 +72,7 @@ bool Reverse_Test::run(){
 		}
 		int  nPersent = (nCheck * 100) / nCount;
 		std::cout << "\t " << key.toStdString() << " => " << tests.value(key).toStdString() << "; reverted " << nPersent << "% [" << nCheck << "/" << nCount << " bits]\n";
-    }*/
+    }
 	return false;
 };
 
