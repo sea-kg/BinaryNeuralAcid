@@ -36,6 +36,14 @@ class BNAOperXor : public IBNAOper{
 
 // -----------------------------------------------------------------
 
+class BNAOperNotXor : public IBNAOper{
+    public:
+        virtual QString type();
+        virtual bool calc(bool b1, bool b2);
+};
+
+// -----------------------------------------------------------------
+
 class BNAOperAnd : public IBNAOper {
     public:
         virtual QString type();

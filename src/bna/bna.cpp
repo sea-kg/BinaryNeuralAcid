@@ -157,6 +157,9 @@ void BNAItem::writeXYT(QDataStream &stream){
 QString BNAOperXor::type(){ return QString("XOR"); }
 bool BNAOperXor::calc(bool b1, bool b2){ return b1 ^ b2; }
 
+QString BNAOperNotXor::type(){ return QString("NXOR"); }
+bool BNAOperNotXor::calc(bool b1, bool b2){ return !b1 ^ !b2; }
+
 QString BNAOperAnd::type(){ return QString("AND"); }
 bool BNAOperAnd::calc(bool b1, bool b2){ return b1 & b2; }
 
@@ -169,6 +172,7 @@ BNA::BNA(){
 	m_nInput = 1; // Default
 	m_nOutput = 1; // 16 bytes of md5 hash
     m_vOpers.push_back(new BNAOperXor());
+    m_vOpers.push_back(new BNAOperNotXor());
     m_vOpers.push_back(new BNAOperAnd());
     m_vOpers.push_back(new BNAOperOr());
     m_nOperSize = m_vOpers.size();
