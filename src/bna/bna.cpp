@@ -1,14 +1,28 @@
-#include "bna.h"
+#include <bna.h>
 #include <QDataStream>
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <iostream>
 
 // -----------------------------------------------------------------
 // BNA Var just contains boolean variable
 
 BNAVar::BNAVar() {
    m_bVal = false;
+   m_sName = "";
+}
+
+// -----------------------------------------------------------------
+
+void BNAVar::name(QString name){
+    m_sName = name;
+}
+
+// -----------------------------------------------------------------
+
+QString BNAVar::name(){
+    return m_sName;
 }
 
 // -----------------------------------------------------------------
@@ -30,46 +44,45 @@ BNAExpr::BNAExpr(){
     m_pVar1 = NULL;
     m_pVar2 = NULL;
     m_pVarOut = NULL;
+    m_pOper = NULL;
 }
 
 // -----------------------------------------------------------------
 
-void BNAExpr::op1(BNAVar *pVar1){
-    m_pVar1 = pVar1;
-}
-
-// -----------------------------------------------------------------
-
-void BNAExpr::op2(BNAVar *pVar2){
-    m_pVar2 = pVar2;
-}
-
-// -----------------------------------------------------------------
-
-void BNAExpr::out(BNAVar *pVarOut){
-    m_pVarOut = pVarOut;
-}
+void BNAExpr::op1(BNAVar *pVar1){ m_pVar1 = pVar1; }
+BNAVar *BNAExpr::op1(){ return m_pVar1; }
+void BNAExpr::op2(BNAVar *pVar2){ m_pVar2 = pVar2; }
+BNAVar * BNAExpr::op2(){ return m_pVar2; }
+void BNAExpr::oper(IBNAOper *pOper){ m_pOper = pOper; }
+IBNAOper * BNAExpr::oper(){ return m_pOper; }
+void BNAExpr::out(BNAVar *pVarOut){ m_pVarOut = pVarOut; }
+BNAVar * BNAExpr::out(){ return m_pVarOut; }
 
 // -----------------------------------------------------------------
 
 void BNAExpr::exec(){
     if(m_pVar1 == NULL){
-        qDebug() << "[ERROR] m_pVar1 is NULL";
+        std::cerr << "[ERROR] m_pVar1 is NULL\n";
         return;
     }
 
     if(m_pVar2 == NULL){
-        qDebug() << "[ERROR] m_pVar2 is NULL";
+        std::cerr << "[ERROR] m_pVar2 is NULL\n";
         return;
     }
 
     if(m_pVarOut == NULL){
-        qDebug() << "[ERROR] m_pVarOut is NULL";
+        std::cerr << "[ERROR] m_pVarOut is NULL\n";
         return;
     }
 
-    // TODO oper
-    m_pVarOut->val(m_pVar1->val() ^ m_pVar2->val());
+    if(m_pOper == NULL){
+        std::cerr << "[ERROR] m_pOper is NULL\n";
+        return;
+    }
+    unsigned char b1 = m_pVar1->val() & 0x01;
+    unsigned char b2 = m_pVar2->val() & 0x01;
+    m_pVarOut->val(m_pOper->calc(b1, b2));
 }
 
 // -----------------------------------------------------------------
@@ -141,20 +154,24 @@ void BNAItem::writeXYT(QDataStream &stream){
 
 // -----------------------------------------------------------------
 
-QString BNAOperXor::type(){ return QString("^"); }
-bool BNAOperXor::calc(bool b1, bool b2){ return b1^b2; }
+QString BNAOperXor::type(){ return QString("XOR"); }
+bool BNAOperXor::calc(bool b1, bool b2){ return b1 ^ b2; }
 
-QString BNAOperAnd::type(){ return QString("&"); }
-bool BNAOperAnd::calc(bool b1, bool b2){ return b1&b2; }
+QString BNAOperAnd::type(){ return QString("AND"); }
+bool BNAOperAnd::calc(bool b1, bool b2){ return b1 & b2; }
 
-QString BNAOperOr::type(){ return QString("|"); }
-bool BNAOperOr::calc(bool b1, bool b2){ return b1|b2; }
+QString BNAOperOr::type(){ return QString("OR"); }
+bool BNAOperOr::calc(bool b1, bool b2){ return b1 | b2; }
 
 // -----------------------------------------------------------------
 
 BNA::BNA(){
 	m_nInput = 1; // Default
 	m_nOutput = 1; // 16 bytes of md5 hash
+    m_vOpers.push_back(new BNAOperXor());
+    m_vOpers.push_back(new BNAOperAnd());
+    m_vOpers.push_back(new BNAOperOr());
+    m_nOperSize = m_vOpers.size();
 }
 
 // ----------------------------------------------------------------
@@ -206,20 +223,6 @@ bool BNA::save(QString filename){
 
 // ----------------------------------------------------------------
 
-void BNA::normalize(){
-	int nodes = m_nInput;
-	for(int i = 0; i < m_vItems.size(); i++){
-        m_vItems[i].setX(m_vItems[i].getX() % nodes);
-        m_vItems[i].setY(m_vItems[i].getY() % nodes);
-        m_vItems[i].setT(m_vItems[i].getT() % 3);
-		nodes++;
-	}
-    // prepare for calculations
-    updateExprs();
-}
-
-// ----------------------------------------------------------------
-
 void BNA::randomGenerate(int nInput, int nOutput, int nSize){
 	m_nInput = nInput;
 	m_nOutput = nOutput;
@@ -237,6 +240,20 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
 
 // ----------------------------------------------------------------
 
+void BNA::normalize(){
+    int nodes = m_nInput;
+    for(int i = 0; i < m_vItems.size(); i++){
+        m_vItems[i].setX(m_vItems[i].getX() % nodes);
+        m_vItems[i].setY(m_vItems[i].getY() % nodes);
+        m_vItems[i].setT(m_vItems[i].getT() % m_nOperSize);
+        nodes++;
+    }
+    // prepare for calculations
+    updateExprs();
+}
+
+// ----------------------------------------------------------------
+
 bool BNA::exportToDot(QString filename, QString graphname){
 	QFile file(filename);
 	if (file.exists()) {
@@ -248,23 +265,46 @@ bool BNA::exportToDot(QString filename, QString graphname){
 	}
 	QTextStream stream( &file );
 	stream << "digraph " << graphname << " {\n";
-	int nodes = m_nInput;
 
-	for(int i = 0; i < m_vItems.size(); i++){
-        QString sX = (m_vItems[i].getX() < m_nInput ? "in" : "node") + QString::number(m_vItems[i].getX());
-        QString sY = (m_vItems[i].getY() < m_nInput ? "in" : "node") + QString::number(m_vItems[i].getY());
-		QString sNode = "node" + QString::number(nodes); 
+    int nExprsSize = m_vCalcExprs.size();
+    for(int i = 0; i < m_vCalcExprs.size(); i++){
+        BNAExpr *pExpr = m_vCalcExprs[i];
+        stream << "\t" << pExpr->out()->name() << " [label=\"" << pExpr->oper()->type() << "\"];\n";
+        stream << "\t" << pExpr->op1()->name() << " -> " << pExpr->out()->name() << ";\n";
+        stream << "\t" << pExpr->op2()->name() << " -> " << pExpr->out()->name() << ";\n";
+        if(nExprsSize - i <= m_nOutput){
+            stream << "\t" << pExpr->out()->name() << " -> out" << QString::number(nExprsSize - i) << ";\n";
+        }
+    }
+
+    /*
+    for(int i = 0; i < m_vItems.size(); i++){
+        IBNAOper *pOper = m_vOpers[m_vItems[i].getT()];
+        QString sID = "node" + QString::number(i);
+        if(i < m_nInput){
+            stream << "\t" << sID << " [label=\"" << sID << " (IN" << QString::number(i) << ")\"];\n";
+        }else{
+            stream << "\t" << sID << " [label=\"" << sID << " (" << pOper->type() << ")\"];\n";
+        }
+    }
+
+    for(int i = m_nInput; i < m_vItems.size(); i++){
+        QString sX = "node" + QString::number(m_vItems[i].getX());
+        QString sY = "node" + QString::number(m_vItems[i].getY());
+        QString sNode = "node" + QString::number(i);
 		stream << "\t" << sX << " -> " << sNode << ";\n";
 		stream << "\t" << sY << " -> " << sNode << ";\n";
-		nodes++;
+    }
+
+    int out = 0;
+    for(int i = m_vItems.size() - m_nOutput; i < m_vItems.size(); i++){
+        QString sOut = "out" + QString::number(out);
+        QString sNode = "node" + QString::number(i);
+        stream << "\t" << sNode << " -> " << sOut << ";\n";
+        out++;
 	}
-	int out_nodes = nodes-m_nOutput-1;
-	for(int i = out_nodes; i < nodes; i++){
-		QString sOut = "out" + QString::number(i-out_nodes);
-		QString sNode = "node" + QString::number(i);
-		stream << sNode << " -> " << sOut << ";\n";
-	}
-	stream << "}\n";
+    */
+    stream << "}\n";
 	file.close();
 	return true;
 }
@@ -350,8 +390,70 @@ bool BNA::exportToCpp(QString filename, QString funcname){
 
 // ----------------------------------------------------------------
 
-void BNA::generateRandomMutations(){
-	// TODO random changes
+QByteArray BNA::exportToByteArray(){
+    QByteArray data;
+    QDataStream stream( &data, QIODevice::WriteOnly );
+    stream << m_nInput << m_nOutput;
+    for (int i = 0; i < m_vItems.size(); i++) {
+        m_vItems[i].writeXYT(stream);
+    }
+    return data;
+}
+
+// ----------------------------------------------------------------
+
+void BNA::importFromByteArray(QByteArray &data){
+    QDataStream stream(&data, QIODevice::ReadOnly);
+    m_vItems.clear();
+
+    stream >> m_nInput;
+    stream >> m_nOutput;
+
+    while(!stream.atEnd()){
+        BNAItem item;
+        item.readXYT(stream);
+        m_vItems.push_back(item);
+    }
+    normalize();
+    return;
+}
+
+// ----------------------------------------------------------------
+
+void BNA::generateRandomMutations(int nRandomCicles){
+    QByteArray data = exportToByteArray();
+
+    // random mutations data (exclude first 8 byte)
+    int nOffset = 8;
+    int nSize = data.size() - nOffset;
+    char buf[1];
+    for(int i = 0; i < nRandomCicles; i++){
+        int x = qrand() % nSize;
+        unsigned char ch = data.at(x + nOffset);
+        buf[0] = ch + qrand();
+        // std::cout << (int)ch << " -> " << (int)buf[0] << "\n";
+        data = data.replace(x + nOffset, 1, buf);
+    }
+    importFromByteArray(data);
+}
+
+// ----------------------------------------------------------------
+
+void BNA::appendRandomData(int nRandomCicles){
+    QByteArray data = exportToByteArray();
+
+    // random append data
+    for(int i = 0; i < nRandomCicles; i++){
+        // short x1
+        data.append((char) qrand());
+        data.append((char) qrand());
+        // short y1
+        data.append((char) qrand());
+        data.append((char) qrand());
+        // c0
+        data.append((char) qrand());
+    }
+    importFromByteArray(data);
 }
 
 // ----------------------------------------------------------------
@@ -372,27 +474,27 @@ void BNA::updateExprs(){
     for(unsigned int i  = 0; i < m_nInput; i++){
         BNAVar *pVar = new BNAVar();
         pVar->val(false);
+        pVar->name("in" + QString::number(i));
         m_vCalcVars.push_back(pVar);
     }
 
-    int nodes = m_nInput;
+    int nItemsSize = m_vItems.size();
     for(int i = 0; i < m_vItems.size(); i++){
         int x = m_vItems[i].getX();
         int y = m_vItems[i].getY();
+        int t = m_vItems[i].getT();
         BNAExpr *pExpr = new BNAExpr();
         pExpr->op1(m_vCalcVars[x]);
         pExpr->op2(m_vCalcVars[y]);
+        pExpr->oper(m_vOpers[t]);
         BNAVar *pVar = new BNAVar();
+        pVar->name("node" + QString::number(i));
         m_vCalcVars.push_back(pVar);
-        pExpr->out(m_vCalcVars[nodes]);
+        pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
-        nodes++;
-    }
-
-    int out_nodes = nodes-m_nOutput;
-
-    for(int i = out_nodes; i < nodes; i++){
-        m_vCalcOutVars.push_back(m_vCalcVars[i-out_nodes]);
+        if(nItemsSize - i <= m_nOutput){
+            m_vCalcOutVars.push_back(pVar);
+        }
     }
 }
 

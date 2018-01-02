@@ -93,7 +93,7 @@ void TrainingThread::run(){
 					
 					bna.load(filename);
 					nPersent = pItem->percent();
-					bna.generateRandomMutations();
+                    bna.generateRandomMutations(10);
 				}
 			}
 			

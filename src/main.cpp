@@ -33,8 +33,8 @@ void print_help(QVector<QString> &vParams) {
 int main(int argc, char* argv[])
 {
 	// Seed the random generator with current time
-	QTime time = QTime::currentTime();
-	qsrand((uint)time.msec());
+    QTime midnight(0,0,0);
+    qsrand(midnight.secsTo(QTime::currentTime()));
 
 	QCoreApplication app(argc, argv);
     QCoreApplication::setApplicationName("reversehash");

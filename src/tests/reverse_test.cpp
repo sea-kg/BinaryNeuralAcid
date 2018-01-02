@@ -21,7 +21,6 @@ bool Reverse_Test::run(){
     tests.push_back("test1234");
     tests.push_back("1234");
 
-
     /*QMap<QString, QString> tests;
 	tests["202CB962AC59075B964B07152D234B70"] = "123";
 	tests["92BA7B54A295FED5060A2BA44A72E595"] = "66^lvp/-!A";
@@ -62,7 +61,7 @@ bool Reverse_Test::run(){
 				vOutput.push_back(pVertexGraph.out());
 			}else{
 				std::cerr << "Error: File '" << filename.toStdString() << "'does not exists\n";
-			}
+            }
 		}
 
 		int min = std::min(vOutputExpected.size(), vOutput.size());
