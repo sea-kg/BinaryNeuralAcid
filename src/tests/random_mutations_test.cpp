@@ -15,8 +15,8 @@ void RandomMutations_Test::printStat(int i, int cicles, int max){
 	std::cout << "\r\t Calculates " << i << " (cicles: " << cicles << " / " << max << ") ";
 }
 
-QVector<bool> createInputs(bool b1, bool b2, bool b3){
-    QVector<bool> vInputs;
+QVector<BNABit> createInputs(BNABit b1, BNABit b2, BNABit b3){
+    QVector<BNABit> vInputs;
     vInputs.push_back(b1);
     vInputs.push_back(b2);
     vInputs.push_back(b3);
@@ -24,8 +24,8 @@ QVector<bool> createInputs(bool b1, bool b2, bool b3){
 }
 
 struct DictonaryTest {
-    DictonaryTest(QVector<bool> vInputs, bool expectedOutput) :  vInputs(vInputs), expectedVal(expectedOutput) {}
-    QVector<bool> vInputs;
+    DictonaryTest(QVector<BNABit> vInputs, bool expectedOutput) :  vInputs(vInputs), expectedVal(expectedOutput) {}
+    QVector<BNABit> vInputs;
     bool expectedVal;
 };
 
@@ -53,14 +53,14 @@ int checkTest(BNA &bna, QVector< DictonaryTest *> &dict){
 
 bool RandomMutations_Test::run(){
     QVector< DictonaryTest *> dict;
-    dict.push_back(new DictonaryTest(createInputs(true, true, true), true));
-    dict.push_back(new DictonaryTest(createInputs(true, true, false), false));
-    dict.push_back(new DictonaryTest(createInputs(true, false, true), true));
-    dict.push_back(new DictonaryTest(createInputs(true, false, false), true));
-    dict.push_back(new DictonaryTest(createInputs(false, true, true), false));
-    dict.push_back(new DictonaryTest(createInputs(false, true, false), false));
-    dict.push_back(new DictonaryTest(createInputs(false, false, true), false));
-    dict.push_back(new DictonaryTest(createInputs(false, false, false), false));
+    dict.push_back(new DictonaryTest(createInputs(B_1, B_1, B_1), true));
+    dict.push_back(new DictonaryTest(createInputs(B_1, B_1, B_0), false));
+    dict.push_back(new DictonaryTest(createInputs(B_1, B_0, B_1), true));
+    dict.push_back(new DictonaryTest(createInputs(B_1, B_0, B_0), true));
+    dict.push_back(new DictonaryTest(createInputs(B_0, B_1, B_1), false));
+    dict.push_back(new DictonaryTest(createInputs(B_0, B_1, B_0), false));
+    dict.push_back(new DictonaryTest(createInputs(B_0, B_0, B_1), false));
+    dict.push_back(new DictonaryTest(createInputs(B_0, B_0, B_0), false));
 
     BNA bna;
     bna.randomGenerate(3,1,4);

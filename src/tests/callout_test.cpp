@@ -9,12 +9,12 @@ QString CallOut_Test::name(){
 bool CallOut_Test::run(){
     BNA bna;
     bna.randomGenerate(15, 1, 100);
-    QVector<bool> vInputs;
+    QVector<BNABit> vInputs;
     for(int i = 0; i < 15; i++){
-        vInputs.push_back(true);
+        vInputs.push_back(B_1);
     }
 
-    bool bResult = bna.calc(vInputs, 1);
+    bool bResult = bna.calc(vInputs, 0);
     return bResult;
 }
 

@@ -23,17 +23,18 @@ bool Reverse_Test::run(){
 	tests["098f6bcd4621d373cade4e832627b4f6"] = "test";
 	tests["16d7a4fca7442dda3ad93c9a726597e4"] = "test1234";
     tests["81dc9bdb52d04dc20036dbd8313ed055"] = "1234";
+    tests["b7608279dd8566a122364ea6eb44edc4"] = "VeryHardPassword";
 
     foreach(QString key, tests.keys()){
-		QVector<bool> vInput;
-		reverse_hash::convertHEXStringToVBool(key, vInput, 128);
+        QVector<BNABit> vInput;
+        BNAConvertHEXStringToVBool(key, vInput, 128);
 		
-		QVector<bool> vOutputExpected;
+        QVector<BNABit> vOutputExpected;
 		QByteArray originalString = tests.value(key).toUtf8();
-		reverse_hash::convertArrayToVBool(originalString, vOutputExpected, originalString.size()*8);
+        BNAConvertArrayToVBool(originalString, vOutputExpected, 55*8);
 	 
 		int nCount = 55*8;
-		QVector<bool> vOutput;
+        QVector<BNABit> vOutput;
         for (int bitid = 0; bitid < nCount; bitid++) {
             QString name = QString::number(bitid).rightJustified(3, '0');
             QString subdir = name[0] + "/" + name[1] + "/" + name[2];
@@ -51,7 +52,7 @@ bool Reverse_Test::run(){
             }else{
                 bna.load(m_sFilename);
             }
-            bool bResult = bna.calc(vInput, 0);
+            BNABit bResult = bna.calc(vInput, 0);
             vOutput.push_back(bResult);
 		}
 

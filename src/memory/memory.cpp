@@ -46,7 +46,7 @@ void RHMemory::load(QString filename){
     int nCount;
     stream >> nCount;
     for(int i = 0; i < nCount; i++){
-        RHMemoryItem memoryItem;
+        BNAMemoryItem memoryItem;
         stream >> memoryItem.input;
         stream >> memoryItem.output;
         m_vItems.push_back(memoryItem);
@@ -87,7 +87,7 @@ int RHMemory::size(){
 
 // ----------------------------------------------------------------
 
-RHMemoryItem RHMemory::at(int i){
+BNAMemoryItem RHMemory::at(int i){
     return m_vItems[i];
 }
 
@@ -105,7 +105,7 @@ void RHMemory::printData(){
 void RHMemory::generateData(int nCount){
     m_vItems.clear();
     for(int i = 0; i < nCount; i++){
-        RHMemoryItem memoryItem;
+        BNAMemoryItem memoryItem;
         memoryItem.input.append(generateRandomString());
         memoryItem.output = QCryptographicHash::hash(memoryItem.input, QCryptographicHash::Md5);
         m_vItems.push_back(memoryItem);
@@ -117,7 +117,7 @@ void RHMemory::generateData(int nCount){
 void RHMemory::dataFrom(const QVector<QString> &vStrigns){
     m_vItems.clear();
     for(int i = 0; i < vStrigns.size(); i++){
-        RHMemoryItem memoryItem;
+        BNAMemoryItem memoryItem;
         memoryItem.input.append(vStrigns.at(i));
         memoryItem.output = QCryptographicHash::hash(memoryItem.input, QCryptographicHash::Md5);
         m_vItems.push_back(memoryItem);

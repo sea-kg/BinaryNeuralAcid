@@ -2,7 +2,6 @@
 #include <bna.h>
 #include <helpers.h>
 #include <memory.h>
-#include <memoryitem.h>
 #include <QFile>
 #include <QJsonDocument>
 
@@ -27,9 +26,9 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	
 	QString hash = req["md5"].toString();
 	QVector<bool> vOutput;
-    QVector<bool> vInputs;
+    QVector<BNABit> vInputs;
 	QString answer_bin = "";
-    reverse_hash::convertHEXStringToVBool(hash, vInputs, 128);
+    BNAConvertHEXStringToVBool(hash, vInputs, 128);
 	int nCount = 55*8;
 	for (int i = 0; i < nCount; i++) {
 		bool bResult = false;

@@ -3,7 +3,7 @@
 
 #include<QString>
 #include<QVector>
-#include"memoryitem.h"
+#include<bna.h>
 
 class RHMemory {
     public:
@@ -11,7 +11,7 @@ class RHMemory {
         void load(QString filename);
         void save(QString filename);
         int size();
-        RHMemoryItem at(int i);
+        BNAMemoryItem at(int i);
         void printData();
         void generateData(int nCount);
         void dataFrom(const QVector<QString> &vStrigns);
@@ -20,7 +20,7 @@ class RHMemory {
         QString generateRandomString();
         int m_nInputSize;
         int m_nOutputSize;
-        QVector<RHMemoryItem> m_vItems;
+        QVector<BNAMemoryItem> m_vItems;
 };
 
 #endif // RHMEMORY_H

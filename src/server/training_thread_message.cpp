@@ -2,7 +2,6 @@
 
 #include <helpers.h>
 #include <memory.h>
-#include <memoryitem.h>
 #include <QFile>
 
 TrainingThreadMessage::TrainingThreadMessage(){

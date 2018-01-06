@@ -3,7 +3,6 @@
 #include <bna.h>
 #include <helpers.h>
 #include <memory.h>
-#include <memoryitem.h>
 #include <QFile>
 
 TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
@@ -53,8 +52,8 @@ void TrainingThread::run(){
 				int nSuccessCount = 0;
 
 				for (int t = 0; t < nMemorySize; t++){
-                    RHMemoryItem memoryItem = pMemory->at(t);
-                    QVector<bool> vInputs = memoryItem.outputToVectorBool();
+                    BNAMemoryItem memoryItem = pMemory->at(t);
+                    QVector<BNABit> vInputs = memoryItem.outputToVectorBool();
 
                     bool b = bna.calc(vInputs, 0);
 					if(b == memoryItem.inputToVectorBool()[pItem->id()]){

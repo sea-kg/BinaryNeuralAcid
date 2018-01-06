@@ -1,7 +1,6 @@
 #include <iostream>
 #include "helpers.h"
 #include "memory.h"
-#include "memoryitem.h"
 #include "tests/tests.h"
 #include <reversehashd_server.h>
 #include <QString>
@@ -16,6 +15,7 @@
 #include <QCryptographicHash>
 #include <QXmlStreamWriter>
 #include <QCoreApplication>
+#include "tests/bnaoper_test.h"
 #include "tests/reverse_test.h"
 #include "tests/learning_test.h"
 
@@ -23,7 +23,7 @@ void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
 		<< "  Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
 		<< "\t --run-tests                           - run tests\n"
-		<< "\t --run-reverse-test                    - run reverse test\n"
+        << "\t --run-learning-test                   - run learning test\n"
 		<< "\t --run-random-remove-vertex-test       - run random remove vertex test\n"
 		<< "\t --reset-persents                      - reset last persents from every bit and create missing files\n" 
         << "\t --server                              - start server\n"
@@ -82,25 +82,21 @@ int main(int argc, char* argv[])
 		
 		return 0;
 	}
-	
-	if(vParams.contains("--run-reverse-test")){
-		IReverseHashTest *pTest = new Reverse_Test();
-		qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
-		if(!pTest->run()){
-			qDebug().nospace().noquote() << "\t  ->  [FAIL] \n";
-		}else{
-			qDebug().nospace().noquote() << "\t  ->  [OK] \n";
-		}
-		return 0;
-	}
 
     if(vParams.contains("--run-learning-test")){
         IReverseHashTest *pTest = new Learning_Test();
-        qDebug().nospace().noquote() << " Run " << pTest->name() << " ... ";
+        std::cout << " Run " << pTest->name().toStdString() << " ... \n";
         if(!pTest->run()){
-            qDebug().nospace().noquote() << "\t  ->  [FAIL] \n";
+            std::cout << "\t  ->  [FAIL] \n";
         }else{
-            qDebug().nospace().noquote() << "\t  ->  [OK] \n";
+            std::cout << "\t  ->  [OK] \n";
+        }
+        IReverseHashTest *pTest2 = new Reverse_Test();
+        std::cout << " Run " << pTest2->name().toStdString() << " ... \n";
+        if(!pTest2->run()){
+            std::cout << "\t  ->  [FAIL] \n";
+        }else{
+            std::cout << "\t  ->  [OK] \n";
         }
         return 0;
     }

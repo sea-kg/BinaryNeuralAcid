@@ -6,15 +6,25 @@
 #include <QJsonObject>
 #include <QMap>
 
+enum BNABit{
+    B_0 = 0x00,
+    B_1 = 0x01
+};
+
+void BNAConvertHEXStringToVBool(QString &in, QVector<BNABit> &vars, int size);
+void BNAConvertArrayToVBool(QByteArray &in, QVector<BNABit> &vars, int size);
+
+// -----------------------------------------------------------------
+
 class BNAVar{
     public:
         BNAVar();
         QString name();
         void name(QString name);
-        bool val();
-        void val(bool bVal);
+        BNABit val();
+        void val(BNABit bVal);
     private:
-        bool m_bVal;
+        BNABit m_bVal;
         QString m_sName;
 };
 
@@ -23,7 +33,7 @@ class BNAVar{
 class IBNAOper {
     public:
         virtual QString type() = 0;
-        virtual bool calc(bool b1, bool b2) = 0;
+        virtual BNABit calc(BNABit b1, BNABit b2) = 0;
 };
 
 // -----------------------------------------------------------------
@@ -31,7 +41,7 @@ class IBNAOper {
 class BNAOperXor : public IBNAOper{
     public:
         virtual QString type();
-        virtual bool calc(bool b1, bool b2);
+        virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
 // -----------------------------------------------------------------
@@ -39,7 +49,7 @@ class BNAOperXor : public IBNAOper{
 class BNAOperNotXor : public IBNAOper{
     public:
         virtual QString type();
-        virtual bool calc(bool b1, bool b2);
+        virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
 // -----------------------------------------------------------------
@@ -47,7 +57,7 @@ class BNAOperNotXor : public IBNAOper{
 class BNAOperAnd : public IBNAOper {
     public:
         virtual QString type();
-        virtual bool calc(bool b1, bool b2);
+        virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
 // -----------------------------------------------------------------
@@ -55,7 +65,7 @@ class BNAOperAnd : public IBNAOper {
 class BNAOperOr : public IBNAOper {
     public:
         virtual QString type();
-        virtual bool calc(bool b1, bool b2);
+        virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
 // -----------------------------------------------------------------
@@ -115,26 +125,81 @@ class BNA {
 		bool exportToDot(QString filename, QString graphname);
 		bool exportToCpp(QString filename, QString funcname);
         QByteArray exportToByteArray();
-        void importFromByteArray(QByteArray &data);
+        void importFromByteArray(QByteArray data);
 		QJsonObject toJson();
         void generateRandomMutations(int nRandomCicles);
         void appendRandomData(int nRandomCicles);
-        bool calc(const QVector<bool> &vInputs, int nOutput);
+        BNABit calc(const QVector<BNABit> &vInputs, int nOutput);
+
+
+        unsigned int inputCount();
+        unsigned int outputCount();
+        void compare(BNA &bna);
 	private:
 
 		unsigned int m_nInput;
 		unsigned int m_nOutput;
-		void normalize();
-		QVector<BNAItem> m_vItems;
+        void readFromStream(QDataStream &stream);
+        void writeToStream(QDataStream &stream);
+
         QVector<IBNAOper *> m_vOpers;
         int m_nOperSize;
 
         void clearResources();
-        void updateExprs();
+        void normalize();
+        QVector<BNAItem *> m_vItems;
         QVector<BNAExpr *> m_vCalcExprs;
         QVector<BNAVar *> m_vCalcVars;
         QVector<BNAVar *> m_vCalcOutVars;
 
 };
+
+// -----------------------------------------------------------------
+
+class BNAMemoryItem {
+    public:
+        BNAMemoryItem();
+        QByteArray input;
+        QByteArray output;
+        const QVector<BNABit> &inputToVectorBool();
+        const QVector<BNABit> &outputToVectorBool();
+
+    private:
+        QVector<BNABit> m_vInput;
+        QVector<BNABit> m_vOutput;
+};
+
+// -----------------------------------------------------------------
+
+class BNAMemory {
+    public:
+        BNAMemory();
+        void load(QString filename);
+        void save(QString filename);
+        int size();
+        BNAMemoryItem at(int i);
+        void printData();
+        void generateData(int nCount);
+        void dataFrom(const QVector<QString> &vStrigns);
+    private:
+        QString alphabet();
+        QString generateRandomString();
+        int m_nInputSize;
+        int m_nOutputSize;
+        QVector<BNAMemoryItem> m_vItems;
+};
+
+// -----------------------------------------------------------------
+
+class BNAProject {
+
+    public:
+        BNAProject();
+        bool open(QString sDirPath);
+
+    private:
+        QString m_sDirPath;
+};
+
 
 #endif // BNA_H

@@ -10,7 +10,6 @@
 #include <bna.h>
 #include <helpers.h>
 #include <memory.h>
-#include <memoryitem.h>
 #include <QDir>
 
 // QT_USE_NAMESPACE
