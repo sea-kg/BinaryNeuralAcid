@@ -72,9 +72,9 @@ bool RandomMutations_Test::run(){
     // bna.save("mutation_test.bna");
     int p = checkTest(bna, dict);
     // p = checkTest(bna, dict);
-    // bna.exportToDot("mutation_test.dot", "mutation_test");
-    // bna.generateRandomMutations(100);
-    // bna.exportToDot("mutation_test2.dot", "mutation_test2");
+    bna.exportToDot("mutation_test.dot", "mutation_test");
+    bna.generateRandomMutations(100);
+    bna.exportToDot("mutation_test2.dot", "mutation_test2");
 
     // return true;
     int prev_p = p;

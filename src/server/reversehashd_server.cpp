@@ -9,7 +9,6 @@
 
 #include <bna.h>
 #include <helpers.h>
-#include <memory.h>
 #include <QDir>
 
 // QT_USE_NAMESPACE
@@ -33,7 +32,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
 	
 	// init memory if not exists
 	if(!QFile::exists("/usr/share/reversehashd/md5/memory_md5_10000.rhmem")){
-        RHMemory *pMemory = new RHMemory();
+        BNAMemory *pMemory = new BNAMemory();
         pMemory->generateData(10000);
         pMemory->save("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
 		return;

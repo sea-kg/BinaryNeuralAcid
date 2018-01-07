@@ -2,8 +2,8 @@
 
 #include <bna.h>
 #include <helpers.h>
-#include <memory.h>
 #include <QFile>
+#include <iostream>
 
 TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
 	m_pReverseHashDServer = pReverseHashDServer;
@@ -11,8 +11,8 @@ TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
 }
 
 void TrainingThread::run(){
-	qDebug().noquote().nospace() << "Start Training Thread";
-    RHMemory *pMemory = new RHMemory();
+    std::cout << "Start Training Thread\n";
+    BNAMemory *pMemory = new BNAMemory();
 	pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
 	
 	while(true){
@@ -32,7 +32,7 @@ void TrainingThread::run(){
 			}
 			BNA bna;
 			if(!bna.load(filename)){
-				qDebug().noquote().nospace() << "Could not load file " << filename;
+                std::cout << "Could not load file " << filename.toStdString() << "\n";
 				continue;
 			}
 

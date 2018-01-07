@@ -14,7 +14,6 @@ RCC_DIR = tmp/
 
 INCLUDEPATH += src
 
-include(src/memory/memory.pri)
 include(src/bna/bna.pri)
 include(src/server/server.pri)
 include(src/tests/tests.pri)
