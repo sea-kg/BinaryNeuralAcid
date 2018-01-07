@@ -10,6 +10,7 @@
 #include <bna.h>
 #include <helpers.h>
 #include <QDir>
+#include <iostream>
 
 // QT_USE_NAMESPACE
 
@@ -18,23 +19,12 @@
 ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent) : QObject(parent) {
 	m_pReverseHashDServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
 	m_debug = debug;
-	m_sFilename = "/etc/reversehashd/conf.ini";
-
-	if(!QFile::exists("/usr/share/reversehashd")){
-		qDebug() << "Error /usr/share/reversehashd - file does not exists";
-		return;
-	}
-	
-	if(!QFile::exists("/usr/share/reversehashd/md5")){
-		qDebug() << "Error /usr/share/reversehashd/md5 - file does not exists";
-		return;
-	}
 	
 	// init memory if not exists
-	if(!QFile::exists("/usr/share/reversehashd/md5/memory_md5_10000.rhmem")){
+    if(!QFile::exists("tests_bna_md5/memory_md5_10000.bnamemory")){
         BNAMemory *pMemory = new BNAMemory();
         pMemory->generateData(10000);
-        pMemory->save("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
+        pMemory->save("tests_bna_md5/memory_md5_10000.bnamemory");
 		return;
 	}
 	
@@ -55,7 +45,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
 	}*/
 	
 	// init bna
-	QString path = "/usr/share/reversehashd/md5";
+    QString path = "tests_bna_md5";
 	QDir dir(".");
 	dir.mkpath(path);
 	
@@ -136,22 +126,12 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
 	this->extractFile(":/res/md5revert_main.cpp", path + "/md5revert_main.cpp");
 	this->extractFile(":/res/md5revert_helpers.h", path + "/md5revert_helpers.h");
 	this->extractFile(":/res/md5revert_helpers.cpp", path + "/md5revert_helpers.cpp");
-	
-	if(QFile::exists(m_sFilename)){
-		QSettings sett(m_sFilename, QSettings::IniFormat);
-		m_sPassword = readStringFromSettings(sett, "MAIN/password", "password");
-		if (m_debug){
-			qDebug() << "Password: " << m_sPassword;
-		}
-	}
 
     if (m_pReverseHashDServer->listen(QHostAddress::Any, port)) {
-        if (m_debug)
-            qDebug() << "reversehashd listening on port" << port;
+        std::cout << "reversehashd listening on port " << port << "\n";
         connect(m_pReverseHashDServer, &QWebSocketServer::newConnection, this, &ReverseHashDServer::onNewConnection);
         connect(m_pReverseHashDServer, &QWebSocketServer::closed, this, &ReverseHashDServer::closed);
         connect(this, &ReverseHashDServer::sendToAllSignal, this, &ReverseHashDServer::sendToAllSlot);
-        
         create_cmd_handlers(m_mapCmdHandlers);
     }
 
@@ -168,34 +148,10 @@ ReverseHashDServer::~ReverseHashDServer() {
 
 // ---------------------------------------------------------------------
 
-QString ReverseHashDServer::readStringFromSettings(QSettings &sett, QString settName, QString defaultValue){
-	QString sResult = defaultValue;
-	if(sett.contains(settName)){
-		sResult = sett.value(settName, sResult).toString();
-	}else{
-		qDebug().noquote().nospace() << "[WARNING] " << settName << " - not found in " << m_sFilename << "\n\t Will be used default value: " << defaultValue;
-	}
-	return sResult;
-}
-
-// ---------------------------------------------------------------------
-
-int ReverseHashDServer::readIntFromSettings(QSettings &sett, QString settName, int defaultValue){
-	int nResult = defaultValue;
-	if(sett.contains(settName)){
-		nResult = sett.value(settName, nResult).toInt();
-	}else{
-		qDebug().noquote().nospace() << "[WARNING] " << settName << " - not found in " << m_sFilename << "\n\t Will be used default value: " << defaultValue;
-	}
-	return nResult;
-}
-
-// ---------------------------------------------------------------------
-
 void ReverseHashDServer::extractFile(QString res_name, QString to_name){
 	QFile file_main_cpp_res(res_name);
 	if (!file_main_cpp_res.open(QIODevice::ReadOnly)){
-		qDebug().noquote().nospace() << "Could not open file: '" << res_name << "'";
+        std::cerr << "Could not open file: '" << res_name.toStdString() << "'\n";
 		return;
 	}
 	QTextStream res_main_cpp_file( &file_main_cpp_res );
@@ -208,7 +164,7 @@ void ReverseHashDServer::extractFile(QString res_name, QString to_name){
 		file_main_cpp.remove();
 	}
 	if ( !file_main_cpp.open(QIODevice::WriteOnly) ) {
-		qDebug().noquote().nospace() << "Could not write file: " << to_name;
+        std::cerr << "Could not write file: " << to_name.toStdString() << "\n";
 	}else{
 		QTextStream stream_main_cpp( &file_main_cpp );
 		stream_main_cpp << main_cpp_contents;
@@ -220,9 +176,7 @@ void ReverseHashDServer::extractFile(QString res_name, QString to_name){
 void ReverseHashDServer::onNewConnection()
 {
     QWebSocket *pSocket = m_pReverseHashDServer->nextPendingConnection();
-	
-	if (m_debug)
-        qDebug() << "NewConnection " << pSocket->peerAddress().toString() << " " << pSocket->peerPort();
+    std::cout << "NewConnection " << pSocket->peerAddress().toString().toStdString() << " " << pSocket->peerPort() << "\n";
         
     connect(pSocket, &QWebSocket::textMessageReceived, this, &ReverseHashDServer::processTextMessage);
     connect(pSocket, &QWebSocket::binaryMessageReceived, this, &ReverseHashDServer::processBinaryMessage);

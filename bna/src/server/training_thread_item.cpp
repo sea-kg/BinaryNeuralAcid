@@ -10,8 +10,8 @@ TrainingThreadItem::TrainingThreadItem(int bitid){
 	QString name = QString::number(bitid).rightJustified(3, '0');
 	QString subdir = name[0] + "/" + name[1] + "/" + name[2];
 	m_sBitid = name;
-	m_sFilename = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".bna";
-	m_sFilenameStats = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".statistics";
+    m_sFilename = "tests_bna_md5/" + subdir + "/" + name + ".bna";
+    m_sFilenameStats = "tests_bna_md5/" + subdir + "/" + name + ".statistics";
 	m_nPercent = 0;
 	
 	m_nPercent = loadPersent(m_sFilenameStats);

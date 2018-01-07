@@ -29,7 +29,7 @@
 
 Makefile
 reversehashd
-tmp/*
+bna/tmp/*
 test/*
 *.dot
 *.vertexgraph
@@ -38,5 +38,10 @@ test/*
 
 etc/reversehashd/conf.ini
 !var/www/html/reversehashd/
-reversehashd.pro.user
+bna.pro.user
 .qmake.stash
+tests_bna_md5
+build-bna-Desktop-Debug
+tmp
+
+bna/bna

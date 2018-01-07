@@ -25,7 +25,7 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRev
 		QString name = QString::number(bitid).rightJustified(3, '0');
 		QString subdir = name[0] + "/" + name[1] + "/" + name[2];
 
-		QString filename = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".statistics";
+        QString filename = "tests_bna_md5/" + subdir + "/" + name + ".statistics";
 		QFile file(filename);
 		QFileInfo fi(filename);
 		if(file.exists()){

@@ -13,7 +13,7 @@ TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
 void TrainingThread::run(){
     std::cout << "Start Training Thread\n";
     BNAMemory *pMemory = new BNAMemory();
-	pMemory->load("/usr/share/reversehashd/md5/memory_md5_10000.rhmem");
+    pMemory->load("tests_bna_md5/memory_md5_10000.bnamemory");
 	
 	while(true){
 		QVector<TrainingThreadItem *> list = this->sortedList();
