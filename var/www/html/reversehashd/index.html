@@ -7,29 +7,70 @@
 	<meta name="description" content="generic algorithm for reverse hash" />
 	<meta name="keywords" content="reversehash" />
 
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css?ver=1"/>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-grid.min.css?ver=1"/>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-reboot.min.css?ver=1"/>
 	<link rel="stylesheet" type="text/css" href="css/reversehashd.css?ver=1"/>
-
+	
 	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="js/popper.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/reversehashd.api.js?ver=1"></script>
 	<script type="text/javascript" src="js/index.js?ver=1"></script>
 </head>
 <body>
-	<div class="background"></div>
-	<div class="copyright">Copyright © 2016-2017 sea-kg.</div>
-	<div class="menu">
-		<a class="menu-item" href="./">Reverse</a>
-		<a class="menu-item" href="./statistics/">Statistics</a>
-		<a class="menu-item" href="./visualizer/">Visualizer</a>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+  <a class="navbar-brand" href="#">Reverse Hash D</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Reverse <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="show_statistics" href="javascript:void();">Statistics</a>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-link" href="./visualizer/">Visualizer</a>
+      </li>
+      
+    </ul>
+  </div>
+</nav>
+
+<div class="background"></div>
+
+<div class="container">
+	<br><br>
+	<div id="reverse_page">
+		<div class="form-group">
+			<label for="input_md5">MD5 hash</label>
+			<!-- 86fb269d190d2c85f6e0468ceca42a20 -->
+			<input type="text" class="form-control" size="32" value="81dc9bdb52d04dc20036dbd8313ed055" id="input_md5" aria-describedby="emailHelp" placeholder="e99f33420f577ee8ce54b67080a80d1e">
+		</div>
+		<button id="try_reverse" class="btn btn-primary">Try reverse</button>
+		<br><br>
+		<pre id="reverse_result"></pre>
+	</div>
+
+	<div id="statistics_page" style="display: none">
+		
 	</div>
 	
-	<div class="inputform" style="display: none">
-		<div class="inputform-cell">
-			<h1>Reverse Hash D</h1>
-			<input id="input_md5" type="text" size="55" placeholder="e99f33420f577ee8ce54b67080a80d1e" value="86fb269d190d2c85f6e0468ceca42a20">
-			<pre id="result"></pre>
-				
-			<!-- button id="try" onclick="alert('TODO');">Try</button -->
-		</div>
-	</div>
+	<div id="training_message" class="alert alert-danger" role="alert">...</div>
+	
+</div>
+
+<footer class="footer">
+  <div class="container">
+	<span class="text-muted">Copyright © 2016-2018 sea-kg.</span>
+  </div>
+</footer>
+
 </body>
 </html>

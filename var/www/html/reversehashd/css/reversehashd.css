@@ -1,14 +1,23 @@
-body{
-	background: #000008;
+body {
 	margin: 0px;
 	padding: 0px;
-	color: #24aaff;
-	font-size: 16px;
-	text-shadow: 0px 1px 5px black, 0 0 1px black;
+	padding-top: 60px;
+	padding-bottom: 60px;
+}
+.footer {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    background-color: #f5f5f5;
+    display: block;
 }
 
 .background{
 	position: absolute;
+	top: 0px;
+	left: 0px;
 	width: 100%;
 	height: 100%;
 	background-image: url(../images/connecting.gif);
@@ -22,73 +31,17 @@ body{
      z-index: 100;
 }
 
-.copyright{
-	position: absolute;
-	bottom: 0px;
-	padding-bottom: 10px;
-	text-align: center;
-	width: 100%;
-}
-
-.inputform{
-	display: table;
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	text-align: center;
-	opacity: 0;
-	-webkit-transition: opacity 1s ease-out 0.5s;
-     -moz-transition: opacity 1s ease-out 0.5s;
-     -o-transition: opacity 1s ease-out 0.5s;
-     transition: opacity 1s ease-out 0.5s;
-}
-
-.inputform-cell{
-	display: table-cell;
-	vertical-align: middle;
-}
-
-button{
-	border: 3px solid #24aaff;
-	border-radius: 5pc;
-	background-color: aqua;
-	padding: 5px;
-	cursor: pointer;
-}
-
-input{
-	background-color: #1c455f;
-	color: #24aaff;
-	padding: 5px;
-	border-radius: 5pc;
-	border: 3px solid #24aaff;
-	text-align: center;
-}
-
-.menu{
-	width: 100%;
-	height: 60px;
-	padding-top: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
-	text-align: center;
+#training_message{
 	position: fixed;
-	top: 0px;
-	left: 0px;
-	z-index: 100;
+    width: 300px;
+    right: 20px;
+    bottom: 100px;
 }
 
-.menu-item{
-	display: inline-block;
-	font-size: 24px;
-    cursor: pointer;
-    padding: 10px;
-	text-decoration: none;
-    color: #24aaff;
-}
-
-.menu-item:hover{
-	text-shadow: 1px 1px 5px #24aaff;
+.card-bit{
+    width: 250px;
+    display: inline-block;
+    margin: 10px;
 }
 
 .content{
@@ -160,7 +113,7 @@ input{
 }
 
 .statistics-cell.low{
-	background-color: darkred;
+	/*background-color: darkred;*/
 }
 
 .statistics-cell.info{
@@ -195,3 +148,5 @@ input{
     color: black;
 	display: inline-block;
 }
+
+
