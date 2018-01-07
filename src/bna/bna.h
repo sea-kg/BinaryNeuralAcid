@@ -13,6 +13,7 @@ enum BNABit{
 
 void BNAConvertHEXStringToVBool(QString &in, QVector<BNABit> &vars, int size);
 void BNAConvertArrayToVBool(QByteArray &in, QVector<BNABit> &vars, int size);
+QString BNAConvertVBoolHEXString(QVector<BNABit> &vars);
 
 // -----------------------------------------------------------------
 

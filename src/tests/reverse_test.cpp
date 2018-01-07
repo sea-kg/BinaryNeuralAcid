@@ -36,8 +36,8 @@ bool Reverse_Test::run(){
 		int nCount = 55*8;
         QVector<BNABit> vOutput;
         for (int bitid = 0; bitid < nCount; bitid++) {
-            QString name = QString::number(bitid).rightJustified(3, '0');
-            QString subdir = name[0] + "/" + name[1] + "/" + name[2];
+            QString name = prepareName(bitid);
+            QString subdir = prepareSubdir(bitid);
             QString m_sBitid = name;
             QString m_sDir = "tests_bna_md5/" + subdir;
             QString m_sFilename = m_sDir + "/" + name + ".bna";

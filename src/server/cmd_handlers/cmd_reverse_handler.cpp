@@ -14,8 +14,8 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	if(req.contains("id")){
 		rid = req["id"].toInt();
 	}
-	
-	QJsonObject jsonData;
+
+    QJsonObject jsonData;
 	jsonData["cmd"] = QJsonValue(cmd());
 	jsonData["rid"] = rid;
 	
@@ -25,35 +25,40 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	}
 	
 	QString hash = req["md5"].toString();
-	QVector<bool> vOutput;
+    QVector<BNABit> vOutput;
     QVector<BNABit> vInputs;
 	QString answer_bin = "";
     BNAConvertHEXStringToVBool(hash, vInputs, 128);
 	int nCount = 55*8;
-	for (int i = 0; i < nCount; i++) {
-		bool bResult = false;
-		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-		QFile file(filename);
+    for (int bitid = 0; bitid < nCount; bitid++) {
+        BNABit bResult = B_0;
+        QString name = prepareName(bitid);
+        QString subdir = prepareSubdir(bitid);
+        QString m_sBitid = name;
+        QString m_sDir = "tests_bna_md5/" + subdir;
+        QString m_sFilename = m_sDir + "/" + name + ".bna";
+
+        QFile file(m_sFilename);
 		if(file.exists()){
 			BNA bna;
-			bna.load(filename);
+            bna.load(m_sFilename);
             bResult = bna.calc(vInputs, 0);
 		}else{
-			pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
+            pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + m_sFilename + "'does not exists"));
 			return;
 		}
 		vOutput.push_back(bResult);
-		answer_bin += (bResult ? "1" : "0");
+        answer_bin += (bResult == B_1 ? "1" : "0");
 	}
 	jsonData["output_count"] = vOutput.size();
-	QString answer_hex = reverse_hash::convertVBoolHEXString(vOutput);
+    QString answer_hex = BNAConvertVBoolHEXString(vOutput);
 	QByteArray text = QByteArray::fromHex(answer_hex.toLatin1());
 	jsonData["answer_bin"] = answer_bin;
 	jsonData["answer_text"] = QString(text);
 	jsonData["answer_hex"] = answer_hex;
 	jsonData["answer_base64"] = QString(text.toBase64());
 	jsonData["request_md5"] = hash; // TODO check comeback reverse
-	QByteArray result_md5 = QCryptographicHash::hash(text, QCryptographicHash::Md5);
+    QByteArray result_md5 = QCryptographicHash::hash(QString(text).toUtf8(), QCryptographicHash::Md5);
 	jsonData["result_md5"] = QString(result_md5.toHex());
 
 	QJsonDocument doc(jsonData);
