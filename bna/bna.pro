@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = reversehashd
+TARGET = bna
 
 QT       += core xml network websockets
 QT       -= gui
@@ -18,7 +18,7 @@ include(src/bna/bna.pri)
 include(src/server/server.pri)
 include(src/tests/tests.pri)
 
-RESOURCES = reversehashd.qrc
+RESOURCES = bna.qrc
 
 SOURCES += src/main.cpp \
     src/helpers.cpp \
