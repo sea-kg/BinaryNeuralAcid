@@ -4,17 +4,14 @@
 #include <QString>
 #include <QJsonObject>
 
-#include "training_thread_item.h"
-
 class TrainingThreadMessage {
 	public:
-		TrainingThreadMessage();
-		TrainingThreadMessage(TrainingThreadItem *pItem);
-		int id();
-		QString bitid();
+        TrainingThreadMessage(int bitid);
+        int id();
+        QString bitid();
 		void setMessage(QString message);
 		QString message();
-		bool equals(TrainingThreadMessage &msg);
+        bool equals(TrainingThreadMessage *pMsg);
 		void setLastSuccessPersents(int lp);
 		int lastSuccessPersents();
 		QJsonObject toJson();

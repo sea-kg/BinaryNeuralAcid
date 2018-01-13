@@ -159,13 +159,15 @@ class BNA {
 
 class BNAMemoryItem {
     public:
-        BNAMemoryItem();
+        BNAMemoryItem(int nInputBits, int nOutputBits);
         QByteArray input;
         QByteArray output;
         const QVector<BNABit> &inputToVectorBool();
         const QVector<BNABit> &outputToVectorBool();
 
     private:
+        int m_nInputBits;
+        int m_nOutputBits;
         QVector<BNABit> m_vInput;
         QVector<BNABit> m_vOutput;
 };
@@ -174,20 +176,19 @@ class BNAMemoryItem {
 
 class BNAMemory {
     public:
-        BNAMemory();
+        BNAMemory(int nInputBits, int nOutputBits);
         void load(QString filename);
         void save(QString filename);
         int size();
-        BNAMemoryItem at(int i);
+        BNAMemoryItem *at(int i);
+        BNAMemoryItem *createItem();
+        void append(BNAMemoryItem *pItem);
         void printData();
-        void generateData(int nCount);
-        void dataFrom(const QVector<QString> &vStrigns);
     private:
-        QString alphabet();
-        QString generateRandomString();
-        int m_nInputSize;
-        int m_nOutputSize;
-        QVector<BNAMemoryItem> m_vItems;
+
+        int m_nInputBits;
+        int m_nOutputBits;
+        QVector<BNAMemoryItem *> m_vItems;
 };
 
 // -----------------------------------------------------------------
@@ -197,9 +198,30 @@ class BNAProject {
     public:
         BNAProject();
         bool open(QString sDirPath);
-
+        void setInputBits(int nInputBits);
+        int getInputBits();
+        void setOutputBits(int nOutputBits);
+        int getOutputBits();
+        void setDefaultCountNodes(int nDefaultCountNodes);
+        bool create(QString sDirPath);
+        BNAMemory *getBNAMemory();
+        void saveBNAMemory();
+        int calculate(int bitid, bool bEnableSleep = false);
+        BNA *getBNA(int bitid);
+        void saveBNA(int bitid);
     private:
+        QString prepareName(int bitid);
+        QString prepareSubdir(int bitid);
+        void saveProjFile();
+        void loadProjFile();
+
         QString m_sDirPath;
+        BNAMemory *m_pBNAMemory;
+        int m_nInputBits;
+        int m_nOutputBits;
+        int m_nDefaultCountNodes;
+        QString m_sMemoryFileName;
+        QMap<int,BNA *> m_mBNA;
 };
 
 

@@ -5,137 +5,103 @@
 #include <QFile>
 #include <iostream>
 
-TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer){
+TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer, BNAProject *pBNAProject){
 	m_pReverseHashDServer = pReverseHashDServer;
 	m_nSleep = 5;
+    m_pBNAProject = pBNAProject;
+    m_pLastMessage = NULL;
 }
 
 void TrainingThread::run(){
     std::cout << "Start Training Thread\n";
-    BNAMemory *pMemory = new BNAMemory();
-    pMemory->load("tests_bna_md5/memory_md5_10000.bnamemory");
+
+    // BNAMemory *pMemory = new BNAMemory(128, 440);
+    // pMemory->load("tests_bna_md5/memory_md5_10000.bnamemory");
 	
+
+    int nMemorySize = m_pBNAProject->getBNAMemory()->size();
+    int nOutputBits = m_pBNAProject->getOutputBits();
+    int *pStatistics = new int[nOutputBits];
+    for(int i = 0; i < nOutputBits; i++){
+        pStatistics[i] = 0;
+    }
 	while(true){
-		QVector<TrainingThreadItem *> list = this->sortedList();
-		for(int i = 0; i < list.size(); i++){
-			TrainingThreadItem *pItem = list[i];
-			
-			QString bitid = pItem->bitid();
-			QString filename = pItem->filename();
-			QFile file(filename);
-			if (!file.exists()) {
-				TrainingThreadMessage msg(pItem);
-				msg.setMessage(filename + " file did not found");
-				this->sendMessage(msg);
-				QThread::sleep(m_nSleep);
-				continue;
-			}
-			BNA bna;
-			if(!bna.load(filename)){
-                std::cout << "Could not load file " << filename.toStdString() << "\n";
-				continue;
-			}
+        for(int bitid = 0; bitid < nOutputBits; bitid++){
+            if(pStatistics[bitid] == 0){
+                pStatistics[bitid] = m_pBNAProject->calculate(bitid, true);
+            }
+            int p = pStatistics[bitid];
+            if(p == nMemorySize){
+                continue;
+            }
 
-			{
-				TrainingThreadMessage msg(pItem);
-				msg.setMessage("Training... ");
-				this->sendMessage(msg);
-			}
+            std::cout << bitid << ": Learning start... : " << p << "/" << nMemorySize << "\n";
 
-			int nMemorySize = pMemory->size();
-			
-			int nPersent = pItem->percent();
+            {
+                TrainingThreadMessage *pMsg = new TrainingThreadMessage(bitid);
+                pMsg->setMessage("Training... ");
+                this->sendMessage(pMsg);
+            }
+
+            BNA *pBNA = m_pBNAProject->getBNA(bitid);
+
+            QByteArray prevBna = pBNA->exportToByteArray();
 			int nExperiments = 0;
-			while(nPersent < 90 && nExperiments < 100){
+            while(nExperiments < 100 && p < nMemorySize){
 				QThread::sleep(m_nSleep);
 				nExperiments++;
 				int nSuccessCount = 0;
 
-				for (int t = 0; t < nMemorySize; t++){
-                    BNAMemoryItem memoryItem = pMemory->at(t);
-                    QVector<BNABit> vInputs = memoryItem.outputToVectorBool();
+                nSuccessCount = m_pBNAProject->calculate(bitid, true);
 
-                    bool b = bna.calc(vInputs, 0);
-					if(b == memoryItem.inputToVectorBool()[pItem->id()]){
-						nSuccessCount++;
-					}
-					
-					if(t > 0 && t % 1000 == 0){
-						nPersent = (nSuccessCount * 100) / (t);
-
-						TrainingThreadMessage msg(pItem);
-						msg.setMessage("Training...");
-						msg.setMaxExperiments(100);
-						msg.setCompletedExperiments(nExperiments);
-						msg.setPercent(nPersent);
-						this->sendMessage(msg);
-						
-						QThread::sleep(1);
-					}
-				}
-
-				nPersent = (nSuccessCount * 100) / (nMemorySize);
-				if(nPersent > pItem->percent()){
-					TrainingThreadMessage msg(pItem);
-					msg.setMessage("New percent result set!");
-					msg.setLastSuccessPersents(nPersent);
-					msg.setMaxExperiments(100);
-					msg.setCompletedExperiments(nExperiments);
-					this->sendMessage(msg);
-					
-					pItem->savePercent(nPersent);
+                if(nSuccessCount > p){
+                    prevBna = pBNA->exportToByteArray();
+                    m_pBNAProject->saveBNA(bitid);
+                    pStatistics[bitid] = nSuccessCount;
+                    p = nSuccessCount;
+                    std::cout << bitid << " Updated to " << p << "/" << nMemorySize << "\n";
+                    TrainingThreadMessage *pMsg = new TrainingThreadMessage(bitid);
+                    pMsg->setMessage("New percent result set!");
+                    pMsg->setLastSuccessPersents((p*100)/nMemorySize);
+                    pMsg->setMaxExperiments(100);
+                    pMsg->setCompletedExperiments(nExperiments);
+                    this->sendMessage(pMsg);
 				}else{
-					TrainingThreadMessage msg(pItem);
-					msg.setMessage("Reloading graph.");
-					msg.setLastSuccessPersents(pItem->percent());
-					this->sendMessage(msg);
-					
-					bna.load(filename);
-					nPersent = pItem->percent();
-                    bna.generateRandomMutations(10);
+                    TrainingThreadMessage *pMsg = new TrainingThreadMessage(bitid);
+                    pMsg->setMessage("Reloading bna.");
+                    pMsg->setLastSuccessPersents((p*100)/nMemorySize);
+                    this->sendMessage(pMsg);
+                    pBNA->importFromByteArray(prevBna);
+                    pBNA->generateRandomMutations(100);
 				}
 			}
 			
-			{
-				TrainingThreadMessage msg(pItem);
-				msg.setMessage("Result: " + QString::number(pItem->percent()) + "%");
-				msg.setMaxExperiments(100);
-				msg.setCompletedExperiments(100);
-				this->sendMessage(msg);
-			}
+            {
+                TrainingThreadMessage *pMsg = new TrainingThreadMessage(bitid);
+                pMsg->setMessage("Result: " + QString::number((p*100)/nMemorySize) + "%");
+                pMsg->setMaxExperiments(100);
+                pMsg->setCompletedExperiments(100);
+                this->sendMessage(pMsg);
+            }
 			QThread::sleep(m_nSleep);
 		}
 		QThread::sleep(m_nSleep);
 	}
-	qDebug().noquote().nospace() << "Stop Training Thread";
+    std::cout << "Stop Training Thread\n";
 }
 
-void TrainingThread::sendMessage(TrainingThreadMessage &msg){
-	if(m_lastMessage.equals(msg)){
+void TrainingThread::sendMessage(TrainingThreadMessage *pMsg){
+    if(m_pLastMessage != NULL && m_pLastMessage->equals(pMsg)){
 		return;
 	}
+
+    if(m_pLastMessage != NULL){
+        // delete m_pLastMessage;
+        m_pLastMessage = NULL;
+    }
 	
-	m_lastMessage = msg;
-	qDebug().noquote().nospace() << "Training Thread: [" << msg.bitid() << "] " << msg.message();
+    m_pLastMessage = pMsg;
+    std::cout << "Training Thread: [" << pMsg->id() << "] " << pMsg->message().toStdString() << "\n";
 
-	m_pReverseHashDServer->sendToAll(msg.toJson());
-}
-
-bool sortFunctionTTI( const TrainingThreadItem * e1, const TrainingThreadItem * e2 ) {
-	if(e1->percent() < e2->percent()){
-		return true;
-	}else if(e1->percent() > e2->percent()){
-		return false;
-	}
-    return e1->id() < e2->id();
-}
-
-QVector<TrainingThreadItem *> TrainingThread::sortedList(){
-	QVector<TrainingThreadItem *> result;
-	int nCount = 55*8;
-	for (int i = 0; i < nCount; i++) {
-		result.push_back(new TrainingThreadItem(i));
-	}
-	qSort ( result.begin(), result.end(), sortFunctionTTI );
-	return result;
+    m_pReverseHashDServer->sendToAll(pMsg->toJson());
 }

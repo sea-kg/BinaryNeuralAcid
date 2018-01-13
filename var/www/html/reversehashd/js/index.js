@@ -22,7 +22,7 @@ window.reversehashd.handlerTrainingThreadInfo = function(response){
 reversehashd.initWebsocket();
 
 function try_reverse(){
-	$('#reverse_result').html('');
+	$('#reverse_result').html('Send request...');
 	showLoading();
 	reversehashd.reverse($('#input_md5').val()).done(function(r){
 		console.log("done");
@@ -74,6 +74,7 @@ function loadStatistics(){
 			var sbit = r.statistics[i];
 			$('#statistics_page').append(''
 				+ '<div class="card card-bit" id="' + sbit.name + '">'
+				+ '	<div class="card-background" style="width: ' + sbit.lp + '%"></div>'
 				+ '	<div class="card-body">'
 				+ '	<h5 class="card-title">' + sbit.name + '</h4>'
 				+ '	<p class="card-text">' + sbit.modified + '</p>'
@@ -128,6 +129,33 @@ function hideLoading(){
 	},1000);
 }
 
+var hex2bin_data = {
+	'0': '0000',
+	'1': '0001',
+	'2': '0010',
+	'3': '0011',
+	'4': '0100',
+	'5': '0101',
+	'6': '0110',
+	'7': '0111',
+	'8': '1000',
+	'9': '1001',
+	'a': '1010',
+	'b': '1011',
+	'c': '1100',
+	'd': '1101',
+	'e': '1110',
+	'f': '1111'
+};
+
+function hex2bin(s){
+	var res = '';
+	for(var i = 0; i < s.length; i++){
+		res += hex2bin_data[s[i]];
+	}
+	return res;
+}
+
 function compareHashes(md5_request, md5_response){
 	var r1 = ' Request md5-hash: ';
 	var r2 = 'Response md5-hash: ';
@@ -135,13 +163,30 @@ function compareHashes(md5_request, md5_response){
 		if(md5_request[i] == md5_response[i]){
 			r1 += '<div class="equals-char">' + md5_request[i] + '</div>';
 			r2 += '<div class="equals-char">' + md5_response[i] + '</div>';
-			
 		}else{
 			r1 += md5_request[i];
 			r2 += md5_response[i];
 		}
 	}
-	return r1 + '\n' + r2 + '\n';
+	
+	md5_request_bin = hex2bin(md5_request);
+	md5_response_bin = hex2bin(md5_response);
+	
+	var r1_bin = ' Request md5-hash (bit): ';
+	var r2_bin = 'Response md5-hash (bit): ';
+	var sum = 0;
+	for(var i = 0; i < md5_request_bin.length; i++){
+		if(md5_request_bin[i] == md5_response_bin[i]){
+			r1_bin += '<div class="equals-char">' + md5_request_bin[i] + '</div>';
+			r2_bin += '<div class="equals-char">' + md5_response_bin[i] + '</div>';
+			sum++;
+		}else{
+			r1_bin += md5_request_bin[i];
+			r2_bin += md5_response_bin[i];
+		}
+	}
+
+	return r1 + '\n' + r2 + '\n' + r1_bin + '\n' + r2_bin + '\n Summary bits: ' + sum + '/' + md5_request_bin.length + '\n';
 }
 
 function hexToChar(h1){

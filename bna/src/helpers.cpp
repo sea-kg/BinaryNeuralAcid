@@ -41,12 +41,3 @@ void savePersent(QString filename, int nPersent){
 	stream << nPersent;
 	file.close();
 }
-
-QString prepareName(int bitid){
-    return QString::number(bitid).rightJustified(3, '0');
-}
-
-QString prepareSubdir(int bitid){
-    QString m_sBitid = QString::number(bitid).rightJustified(3, '0');
-    return m_sBitid[0] + "/" + m_sBitid[1] + "/" + m_sBitid[2];
-}

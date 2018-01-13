@@ -35,8 +35,8 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRev
 			sbit["lp"] = loadPersent(filename);
 			statistics.append(sbit);
 		}else{
-			pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
-			return;
+            // pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
+            // return;
 		}
 	}
 	jsonData["statistics"] = statistics;

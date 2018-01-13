@@ -12,40 +12,54 @@
 #include <QDir>
 #include <iostream>
 
-// QT_USE_NAMESPACE
-
 // ---------------------------------------------------------------------
 
-ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent) : QObject(parent) {
+QString alphabet() {
+    return "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]{}:,.<>/?\"'\\*&^%$#!-+=";
+}
+
+// ----------------------------------------------------------------
+
+QString generateRandomString(){
+    QString sAlphabet = alphabet();
+    int len = qrand() % 55 + 2;
+    QString str = "";
+    for (int i = 0; i < len; i++) {
+        str += sAlphabet[qrand() % sAlphabet.length()];
+    }
+    return str;
+}
+
+// ----------------------------------------------------------------
+
+ReverseHashDServer::ReverseHashDServer(quint16 port, QObject *parent) : QObject(parent) {
 	m_pReverseHashDServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
-	m_debug = debug;
-	
-	// init memory if not exists
-    if(!QFile::exists("tests_bna_md5/memory_md5_10000.bnamemory")){
-        BNAMemory *pMemory = new BNAMemory();
-        pMemory->generateData(10000);
-        pMemory->save("tests_bna_md5/memory_md5_10000.bnamemory");
-		return;
-	}
-	
-	// deprecated
-	// init vertexes
-	/*int nCount = 55*8;
-	for (int i = 0; i < nCount; i++) {
-		bool bResult = false;
-		QString filename = "/usr/share/reversehashd/md5/bit" + QString::number(i).rightJustified(3, '0') + ".vertexgraph";
-		QFile file(filename);
-		if(!file.exists()){
-			// create new vertex file
-			VertexGraph vg(128);
-			vg.genBase();
-			vg.saveToFile(filename);
-			qDebug() << "Created new file: " << filename;
-		}
-	}*/
+    QString sFolder = "tmp_server_md5";
+    m_pBnaProject = new BNAProject();
+
+
+    if(!m_pBnaProject->open(sFolder)){
+        std::cerr << "Could not open project, try create\n";
+        m_pBnaProject->setInputBits(128);
+        m_pBnaProject->setOutputBits(440);
+        m_pBnaProject->setDefaultCountNodes(256);
+        m_pBnaProject->create(sFolder);
+
+        // fill memory for learning
+        BNAMemory *pBNAMemory = m_pBnaProject->getBNAMemory();
+        for(int i = 0; i < 10000; i++){
+            BNAMemoryItem *pBNAMemoryItem = pBNAMemory->createItem();
+            pBNAMemoryItem->output.append(generateRandomString());
+            pBNAMemoryItem->input = QCryptographicHash::hash(pBNAMemoryItem->output, QCryptographicHash::Md5);
+            pBNAMemory->append(pBNAMemoryItem);
+        }
+        m_pBnaProject->saveBNAMemory();
+    }
 	
 	// init bna
-    QString path = "tests_bna_md5";
+
+    /*
+     * TODO move yto BNA project like export to cpp
 	QDir dir(".");
 	dir.mkpath(path);
 	
@@ -126,6 +140,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
 	this->extractFile(":/res/md5revert_main.cpp", path + "/md5revert_main.cpp");
 	this->extractFile(":/res/md5revert_helpers.h", path + "/md5revert_helpers.h");
 	this->extractFile(":/res/md5revert_helpers.cpp", path + "/md5revert_helpers.cpp");
+    */
 
     if (m_pReverseHashDServer->listen(QHostAddress::Any, port)) {
         std::cout << "reversehashd listening on port " << port << "\n";
@@ -135,7 +150,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, bool debug, QObject *parent
         create_cmd_handlers(m_mapCmdHandlers);
     }
 
-    m_pTrainingThread = new TrainingThread(this);
+    m_pTrainingThread = new TrainingThread(this, m_pBnaProject);
     m_pTrainingThread->start(QThread::LowestPriority);
 }
 
@@ -173,8 +188,14 @@ void ReverseHashDServer::extractFile(QString res_name, QString to_name){
 
 // ---------------------------------------------------------------------
 
-void ReverseHashDServer::onNewConnection()
-{
+BNAProject * ReverseHashDServer::getBNAProject(){
+    return m_pBnaProject;
+}
+
+// ---------------------------------------------------------------------
+
+void ReverseHashDServer::onNewConnection(){
+
     QWebSocket *pSocket = m_pReverseHashDServer->nextPendingConnection();
     std::cout << "NewConnection " << pSocket->peerAddress().toString().toStdString() << " " << pSocket->peerPort() << "\n";
         
@@ -189,9 +210,8 @@ void ReverseHashDServer::onNewConnection()
 
 void ReverseHashDServer::processTextMessage(QString message) {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (m_debug){
-		qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] <<< " << message;
-	}
+    std::cout << QDateTime::currentDateTimeUtc().toString().toStdString() << " [WS] <<< " << message.toStdString() << "\n";
+
 
 	QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
 	QJsonObject jsonData = doc.object();
@@ -220,21 +240,16 @@ void ReverseHashDServer::processTextMessage(QString message) {
 
 // ---------------------------------------------------------------------
 
-void ReverseHashDServer::processBinaryMessage(QByteArray message) {
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (m_debug)
-        qDebug() << "Binary Message received:" << message;
-    if (pClient) {
-        pClient->sendBinaryMessage(message);
-    }
+void ReverseHashDServer::processBinaryMessage(QByteArray) {
+    // nothing
 }
 
 // ---------------------------------------------------------------------
 
 void ReverseHashDServer::socketDisconnected() {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if (m_debug)
-        qDebug() << "socketDisconnected:" << pClient;
+
+    std::cout << "socketDisconnected:" << pClient << "\n";
     if (pClient) {
         m_clients.removeAll(pClient);
         pClient->deleteLater();

@@ -100,10 +100,21 @@ int main(int argc, char* argv[])
         }
         return 0;
     }
+
+    if(vParams.contains("--run-reverse-test")){
+        IReverseHashTest *pTest2 = new Reverse_Test();
+        std::cout << " Run " << pTest2->name().toStdString() << " ... \n";
+        if(!pTest2->run()){
+            std::cout << "\t  ->  [FAIL] \n";
+        }else{
+            std::cout << "\t  ->  [OK] \n";
+        }
+        return 0;
+    }
 	
 	if(vParams.contains("--server")){
 		qDebug() << "Server starting on 43735 port";
-		ReverseHashDServer *server = new ReverseHashDServer(43735, true);
+        ReverseHashDServer *server = new ReverseHashDServer(43735);
 		QObject::connect(server, &ReverseHashDServer::closed, &app, &QCoreApplication::quit);
 		
 		return app.exec();

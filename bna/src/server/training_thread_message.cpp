@@ -4,22 +4,13 @@
 #include <memory.h>
 #include <QFile>
 
-TrainingThreadMessage::TrainingThreadMessage(){
-	m_nBitid = -1;
-	m_sBitid = "nope";
-	m_nLastSuccessPersents = -1;
-	m_nPercent = -1;
-	m_nCompletedExperiments = -1;
-	m_nMaxExperiments = -1;
-}
-
-TrainingThreadMessage::TrainingThreadMessage(TrainingThreadItem *pItem){
-	m_nBitid = pItem->id();
-	m_sBitid = pItem->bitid();
-	m_nLastSuccessPersents = -1;
-	m_nPercent = -1;
-	m_nCompletedExperiments = -1;
-	m_nMaxExperiments = -1;
+TrainingThreadMessage::TrainingThreadMessage(int nBitId){
+    m_nBitid = nBitId;
+    m_sBitid = QString::number(m_nBitid).rightJustified(3, '0');
+    m_nLastSuccessPersents = -1;
+    m_nPercent = -1;
+    m_nCompletedExperiments = -1;
+    m_nMaxExperiments = -1;
 }
 
 int TrainingThreadMessage::id(){
@@ -38,14 +29,14 @@ QString TrainingThreadMessage::message(){
 	return m_sMessage;
 }
 
-bool TrainingThreadMessage::equals(TrainingThreadMessage &msg){
-	return msg.message() == m_sMessage
-		&& m_nLastSuccessPersents == msg.lastSuccessPersents()
-		&& m_nPercent == msg.percent()
-		&& m_nBitid == msg.id()
-		&& m_sBitid == msg.bitid()
-		&& m_nCompletedExperiments == msg.completedExperiments()
-		&& m_nMaxExperiments == msg.maxExperiments();
+bool TrainingThreadMessage::equals(TrainingThreadMessage *pMsg){
+    return pMsg->message() == m_sMessage
+        && m_nLastSuccessPersents == pMsg->lastSuccessPersents()
+        && m_nPercent == pMsg->percent()
+        && m_nBitid == pMsg->id()
+        && m_sBitid == pMsg->bitid()
+        && m_nCompletedExperiments == pMsg->completedExperiments()
+        && m_nMaxExperiments == pMsg->maxExperiments();
 }
 
 void TrainingThreadMessage::setLastSuccessPersents(int lp){

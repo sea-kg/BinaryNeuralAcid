@@ -23,30 +23,17 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(400, "Not found parameter 'md5'"));
 		return;
 	}
-	
-	QString hash = req["md5"].toString();
+    QString hash = req["md5"].toString();
     QVector<BNABit> vOutput;
     QVector<BNABit> vInputs;
-	QString answer_bin = "";
+    QString answer_bin = "";
     BNAConvertHEXStringToVBool(hash, vInputs, 128);
-	int nCount = 55*8;
+    BNAProject *pBNAProject = pReverseHashDServer->getBNAProject();
+    int nCount = pBNAProject->getOutputBits();
     for (int bitid = 0; bitid < nCount; bitid++) {
         BNABit bResult = B_0;
-        QString name = prepareName(bitid);
-        QString subdir = prepareSubdir(bitid);
-        QString m_sBitid = name;
-        QString m_sDir = "tests_bna_md5/" + subdir;
-        QString m_sFilename = m_sDir + "/" + name + ".bna";
-
-        QFile file(m_sFilename);
-		if(file.exists()){
-			BNA bna;
-            bna.load(m_sFilename);
-            bResult = bna.calc(vInputs, 0);
-		}else{
-            pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + m_sFilename + "'does not exists"));
-			return;
-		}
+        BNA *pBNA = pBNAProject->getBNA(bitid);
+        bResult = pBNA->calc(vInputs, 0);
 		vOutput.push_back(bResult);
         answer_bin += (bResult == B_1 ? "1" : "0");
 	}
@@ -64,6 +51,5 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	QJsonDocument doc(jsonData);
 	QString message = doc.toJson(QJsonDocument::Compact);
 	qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] >>> " << message;
-		
 	pReverseHashDServer->sendMessage(pClient, jsonData);
 }

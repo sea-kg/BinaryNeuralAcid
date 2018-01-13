@@ -2,14 +2,16 @@
 #include <QDataStream>
 #include <QFile>
 #include <QFileInfo>
-#include <QDebug>
 #include <iostream>
 #include <QBuffer>
 #include <QMap>
+#include <QTextStream>
 #include <QDir>
 #include <iostream>
 #include <cstring>
-#include <QCryptographicHash>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QThread>
 
 // -----------------------------------------------------------------
 // function for convert hex string to array bna bit
@@ -521,7 +523,7 @@ bool BNA::exportToDot(QString filename, QString graphname){
 		file.remove();
 	}
 	if ( !file.open(QIODevice::WriteOnly) ) {
-		qDebug().noquote().nospace() << "Could not write file: " << filename;
+        std::cerr << "Could not write file: " << filename.toStdString() << "\n";
 		return false;
 	}
 	QTextStream stream( &file );
@@ -549,7 +551,7 @@ bool BNA::exportToCpp(QString filename, QString funcname){
 	QFile file(filename);
 	QFileInfo fi(filename);
 	if(fi.suffix() != "cpp"){
-		qDebug().noquote().nospace() << "[ERROR]" << filename << " file must be have suffix 'cpp'";
+        std::cerr << "[ERROR]" << filename.toStdString() << " file must be have suffix 'cpp'\n";
 		return false;
 	}
 	
@@ -566,12 +568,12 @@ bool BNA::exportToCpp(QString filename, QString funcname){
 	}
 	
 	if ( !file.open(QIODevice::WriteOnly) ) {
-		qDebug().noquote().nospace() << "Could not write file: " << filename;
+        std::cerr << "Could not write file: " << filename.toStdString() << "\n";
 		return false;
 	}
 	
 	if ( !file_h.open(QIODevice::WriteOnly) ) {
-		qDebug().noquote().nospace() << "Could not write file: " << filename_h;
+        std::cerr << "Could not write file: " << filename_h.toStdString() << "\n";
 		return false;
 	}
 	
@@ -698,17 +700,18 @@ void BNA::generateRandomMutations(int nRandomCicles){
     // random mutations data (exclude first 8 byte)
     int nOffset = 8;
     int nSize = data.size() - nOffset;
-    if(nSize == 0) {
+    if(nSize <= 0) {
         std::cout << "[FAIL] generateRandomMutations failed size " << nSize << "\n";
         return;
     }
     char buf[1];
     for(int i = 0; i < nRandomCicles; i++){
         int x = qrand() % nSize;
-        unsigned char ch = data.at(x + nOffset);
+        unsigned char ch = data.data()[x + nOffset];
         buf[0] = ch + qrand();
         // std::cout << (int)ch << " -> " << (int)buf[0] << "\n";
-        data = data.replace(x + nOffset, 1, buf);
+        data.data()[x + nOffset] = buf[0];
+        // data = data.replace(x + nOffset, 1, buf);
     }
     importFromByteArray(data);
 }
@@ -744,7 +747,7 @@ BNABit BNA::calc(const QVector<BNABit> &vInputs, int nOutput){
     // prepare calculate exprs
 
     if((unsigned int)vInputs.size() != m_nInput){
-        qDebug() << "[ERROR] invalid input count";
+        std::cerr << "[ERROR] invalid input count " << vInputs.size() << "(Expected: " << m_nInput << ") \n";
         return B_0;
     }
 
@@ -761,16 +764,16 @@ BNABit BNA::calc(const QVector<BNABit> &vInputs, int nOutput){
 
 // ----------------------------------------------------------------
 
-BNAMemoryItem::BNAMemoryItem() {
-    // nothing
+BNAMemoryItem::BNAMemoryItem(int nInputBits, int nOutputBits) {
+    m_nInputBits = nInputBits;
+    m_nOutputBits = nOutputBits;
 }
 
 // ----------------------------------------------------------------
 
 const QVector<BNABit> &BNAMemoryItem::inputToVectorBool(){
-    if(m_vInput.size() != input.size()*8){
-        // TODO max size
-        BNAConvertArrayToVBool(input, m_vInput, input.size()*8);
+    if(m_vInput.size() == 0){
+        BNAConvertArrayToVBool(input, m_vInput, m_nInputBits);
     }
     return m_vInput;
 }
@@ -778,58 +781,58 @@ const QVector<BNABit> &BNAMemoryItem::inputToVectorBool(){
 // ----------------------------------------------------------------
 
 const QVector<BNABit> &BNAMemoryItem::outputToVectorBool(){
-    if(m_vOutput.size() != output.size()*8){
-        // TODO max size
-        BNAConvertArrayToVBool(output, m_vOutput, output.size()*8);
+    if(m_vOutput.size() == 0){
+        BNAConvertArrayToVBool(output, m_vOutput, m_nOutputBits);
     }
     return m_vOutput;
 }
 
 // ----------------------------------------------------------------
 
-
-BNAMemory::BNAMemory(){
-    m_nInputSize = 55; // 55 bytes
-    m_nOutputSize = 16; // 16 bytes of md5 hash
+BNAMemory::BNAMemory(int nInputBits, int nOutputBits){
+    m_nInputBits = nInputBits;
+    m_nOutputBits = nOutputBits;
 }
 
 // ----------------------------------------------------------------
 
 void BNAMemory::load(QString filename){
-    m_vItems.clear();
+
     QFile file(filename);
     if (!file.exists()) {
-        qDebug().noquote().nospace() << "RHMEMORY:  File did not exists: " << filename;
+        std::cerr << "BNAMEMORY:  File did not exists: " << filename.toStdString() << "\n";
         return;
     }
     if ( !file.open(QIODevice::ReadOnly) ) {
-        qDebug().noquote().nospace() << "RHMEMORY: Could not open file " << filename;
+        std::cerr << "BNAMEMORY: Could not open file " << filename.toStdString() << "\n";
         return;
     }
+
+    m_vItems.clear();
 
     QDataStream stream( &file );
-    char *pFileType = new char[9];
-    std::memset(pFileType, 0, 9);
-    int nReaded = stream.readRawData(pFileType, 8);
-    if(nReaded > 0){
-        if(QString(pFileType) != "RHMEMORY"){
-            qDebug().noquote().nospace() << "RHMEMORY: File type did not match with RHMEMORY. " << filename;
-            return;
-        }
-    }else{
-        qDebug().noquote().nospace() << "RHMEMORY: Could not read file (1) " << filename;
+
+    int nInputBits = 0;
+    int nOutputBits = 0;
+    stream >> nInputBits;
+    stream >> nOutputBits;
+    if(nInputBits != m_nInputBits){
+        std::cerr << "Invalid input bits in memory file. Filename: "  << filename.toStdString() << " \n";
         return;
     }
 
-    stream >> m_nInputSize;
-    stream >> m_nOutputSize;
+    if(nOutputBits != m_nOutputBits){
+        std::cerr << "Invalid output bits in memory file.\n";
+        return;
+    }
+
     int nCount;
     stream >> nCount;
     for(int i = 0; i < nCount; i++){
-        BNAMemoryItem memoryItem;
-        stream >> memoryItem.input;
-        stream >> memoryItem.output;
-        m_vItems.push_back(memoryItem);
+        BNAMemoryItem *pBNAMemoryItem = new BNAMemoryItem(nInputBits, nOutputBits);
+        stream >> pBNAMemoryItem->input;
+        stream >> pBNAMemoryItem->output;
+        m_vItems.push_back(pBNAMemoryItem);
     }
 };
 
@@ -841,20 +844,13 @@ void BNAMemory::save(QString filename){
         file.remove();
     }
     if ( !file.open(QIODevice::WriteOnly) ) {
-        qDebug().noquote().nospace() << "Could not write file: " << filename;
+        std::cerr << "Could not write file: " << filename.toStdString() << "\n";
         return;
     }
     QDataStream stream( &file );
-    stream.writeRawData("RHMEMORY", 8);
-    stream << m_nInputSize << m_nOutputSize << m_vItems.size();
+    stream << m_nInputBits << m_nOutputBits << m_vItems.size();
     for (int i = 0; i < m_vItems.size(); i++) {
-        // QByteArray input(m_vItems[i].input);
-        /*while(input.size() < m_nInputSize){
-            input.append(char(0x00));
-        }*/
-        // stream.writeRawData(input.data(), input.size());
-        // stream.writeRawData(m_vItems[i].output.data(), m_vItems[i].output.size());
-        stream << m_vItems[i].input << m_vItems[i].output;
+        stream << m_vItems[i]->input << m_vItems[i]->output;
     }
     file.close();
 };
@@ -867,38 +863,38 @@ int BNAMemory::size(){
 
 // ----------------------------------------------------------------
 
-BNAMemoryItem BNAMemory::at(int i){
+BNAMemoryItem* BNAMemory::at(int i){
     return m_vItems[i];
 }
 
 // ----------------------------------------------------------------
 
+BNAMemoryItem * BNAMemory::createItem(){
+    return new BNAMemoryItem(m_nInputBits, m_nOutputBits);
+}
+
+// ----------------------------------------------------------------
+
+void BNAMemory::append(BNAMemoryItem *pBNAMemoryItem){
+    m_vItems.push_back(pBNAMemoryItem);
+}
+
+// ----------------------------------------------------------------
+
 void BNAMemory::printData(){
-    qDebug().noquote().nospace() <<  " --- Reverse Hash Memory --- ";
+    std::cerr <<  " --- BNA Memory --- \n";
     for (int i = 0; i < m_vItems.size(); i++) {
-        qDebug().noquote().nospace() << m_vItems[i].input.toHex() << " => " << m_vItems[i].output.toHex();
+        std::cerr << m_vItems[i]->input.toHex().toStdString() << " => " << m_vItems[i]->output.toHex().toStdString() << "\n";
     }
 }
 
 // ----------------------------------------------------------------
 
-void BNAMemory::generateData(int nCount){
+/*void BNAMemory::generateData(int nCount){
     m_vItems.clear();
     for(int i = 0; i < nCount; i++){
         BNAMemoryItem memoryItem;
         memoryItem.input.append(generateRandomString());
-        memoryItem.output = QCryptographicHash::hash(memoryItem.input, QCryptographicHash::Md5);
-        m_vItems.push_back(memoryItem);
-    }
-}
-
-// ----------------------------------------------------------------
-
-void BNAMemory::dataFrom(const QVector<QString> &vStrigns){
-    m_vItems.clear();
-    for(int i = 0; i < vStrigns.size(); i++){
-        BNAMemoryItem memoryItem;
-        memoryItem.input.append(vStrigns.at(i));
         memoryItem.output = QCryptographicHash::hash(memoryItem.input, QCryptographicHash::Md5);
         m_vItems.push_back(memoryItem);
     }
@@ -914,18 +910,50 @@ QString BNAMemory::alphabet() {
 
 QString BNAMemory::generateRandomString(){
     QString sAlphabet = alphabet();
-    int len = qrand() % (m_nInputSize) + 2;
+    int len = qrand() % (m_nInputBits) + 2;
     QString str = "";
     for (int i = 0; i < len; i++) {
         str += sAlphabet[qrand() % sAlphabet.length()];
     }
     return str;
 }
-
+*/
 // ----------------------------------------------------------------
 
 BNAProject::BNAProject(){
-    // nothing
+    m_nInputBits = 1;
+    m_nOutputBits = 1;
+    m_nDefaultCountNodes = 5;
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::setInputBits(int nInputBits){
+    m_nInputBits = nInputBits;
+}
+
+// ----------------------------------------------------------------
+
+int BNAProject::getInputBits(){
+    return m_nInputBits;
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::setOutputBits(int nOutputBits){
+    m_nOutputBits = nOutputBits;
+}
+
+// ----------------------------------------------------------------
+
+int BNAProject::getOutputBits(){
+    return m_nOutputBits;
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::setDefaultCountNodes(int nDefaultCountNodes){
+    m_nDefaultCountNodes = nDefaultCountNodes;
 }
 
 // ----------------------------------------------------------------
@@ -936,10 +964,197 @@ bool BNAProject::open(QString sDirPath){
         std::cerr << "[ERROR] BNA Project " << sDirPath.toStdString() << " does not exists in this folder.\n";
         return false;
     }
+    m_sDirPath = sDirPath;
+    loadProjFile();
+    m_pBNAMemory = new BNAMemory(m_nInputBits, m_nOutputBits);
+    m_pBNAMemory->load(m_sDirPath + "/" + m_sMemoryFileName);
+
+    for (int bitid = 0; bitid < m_nOutputBits; bitid++) {
+        QString m_sBitid = prepareName(bitid);
+        QString subdir = prepareSubdir(bitid);
+        QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".bna";
+        BNA *pBNA = new BNA();
+        pBNA->load(m_sFilename);
+        m_mBNA[bitid] = pBNA;
+    }
 
     return true;
 }
 
 // ----------------------------------------------------------------
 
+QString BNAProject::prepareName(int bitid) {
+    return QString::number(bitid).rightJustified(3, '0');
+}
 
+// ----------------------------------------------------------------
+
+QString BNAProject::prepareSubdir(int bitid){
+    QString m_sBitid = QString::number(bitid).rightJustified(3, '0');
+    return m_sBitid[0] + "/" + m_sBitid[1] + "/" + m_sBitid[2];
+}
+
+// ----------------------------------------------------------------
+
+bool BNAProject::create(QString sDirPath){
+    QDir dir(sDirPath);
+    if(dir.exists()){
+        std::cerr << "[ERROR] BNA Project " << sDirPath.toStdString() << " already exists.\n";
+        return false;
+    }
+    QDir curr(".");
+    curr.mkpath(sDirPath);
+    m_sDirPath = sDirPath;
+
+    for (int bitid = 0; bitid < m_nOutputBits; bitid++) {
+        QString m_sBitid = prepareName(bitid);
+        QString subdir = prepareSubdir(bitid);
+        curr.mkpath(m_sDirPath + "/" + subdir);
+        QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".bna";
+
+        QFile file(m_sFilename);
+        if(!file.exists()){
+            BNA *pBNA = new BNA();
+            pBNA->randomGenerate(m_nInputBits,1,m_nDefaultCountNodes);
+            pBNA->save(m_sFilename);
+            m_mBNA[bitid] = pBNA;
+        }
+    }
+    m_pBNAMemory = new BNAMemory(m_nInputBits, m_nOutputBits);
+    m_sMemoryFileName = "data.bnamemory";
+    m_pBNAMemory->save(m_sDirPath + "/" + m_sMemoryFileName);
+    saveProjFile();
+
+    return true;
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::saveProjFile(){
+    QJsonObject proj;
+    proj["input_bits"] = m_nInputBits;
+    proj["output_bits"] = m_nOutputBits;
+    proj["default_count_nodes"] = m_nDefaultCountNodes;
+    proj["memory"] = m_sMemoryFileName;
+
+    QJsonDocument doc(proj);
+    QString sProj = doc.toJson(QJsonDocument::Indented);
+    QString sFilename = m_sDirPath + "/bnaproject.json";
+    QFile file(sFilename);
+    if (file.exists()) {
+        file.remove();
+    }
+    if ( !file.open(QIODevice::WriteOnly) ) {
+        std::cerr << "[ERROR] Could not write file: " << sFilename.toStdString() << "\n";
+        return;
+    }
+
+    QTextStream stream( &file );
+    stream << sProj;
+    file.close();
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::loadProjFile(){
+    QString sFilename = m_sDirPath + "/bnaproject.json";
+    QFile file(sFilename);
+    if (!file.exists()) {
+        std::cerr << "[ERROR] Did not found file: " << sFilename.toStdString() << "\n";
+        return;
+    }
+
+    if ( !file.open(QIODevice::ReadOnly) ) {
+        std::cerr << "[ERROR] Could not read file: " << sFilename.toStdString() << "\n";
+        return;
+    }
+
+    QTextStream stream( &file );
+    QString sProj = stream.readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(sProj.toUtf8());
+    QJsonObject proj = doc.object();
+    m_nInputBits = proj["input_bits"].toInt();
+    m_nOutputBits = proj["output_bits"].toInt();
+    m_nDefaultCountNodes = proj["default_count_nodes"].toInt();
+    m_sMemoryFileName = proj["memory"].toString();
+}
+
+// ----------------------------------------------------------------
+
+BNAMemory *BNAProject::getBNAMemory(){
+    return m_pBNAMemory;
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::saveBNAMemory(){
+    m_pBNAMemory->save(m_sDirPath + "/" + m_sMemoryFileName);
+}
+
+// ----------------------------------------------------------------
+
+int BNAProject::calculate(int bitid, bool bEnableSleep){
+
+    if(bitid > m_nOutputBits){
+        std::cerr << "Invalid bitid max possible" << (m_nOutputBits-1) << "\n";
+        return 0;
+    }
+
+    if(!m_mBNA.contains(bitid)){
+        std::cerr << "Not found bitid in array\n";
+        return 0;
+    }
+
+    int nResult = 0;
+    BNA *pBNA = m_mBNA[bitid];
+    int nMemorySize = m_pBNAMemory->size();
+    for(int i = 0; i < nMemorySize; i++){
+        BNAMemoryItem *pBNAMemoryItem = m_pBNAMemory->at(i);
+        BNABit bResult = pBNA->calc(pBNAMemoryItem->inputToVectorBool(), 0);
+        if(pBNAMemoryItem->outputToVectorBool()[bitid] == bResult){
+            nResult++;
+        }
+
+        if(bEnableSleep && i > 0 && i % 1000 == 0){
+            QThread::sleep(1);
+        }
+    }
+    return nResult;
+}
+
+// ----------------------------------------------------------------
+
+BNA *BNAProject::getBNA(int bitid){
+    if(bitid > m_nOutputBits){
+        std::cerr << "Invalid bitid max possible" << (m_nOutputBits-1) << "\n";
+        return NULL;
+    }
+
+    if(!m_mBNA.contains(bitid)){
+        std::cerr << "Not found bitid in array\n";
+        return NULL;
+    }
+
+    return m_mBNA[bitid];
+}
+
+// ----------------------------------------------------------------
+
+void BNAProject::saveBNA(int bitid){
+    if(bitid > m_nOutputBits){
+        std::cerr << "Invalid bitid max possible" << (m_nOutputBits-1) << "\n";
+        return;
+    }
+
+    if(!m_mBNA.contains(bitid)){
+        std::cerr << "Not found bitid in array\n";
+        return;
+    }
+
+    QString m_sBitid = prepareName(bitid);
+    QString subdir = prepareSubdir(bitid);
+    QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".bna";
+    m_mBNA[bitid]->save(m_sFilename);
+}
+
+// ----------------------------------------------------------------

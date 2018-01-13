@@ -44,6 +44,19 @@ body {
     margin: 10px;
 }
 
+.card-background{
+	position: absolute;
+    height: 100%;
+    width: 30%;
+    background-color: red;
+    opacity: 0.2;
+}
+
+.card-body{
+	z-index: 10;
+    background-color: transparent;
+}
+
 .content{
 	display: block;
 	width: calc(100% - 60px);
