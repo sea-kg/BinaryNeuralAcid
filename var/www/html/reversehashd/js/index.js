@@ -192,7 +192,7 @@ function compareHashes(md5_request, md5_response){
 function hexToChar(h1){
 	var t = parseInt(h1, 16);
 	if((t >= 32 && t <= 126) || (t >= 128 && t <= 254)){
-		return return "&#" + t + ";";
+		return "&#" + t + ";";
 	}
 	return '.';
 }
