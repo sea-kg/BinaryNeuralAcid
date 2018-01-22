@@ -1,5 +1,4 @@
 #include "reverse_test.h"
-#include "../helpers.h"
 #include <iostream>
 #include <QByteArray>
 #include <QVector>

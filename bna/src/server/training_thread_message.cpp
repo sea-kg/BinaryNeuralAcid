@@ -1,6 +1,5 @@
 #include "training_thread_message.h"
 
-#include <helpers.h>
 #include <memory.h>
 #include <QFile>
 

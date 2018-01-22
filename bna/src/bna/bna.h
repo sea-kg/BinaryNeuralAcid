@@ -207,6 +207,8 @@ class BNAProject {
         BNAMemory *getBNAMemory();
         void saveBNAMemory();
         int calculate(int bitid, bool bEnableSleep = false);
+        void saveResult(int bitid, int nSuccess);
+        int loadResult(int bitid);
         BNA *getBNA(int bitid);
         void saveBNA(int bitid);
     private:

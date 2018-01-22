@@ -1,6 +1,5 @@
 #include <cmd_reverse_handler.h>
 #include <bna.h>
-#include <helpers.h>
 #include <memory.h>
 #include <QFile>
 #include <QJsonDocument>

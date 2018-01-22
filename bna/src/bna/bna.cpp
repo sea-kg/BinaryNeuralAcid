@@ -1124,6 +1124,49 @@ int BNAProject::calculate(int bitid, bool bEnableSleep){
 
 // ----------------------------------------------------------------
 
+void BNAProject::saveResult(int bitid, int nSuccess){
+	QString m_sBitid = prepareName(bitid);
+	QString subdir = prepareSubdir(bitid);
+	QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
+	
+	QFile file(m_sFilename);
+	if (file.exists()) {
+		file.remove();
+	}
+	if ( !file.open(QIODevice::WriteOnly) ) {
+		std::cout << "BNAProject/savePersent: Could not write file: " << m_sFilename.toStdString() << "\n";
+		return;
+	}
+	QDataStream stream( &file );
+	stream << nSuccess;
+	file.close();
+}
+
+// ----------------------------------------------------------------
+
+int BNAProject::loadResult(int bitid){
+	QString m_sBitid = prepareName(bitid);
+	QString subdir = prepareSubdir(bitid);
+	QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
+	
+	int nPersent = 0;
+	// load persent
+	QFile file(m_sFilename);
+	if (!file.exists()) {
+		std::cout << "BNAProject/loadPersent:  File did not exists: " << m_sFilename.toStdString() << "\n";
+	}else{
+		if (!file.open(QIODevice::ReadOnly) ) {
+			std::cout << "BNAProject/loadPersent: Could not open file " << m_sFilename.toStdString() << "\n";
+		}else{
+			QDataStream stream(&file);
+			stream >> nPersent;
+		}
+	}
+	return nPersent;
+}
+        
+// ----------------------------------------------------------------
+
 BNA *BNAProject::getBNA(int bitid){
     if(bitid > m_nOutputBits){
         std::cerr << "Invalid bitid max possible" << (m_nOutputBits-1) << "\n";

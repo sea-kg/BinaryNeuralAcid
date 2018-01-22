@@ -21,8 +21,8 @@ include(src/tests/tests.pri)
 RESOURCES = bna.qrc
 
 SOURCES += src/main.cpp \
-    src/helpers.cpp \
+    
 
 HEADERS += \
-    src/helpers.h \
+    
    

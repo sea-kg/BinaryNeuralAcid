@@ -1,6 +1,5 @@
 #include <cmd_statistics_handler.h>
 #include <bna.h>
-#include <helpers.h>
 #include <memory.h>
 #include <QFile>
 #include <QJsonArray>
@@ -21,7 +20,7 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRev
 	jsonData["rid"] = rid;
 	
 	QJsonArray statistics;
-	for (int bitid = 0; bitid < 440; bitid++) {
+	/*for (int bitid = 0; bitid < 440; bitid++) {
 		QString name = QString::number(bitid).rightJustified(3, '0');
 		QString subdir = name[0] + "/" + name[1] + "/" + name[2];
 
@@ -38,7 +37,7 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRev
             // pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename + "'does not exists"));
             // return;
 		}
-	}
+	}*/
 	jsonData["statistics"] = statistics;
 	pReverseHashDServer->sendMessage(pClient, jsonData);
 }

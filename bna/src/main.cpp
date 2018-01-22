@@ -1,5 +1,4 @@
 #include <iostream>
-#include "helpers.h"
 #include "memory.h"
 #include "tests/tests.h"
 #include <reversehashd_server.h>

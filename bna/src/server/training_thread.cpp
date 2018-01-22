@@ -1,7 +1,6 @@
 #include "training_thread.h"
 
 #include <bna.h>
-#include <helpers.h>
 #include <QFile>
 #include <iostream>
 
@@ -22,13 +21,15 @@ void TrainingThread::run(){
     int nMemorySize = m_pBNAProject->getBNAMemory()->size();
     int nOutputBits = m_pBNAProject->getOutputBits();
     int *pStatistics = new int[nOutputBits];
-    for(int i = 0; i < nOutputBits; i++){
-        pStatistics[i] = 0;
+    for(int bitid = 0; bitid < nOutputBits; bitid++){
+        pStatistics[bitid] = m_pBNAProject->loadResult(bitid);
+        m_pBNAProject->saveResult(bitid, pStatistics[bitid]);
     }
 	while(true){
         for(int bitid = 0; bitid < nOutputBits; bitid++){
             if(pStatistics[bitid] == 0){
                 pStatistics[bitid] = m_pBNAProject->calculate(bitid, true);
+                m_pBNAProject->saveResult(bitid, pStatistics[bitid]);
             }
             int p = pStatistics[bitid];
             if(p == nMemorySize){
@@ -59,6 +60,7 @@ void TrainingThread::run(){
                     m_pBNAProject->saveBNA(bitid);
                     pStatistics[bitid] = nSuccessCount;
                     p = nSuccessCount;
+                    m_pBNAProject->saveResult(bitid, p);
                     std::cout << bitid << " Updated to " << p << "/" << nMemorySize << "\n";
                     TrainingThreadMessage *pMsg = new TrainingThreadMessage(bitid);
                     pMsg->setMessage("New percent result set!");

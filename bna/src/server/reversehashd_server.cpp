@@ -8,7 +8,6 @@
 #include <create_cmd_handlers.h>
 
 #include <bna.h>
-#include <helpers.h>
 #include <QDir>
 #include <iostream>
 
