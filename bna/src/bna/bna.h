@@ -152,7 +152,6 @@ class BNA {
         QVector<BNAExpr *> m_vCalcExprs;
         QVector<BNAVar *> m_vCalcVars;
         QVector<BNAVar *> m_vCalcOutVars;
-
 };
 
 // -----------------------------------------------------------------
@@ -209,8 +208,10 @@ class BNAProject {
         int calculate(int bitid, bool bEnableSleep = false);
         void saveResult(int bitid, int nSuccess);
         int loadResult(int bitid);
+        QMap<int,int> &getResults();
         BNA *getBNA(int bitid);
         void saveBNA(int bitid);
+
     private:
         QString prepareName(int bitid);
         QString prepareSubdir(int bitid);
@@ -224,6 +225,7 @@ class BNAProject {
         int m_nDefaultCountNodes;
         QString m_sMemoryFileName;
         QMap<int,BNA *> m_mBNA;
+        QMap<int,int> m_mapResults;
 };
 
 

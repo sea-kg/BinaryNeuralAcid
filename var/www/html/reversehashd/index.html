@@ -21,31 +21,36 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="navbar-brand" href="#">Reverse Hash D</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+	<div class="container">
+	  <a class="navbar-brand" href="#">BNA</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Reverse <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="show_statistics" href="javascript:void();">Statistics</a>
-      </li>
-      
-      <li class="nav-item">
-        <a class="nav-link" href="./visualizer/">Visualizer</a>
-      </li>
-      
-    </ul>
-  </div>
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+		  <li class="nav-item active">
+			<a class="nav-link" href="#">Reverse <span class="sr-only">(current)</span></a>
+		  </li>
+		  
+		  <li class="nav-item">
+			<a class="nav-link" href="./visualizer/">Visualizer</a>
+		  </li>
+		  
+		</ul>
+	  </div>
+	</div>
 </nav>
 
 <div class="background"></div>
 
 <div class="container">
+	
+	<div id="statistics_page">
+		Statistics (white - cool, black - not cool):<br>
+		<canvas id="cnv_statistics" width="442" height="25"/>
+	</div>
+	
 	<br><br>
 	<div id="reverse_page">
 		<div class="form-group">
@@ -58,9 +63,7 @@
 		<pre id="reverse_result"></pre>
 	</div>
 
-	<div id="statistics_page" style="display: none">
-		
-	</div>
+	
 	
 	<div id="training_message" class="alert alert-danger" role="alert">...</div>
 	

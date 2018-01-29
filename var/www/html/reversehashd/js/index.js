@@ -66,25 +66,21 @@ function updatePercents(bitid, lp){
 }
 
 function loadStatistics(){
+	var canvas = document.getElementById("cnv_statistics");
+	var ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#000000";
+	ctx.fillRect(0,0,442,25);
+	ctx.fillStyle = "#FFFFFF";
+	ctx.fillRect(1,1,440,23);
+	
 	reversehashd.statistics().done(function(r){
-		// console.log(r);
-		$('#statistics_page').html('');
-		
 		for(var i = 0; i < r.statistics.length; i++){
 			var sbit = r.statistics[i];
-			$('#statistics_page').append(''
-				+ '<div class="card card-bit" id="' + sbit.name + '">'
-				+ '	<div class="card-background" style="width: ' + sbit.lp + '%"></div>'
-				+ '	<div class="card-body">'
-				+ '	<h5 class="card-title">' + sbit.name + '</h4>'
-				+ '	<p class="card-text">' + sbit.modified + '</p>'
-				+ '	<p class="card-text lp">' + sbit.lp + '%</p>'
-				// + ' <a href="#" class="btn btn-primary">Go somewhere</a>'
-				+ '</div>'
-				+ '</div>'
-			);
-
-			updatePercents(sbit.name, sbit.lp);
+			var p = Math.floor((sbit.result / 10000)*255);
+			var c = p.toString(16);
+			// console.log(p.toString(16));
+			ctx.fillStyle = "#" + c + c + c;
+			ctx.fillRect(1 + i,1,1,23);
 		}
 	}).fail(function(r){
 		console.error(r);
@@ -102,12 +98,7 @@ $(document).ready(function(){
 			return false;
 		}
 	});
-	
-	$('#show_statistics').unbind().bind('click', function(){
-		$('#reverse_page').hide();
-		$('#statistics_page').show();
-		loadStatistics();
-	})
+	loadStatistics();
 });
 
 

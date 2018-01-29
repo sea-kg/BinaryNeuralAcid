@@ -47,6 +47,12 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
     QByteArray result_md5 = QCryptographicHash::hash(QString(text).toUtf8(), QCryptographicHash::Md5);
 	jsonData["result_md5"] = QString(result_md5.toHex());
 
+    /*QString alphabet = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]{}:,.<>/?\"'\\*&^%$#!-+=";
+    for(int i = 0; i < text.size(); i++){
+        char ch = text.at(i);
+        // if(alphabet.contains(QChar(ch));
+    }*/
+
 	QJsonDocument doc(jsonData);
 	QString message = doc.toJson(QJsonDocument::Compact);
 	qDebug() << QDateTime::currentDateTimeUtc().toString() << " [WS] >>> " << message;

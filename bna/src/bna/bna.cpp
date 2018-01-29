@@ -976,6 +976,7 @@ bool BNAProject::open(QString sDirPath){
         BNA *pBNA = new BNA();
         pBNA->load(m_sFilename);
         m_mBNA[bitid] = pBNA;
+        m_mapResults[bitid] = loadResult(bitid);
     }
 
     return true;
@@ -1019,6 +1020,8 @@ bool BNAProject::create(QString sDirPath){
             pBNA->save(m_sFilename);
             m_mBNA[bitid] = pBNA;
         }
+        m_mapResults[bitid] = 0;
+        saveResult(bitid, 0);
     }
     m_pBNAMemory = new BNAMemory(m_nInputBits, m_nOutputBits);
     m_sMemoryFileName = "data.bnamemory";
@@ -1124,7 +1127,7 @@ int BNAProject::calculate(int bitid, bool bEnableSleep){
 
 // ----------------------------------------------------------------
 
-void BNAProject::saveResult(int bitid, int nSuccess){
+void BNAProject::saveResult(int bitid, int nResult){
 	QString m_sBitid = prepareName(bitid);
 	QString subdir = prepareSubdir(bitid);
 	QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
@@ -1138,7 +1141,8 @@ void BNAProject::saveResult(int bitid, int nSuccess){
 		return;
 	}
 	QDataStream stream( &file );
-	stream << nSuccess;
+    stream << nResult;
+    m_mapResults[bitid] = nResult;
 	file.close();
 }
 
@@ -1149,7 +1153,7 @@ int BNAProject::loadResult(int bitid){
 	QString subdir = prepareSubdir(bitid);
 	QString m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
 	
-	int nPersent = 0;
+    int nResult = 0;
 	// load persent
 	QFile file(m_sFilename);
 	if (!file.exists()) {
@@ -1159,12 +1163,19 @@ int BNAProject::loadResult(int bitid){
 			std::cout << "BNAProject/loadPersent: Could not open file " << m_sFilename.toStdString() << "\n";
 		}else{
 			QDataStream stream(&file);
-			stream >> nPersent;
+            stream >> nResult;
 		}
 	}
-	return nPersent;
+    m_mapResults[bitid] = nResult;
+    return nResult;
 }
         
+// ----------------------------------------------------------------
+
+QMap<int,int> &BNAProject::getResults(){
+    return m_mapResults;
+}
+
 // ----------------------------------------------------------------
 
 BNA *BNAProject::getBNA(int bitid){
