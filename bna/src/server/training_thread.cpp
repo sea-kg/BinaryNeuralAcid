@@ -78,6 +78,9 @@ void TrainingThread::run(){
 				}
 			}
 			
+			// revert to original before goto next bit
+			pBNA->importFromByteArray(prevBna);
+			
             {
                 TrainingThreadMessage *pMsg = new TrainingThreadMessage(bitid);
                 pMsg->setMessage("Result: " + QString::number((p*100)/nMemorySize) + "%");
