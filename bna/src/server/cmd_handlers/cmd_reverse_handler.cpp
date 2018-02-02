@@ -44,7 +44,7 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	jsonData["answer_hex"] = answer_hex;
 	jsonData["answer_base64"] = QString(text.toBase64());
 	jsonData["request_md5"] = hash; // TODO check comeback reverse
-    QByteArray result_md5 = QCryptographicHash::hash(QString(text).toUtf8(), QCryptographicHash::Md5);
+	QByteArray result_md5 = QCryptographicHash::hash(text, QCryptographicHash::Md5);
 	jsonData["result_md5"] = QString(result_md5.toHex());
 
     /*QString alphabet = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]{}:,.<>/?\"'\\*&^%$#!-+=";
