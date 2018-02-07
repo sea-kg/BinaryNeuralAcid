@@ -8,7 +8,8 @@ HEADERS += \
     src/tests/reverse_test.h \
     src/tests/random_mutations_test.h \
     $$PWD/learning_test.h \
-    $$PWD/bnaoper_test.h
+    $$PWD/bnaoper_test.h \
+    $$PWD/brut_test.h
 
 SOURCES += \
     src/tests/tests.cpp \
@@ -17,4 +18,5 @@ SOURCES += \
     src/tests/reverse_test.cpp \
     src/tests/random_mutations_test.cpp \
     $$PWD/learning_test.cpp \
-    $$PWD/bnaoper_test.cpp
+    $$PWD/bnaoper_test.cpp \
+    $$PWD/brut_test.cpp

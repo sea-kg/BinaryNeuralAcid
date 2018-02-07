@@ -17,12 +17,14 @@
 #include "tests/bnaoper_test.h"
 #include "tests/reverse_test.h"
 #include "tests/learning_test.h"
+#include "tests/brut_test.h"
 
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
 		<< "  Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
 		<< "\t --run-tests                           - run tests\n"
         << "\t --run-learning-test                   - run learning test\n"
+        << "\t --run-brut-test                       - run brut test\n"
 		<< "\t --run-random-remove-vertex-test       - run random remove vertex test\n"
 		<< "\t --reset-persents                      - reset last persents from every bit and create missing files\n" 
         << "\t --server                              - start server\n"
@@ -93,6 +95,17 @@ int main(int argc, char* argv[])
         IReverseHashTest *pTest2 = new Reverse_Test();
         std::cout << " Run " << pTest2->name().toStdString() << " ... \n";
         if(!pTest2->run()){
+            std::cout << "\t  ->  [FAIL] \n";
+        }else{
+            std::cout << "\t  ->  [OK] \n";
+        }
+        return 0;
+    }
+    
+     if(vParams.contains("--run-brut-test")){
+        IReverseHashTest *pTest = new Brut_Test();
+        std::cout << " Run " << pTest->name().toStdString() << " ... \n";
+        if(!pTest->run()){
             std::cout << "\t  ->  [FAIL] \n";
         }else{
             std::cout << "\t  ->  [OK] \n";
