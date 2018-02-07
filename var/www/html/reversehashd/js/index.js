@@ -65,6 +65,15 @@ function updatePercents(bitid, lp){
 	$('#bit' + bitid + " .lp").html(lp + "%");
 }
 
+function cnv_statistics_more(){
+	var el = $('#cnv_statistics_more');
+	if(el.is(":visible")){
+		$('#cnv_statistics_more').hide();
+	} else {
+		$('#cnv_statistics_more').show();
+	}
+}
+
 function loadStatistics(){
 	var canvas = document.getElementById("cnv_statistics");
 	var ctx = canvas.getContext("2d");
@@ -72,7 +81,7 @@ function loadStatistics(){
 	ctx.fillRect(0,0,442,25);
 	ctx.fillStyle = "#FFFFFF";
 	ctx.fillRect(1,1,440,23);
-	
+	var sMore = "";
 	reversehashd.statistics().done(function(r){
 		for(var i = 0; i < r.statistics.length; i++){
 			var sbit = r.statistics[i];
@@ -81,7 +90,9 @@ function loadStatistics(){
 			// console.log(p.toString(16));
 			ctx.fillStyle = "#" + c + c + c;
 			ctx.fillRect(1 + i,1,1,23);
+			sMore += sbit.id + " = " + Math.floor((sbit.result / 10000)*100) + "%<br>";
 		}
+		$('#cnv_statistics_more').html(sMore);
 	}).fail(function(r){
 		console.error(r);
 		$('#statistics_page').html('failed');
