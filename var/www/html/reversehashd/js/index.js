@@ -21,16 +21,39 @@ window.reversehashd.handlerTrainingThreadInfo = function(response){
 
 reversehashd.initWebsocket();
 
+
 function try_reverse(){
 	$('#reverse_result').html('Send request...');
+	clearMD5();
 	showLoading();
 	reversehashd.reverse($('#input_md5').val()).done(function(r){
 		console.log("done");
 		console.log("response: ", r);
 		setTimeout(function(){
-			hideLoading();
+			
+			md5_request_bin = hex2bin(r.request_md5);
+			md5_response_bin = hex2bin(r.result_md5);
+			drawMD5('cnv_md5_1', md5_request_bin, "#000000");
+			drawMD5('cnv_md5_2', md5_response_bin, "#000000");
+			
+			$('#md5_expected').html(r.request_md5);
+			$('#md5_got').html(r.result_md5);
+			
+			var md5_xor = "";
+			var sum = 0;
+			for(var i = 0; i < 128; i++){
+				if(md5_request_bin[i] == md5_response_bin[i]){
+					md5_xor += "1";
+					sum++;
+				}else{
+					md5_xor += "0";
+				}
+			}
+			drawMD5('cnv_md5_3', md5_xor, "#ff0000");
+			$('#md5_xor_sum').html(sum + '/' + md5_request_bin.length);
+			
 			$('#reverse_result').html('');
-			$('#reverse_result').append(compareHashes(r.request_md5, r.result_md5));
+			// $('#reverse_result').append(compareHashes(r.request_md5, r.result_md5));
 			if(r.request_md5 == r.result_md5){
 				$('#reverse_result').append('Cool!!! I found it:\n');
 				$('#reverse_result').append('Base64: ' + r.answer_base64 + "\n");
@@ -39,8 +62,8 @@ function try_reverse(){
 			}else{
 				$('#reverse_result').append('\nNot found matches.\n\n Response hex is: \n' + prepareHex(r.answer_hex) + "\n");
 			}
+			hideLoading();
 		},2000);
-		hideLoading();
 	}).fail(function(r){
 		console.log("fail");
 		setTimeout(function(){
@@ -99,6 +122,31 @@ function loadStatistics(){
 	});
 }
 
+function drawMD5(elid, s, color){
+	var canvas = document.getElementById(elid);
+	var ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#000000";
+	ctx.fillRect(0,0,258,130);
+	ctx.fillStyle = "#FFFFFF";
+	ctx.fillRect(1,1,256,128);
+	for(var y = 0; y < 16; y++){
+		for(var x = 0; x < 16; x++){
+			var c = s[y*16 + x];
+			if(c == "1"){
+				ctx.fillStyle = color;
+				ctx.fillRect(1 + x*16,1+y*16,16,16);
+			}
+		}
+	}
+}
+
+function clearMD5(){
+	var md5_0 = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
+	drawMD5('cnv_md5_1', md5_0, "#000000");
+	drawMD5('cnv_md5_2', md5_0, "#000000");
+	drawMD5('cnv_md5_3', md5_0, "#ff0000");
+}
 
 $(document).ready(function(){
 	$('#try_reverse').unbind().bind('click', try_reverse);
@@ -110,44 +158,26 @@ $(document).ready(function(){
 		}
 	});
 	loadStatistics();
+	clearMD5();
 });
 
-
 function showLoading(){
-	$('.inputform').css({'opacity': 0});
-	setTimeout(function(){
-		$('.background').show();
-		$('.background').css({'opacity': 1});
-		$('.inputform').hide();
-	},1000);
+	$('.background').show();
+	$('.background').css({'opacity': 1});
 }
 
 function hideLoading(){
 	$('.background').css({'opacity': 0});
 	setTimeout(function(){
 		$('.background').hide();
-		$('.inputform').show();
-		$('.inputform').css({'opacity': 1});
-	},1000);
+	}, 200);
 }
 
 var hex2bin_data = {
-	'0': '0000',
-	'1': '0001',
-	'2': '0010',
-	'3': '0011',
-	'4': '0100',
-	'5': '0101',
-	'6': '0110',
-	'7': '0111',
-	'8': '1000',
-	'9': '1001',
-	'a': '1010',
-	'b': '1011',
-	'c': '1100',
-	'd': '1101',
-	'e': '1110',
-	'f': '1111'
+	'0': '0000', '1': '0001', '2': '0010', '3': '0011',
+	'4': '0100', '5': '0101', '6': '0110', '7': '0111',
+	'8': '1000', '9': '1001', 'a': '1010', 'b': '1011',
+	'c': '1100', 'd': '1101', 'e': '1110', 'f': '1111'
 };
 
 function hex2bin(s){
@@ -156,39 +186,6 @@ function hex2bin(s){
 		res += hex2bin_data[s[i]];
 	}
 	return res;
-}
-
-function compareHashes(md5_request, md5_response){
-	var r1 = ' Request md5-hash: ';
-	var r2 = 'Response md5-hash: ';
-	for(var i = 0; i < md5_request.length; i++){
-		if(md5_request[i] == md5_response[i]){
-			r1 += '<div class="equals-char">' + md5_request[i] + '</div>';
-			r2 += '<div class="equals-char">' + md5_response[i] + '</div>';
-		}else{
-			r1 += md5_request[i];
-			r2 += md5_response[i];
-		}
-	}
-	
-	md5_request_bin = hex2bin(md5_request);
-	md5_response_bin = hex2bin(md5_response);
-	
-	var r1_bin = ' Request md5-hash (bit): ';
-	var r2_bin = 'Response md5-hash (bit): ';
-	var sum = 0;
-	for(var i = 0; i < md5_request_bin.length; i++){
-		if(md5_request_bin[i] == md5_response_bin[i]){
-			r1_bin += '<div class="equals-char">' + md5_request_bin[i] + '</div>';
-			r2_bin += '<div class="equals-char">' + md5_response_bin[i] + '</div>';
-			sum++;
-		}else{
-			r1_bin += md5_request_bin[i];
-			r2_bin += md5_response_bin[i];
-		}
-	}
-
-	return r1 + '\n' + r2 + '\n' + r1_bin + '\n' + r2_bin + '\n Summary bits: ' + sum + '/' + md5_request_bin.length + '\n';
 }
 
 function hexToChar(h1){
@@ -203,10 +200,10 @@ function prepareHex(hex){
 	var r1 = '==================== HEX =======================\n';
 	console.log(hex.length);
 	console.log(hex);
-	
+
 	var l1 = '' 
 	var l2 = '';
-	
+
 	for(var i = 0; i < hex.length; i = i + 2){
 		var h1 = hex[i] + '' + hex[i+1];
 		

@@ -62,10 +62,44 @@
 		</div>
 		<button id="try_reverse" class="btn btn-primary">Try reverse</button>
 		<br><br>
+		<table>
+			<tr>
+				<td align=center>
+					<b>md5 expected (binary)</b>
+					<div id="md5_expected"></div>
+				</td>
+				<td></td>
+				<td align=center>
+					<b>md5 got (binary)</b>
+					<div id="md5_got"></div>
+				</td>
+				<td></td>
+				<td align=center>
+					<b>Equals:</b>
+					<div id="md5_xor_sum"></div>
+				</td>
+			</tr>
+			<tr>
+				<td align=center>
+					<canvas id="cnv_md5_1" width="258" height="130"></canvas>
+				</td>
+				<td align=center>
+					XOR
+				</td>
+				<td align=center>
+					<canvas id="cnv_md5_2" width="258" height="130"></canvas>
+				</td>
+				<td align=center>
+					=
+				</td>
+				<td align=center>
+					<canvas id="cnv_md5_3" width="258" height="130"></canvas>
+				</td>
+			</tr>
+		</table>
+		
 		<pre id="reverse_result"></pre>
 	</div>
-
-	
 	
 	<div id="training_message" class="alert alert-danger" role="alert">...</div>
 	
