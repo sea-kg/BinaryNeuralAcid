@@ -24,52 +24,86 @@ reversehashd.initWebsocket();
 
 function try_reverse(){
 	$('#reverse_result').html('Send request...');
+	$('#reverse_result2').html('Send request...');
 	clearMD5();
+	$('#md5_expected').html('');
+	$('#md5_got').html('');
+	$('#md5_xor_sum').html('');
+	$('#md5_expected2').html('');
+	$('#md5_got2').html('');
+	$('#md5_xor_sum2').html('');
+	
 	showLoading();
 	reversehashd.reverse($('#input_md5').val()).done(function(r){
 		console.log("done");
 		console.log("response: ", r);
-		setTimeout(function(){
 			
-			md5_request_bin = hex2bin(r.request_md5);
-			md5_response_bin = hex2bin(r.result_md5);
-			drawMD5('cnv_md5_1', md5_request_bin, "#000000");
-			drawMD5('cnv_md5_2', md5_response_bin, "#000000");
-			
-			$('#md5_expected').html(r.request_md5);
-			$('#md5_got').html(r.result_md5);
-			
-			var md5_xor = "";
-			var sum = 0;
-			for(var i = 0; i < 128; i++){
-				if(md5_request_bin[i] == md5_response_bin[i]){
-					md5_xor += "1";
-					sum++;
-				}else{
-					md5_xor += "0";
-				}
-			}
-			drawMD5('cnv_md5_3', md5_xor, "#ff0000");
-			$('#md5_xor_sum').html(sum + '/' + md5_request_bin.length);
-			
-			$('#reverse_result').html('');
-			// $('#reverse_result').append(compareHashes(r.request_md5, r.result_md5));
-			if(r.request_md5 == r.result_md5){
-				$('#reverse_result').append('Cool!!! I found it:\n');
-				$('#reverse_result').append('Base64: ' + r.answer_base64 + "\n");
-				$('#reverse_result').append('HEX: ' + r.answer_hex + "\n");
-				$('#reverse_result').append('Text: ' + r.answer_text + "\n");
+		md5_request_bin = hex2bin(r.request_md5);
+		md5_response_bin = hex2bin(r.result_md5);
+		drawMD5('cnv_md5_1', md5_request_bin, "#000000");
+		drawMD5('cnv_md5_2', md5_response_bin, "#000000");
+		
+		$('#md5_expected').html(r.request_md5);
+		$('#md5_got').html(r.result_md5);
+		
+		var md5_xor = "";
+		var sum = 0;
+		for(var i = 0; i < 128; i++){
+			if(md5_request_bin[i] == md5_response_bin[i]){
+				md5_xor += "1";
+				sum++;
 			}else{
-				$('#reverse_result').append('\nNot found matches.\n\n Response hex is: \n' + prepareHex(r.answer_hex) + "\n");
+				md5_xor += "0";
 			}
-			hideLoading();
-		},2000);
+		}
+		drawMD5('cnv_md5_3', md5_xor, "#ff0000");
+		$('#md5_xor_sum').html(sum + '/' + md5_request_bin.length);
+		
+		$('#reverse_result').html('');
+		// $('#reverse_result').append(compareHashes(r.request_md5, r.result_md5));
+		if(r.request_md5 == r.result_md5){
+			$('#reverse_result').append('Cool!!! I found it:\n');
+			$('#reverse_result').append('Base64: ' + r.answer_base64 + "\n");
+			$('#reverse_result').append('HEX: ' + r.answer_hex + "\n");
+			$('#reverse_result').append('Text: ' + r.answer_text + "\n");
+		}else{
+			$('#reverse_result').append('\nNot found matches.\n\n Response hex is: \n' + prepareHex(r.answer_hex) + "\n");
+		}
+		
+		// step2
+		md5_response2_bin = hex2bin(r.step2.result_md5);
+		drawMD5('cnv_md5_2_1', md5_request_bin, "#000000");
+		drawMD5('cnv_md5_2_2', md5_response2_bin, "#000000");
+		
+		$('#md5_expected2').html(r.request_md5);
+		$('#md5_got2').html(r.step2.result_md5);
+		
+		var md5_xor2 = "";
+		sum = 0;
+		for(var i = 0; i < 128; i++){
+			if(md5_request_bin[i] == md5_response2_bin[i]){
+				md5_xor2 += "1";
+				sum++;
+			}else{
+				md5_xor2 += "0";
+			}
+		}
+		drawMD5('cnv_md5_2_3', md5_xor2, "#ff0000");
+		$('#md5_xor_sum2').html(sum + '/' + md5_request_bin.length);
+		$('#reverse_result2').html('');
+		if(r.request_md5 == r.step2.result_md5){
+			$('#reverse_result2').append("Cool!!! I found it:\n");
+			$('#reverse_result2').append(r.step2.answer_text);
+		}else{
+			$('#reverse_result2').append("Not equal:\n");
+			$('#reverse_result2').append(r.step2.answer_text);
+		}
+		hideLoading();
+		
 	}).fail(function(r){
-		console.log("fail");
-		setTimeout(function(){
-			hideLoading();
-			$('#reverse_result').html("Error " + r.code + "): " + r.error);
-		},2000);
+		console.log("Error: ", r);
+		hideLoading();
+		$('#reverse_result').html("Error " + r.code + "): " + r.error);
 	});
 }
 
@@ -146,6 +180,10 @@ function clearMD5(){
 	drawMD5('cnv_md5_1', md5_0, "#000000");
 	drawMD5('cnv_md5_2', md5_0, "#000000");
 	drawMD5('cnv_md5_3', md5_0, "#ff0000");
+	
+	drawMD5('cnv_md5_2_1', md5_0, "#000000");
+	drawMD5('cnv_md5_2_2', md5_0, "#000000");
+	drawMD5('cnv_md5_2_3', md5_0, "#ff0000");
 }
 
 $(document).ready(function(){
