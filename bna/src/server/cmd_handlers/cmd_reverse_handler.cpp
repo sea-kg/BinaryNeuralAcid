@@ -47,6 +47,70 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
 	QByteArray result_md5 = QCryptographicHash::hash(text, QCryptographicHash::Md5);
 	jsonData["result_md5"] = QString(result_md5.toHex());
 
+    QJsonObject jsonData2;
+    // step2
+    {
+        QString sText_bin = BNAConvertHexToBin(hash);
+        QByteArray md5Text = QCryptographicHash::hash(text, QCryptographicHash::Md5);
+        QString sMd5Text = QString(md5Text.toHex());
+
+        int nPrevResult = BNACalculateBinDistance(BNAConvertHexToBin(hash), BNAConvertHexToBin(sMd5Text));
+
+        // bool
+        bool bExists = true;
+        while(bExists){
+            bExists = false;
+            QByteArray textNew = BNATryBrutFast1(text, hash);
+            textNew = BNATryBrutFast2(textNew, hash);
+
+            QByteArray md5TextNew = QCryptographicHash::hash(textNew, QCryptographicHash::Md5);
+            QString sMd5TextNew = QString(md5TextNew.toHex());
+
+            QString sTextNew_bin = BNAConvertHexToBin(sMd5TextNew);
+            int nNewResult = BNACalculateBinDistance(sText_bin, sTextNew_bin);
+            if(nNewResult > nPrevResult){
+                bExists = true;
+                text = QByteArray(textNew);
+                nPrevResult = nNewResult;
+                // std::cout << "Distance: " << nPrevResult << "\n";
+            }
+        }
+
+        text = QString(text).toLatin1();
+        md5Text = QCryptographicHash::hash(text, QCryptographicHash::Md5);
+        sMd5Text = QString(md5Text.toHex());
+
+        nPrevResult = BNACalculateBinDistance(BNAConvertHexToBin(hash), BNAConvertHexToBin(sMd5Text));
+        // std::cout << "Start: " << nPrevResult << "\n";
+
+        bExists = true;
+        while(bExists){
+            bExists = false;
+            QByteArray textNew = BNATryBrutFast1(text, hash);
+            textNew = BNATryBrutFast2(textNew, hash);
+
+            QByteArray md5TextNew = QCryptographicHash::hash(textNew, QCryptographicHash::Md5);
+            QString sMd5TextNew = QString(md5TextNew.toHex());
+
+            QString sTextNew_bin = BNAConvertHexToBin(sMd5TextNew);
+
+            int nNewResult = BNACalculateBinDistance(sText_bin, sTextNew_bin);
+            if(nNewResult > nPrevResult){
+                bExists = true;
+                text = QByteArray(textNew);
+                nPrevResult = nNewResult;
+                // std::cout << "Distance: " << nPrevResult << "\n";
+            }
+        }
+
+        jsonData2["answer_text"] = QString(text);
+        QByteArray result_md5 = QCryptographicHash::hash(text, QCryptographicHash::Md5);
+        jsonData2["result_md5"] = QString(result_md5.toHex());
+        jsonData2["distance"] = nPrevResult;
+        jsonData["step2"] = jsonData2;
+    }
+
+
     /*QString alphabet = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]{}:,.<>/?\"'\\*&^%$#!-+=";
     for(int i = 0; i < text.size(); i++){
         char ch = text.at(i);
