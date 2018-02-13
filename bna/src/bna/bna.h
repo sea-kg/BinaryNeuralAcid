@@ -15,6 +15,12 @@ void BNAConvertHEXStringToVBool(QString &in, QVector<BNABit> &vars, int size);
 void BNAConvertArrayToVBool(QByteArray &in, QVector<BNABit> &vars, int size);
 QString BNAConvertVBoolHEXString(QVector<BNABit> &vars);
 QString BNAConvertCharToHexCode(unsigned char c);
+QString BNAConvertHexToBin(QString sHex);
+QString BNAConvertBinToHex(QString sBin);
+int BNACalculateBinDistance(QString sBin1, QString sBin2);
+
+QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const QString &md5ExpectedHex);
+QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const QString &md5ExpectedHex);
 
 // -----------------------------------------------------------------
 

@@ -12,6 +12,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QThread>
+#include <QCryptographicHash>
 
 // -----------------------------------------------------------------
 // function for convert hex string to array bna bit
@@ -106,6 +107,93 @@ QString BNAConvertCharToHexCode(unsigned char c) {
 
 // ----------------------------------------------------------------
 
+static QMap<QChar, QString> gMapHEX2BIN;
+
+void initMapHEX2BIN(){
+    if(gMapHEX2BIN.size() == 0){
+        gMapHEX2BIN['0'] = "0000";
+        gMapHEX2BIN['1'] = "0001";
+        gMapHEX2BIN['2'] = "0010";
+        gMapHEX2BIN['3'] = "0011";
+        gMapHEX2BIN['4'] = "0100";
+        gMapHEX2BIN['5'] = "0101";
+        gMapHEX2BIN['6'] = "0110";
+        gMapHEX2BIN['7'] = "0111";
+        gMapHEX2BIN['8'] = "1000";
+        gMapHEX2BIN['9'] = "1001";
+        gMapHEX2BIN['A'] = "1010";
+        gMapHEX2BIN['B'] = "1011";
+        gMapHEX2BIN['C'] = "1100";
+        gMapHEX2BIN['D'] = "1101";
+        gMapHEX2BIN['E'] = "1110";
+        gMapHEX2BIN['F'] = "1111";
+        gMapHEX2BIN['a'] = gMapHEX2BIN['A'];
+        gMapHEX2BIN['b'] = gMapHEX2BIN['B'];
+        gMapHEX2BIN['c'] = gMapHEX2BIN['C'];
+        gMapHEX2BIN['d'] = gMapHEX2BIN['D'];
+        gMapHEX2BIN['e'] = gMapHEX2BIN['E'];
+        gMapHEX2BIN['f'] = gMapHEX2BIN['F'];
+    }
+}
+
+// ----------------------------------------------------------------
+
+QString BNAConvertHexToBin(QString sHex){
+    initMapHEX2BIN();
+    QString sResult = "";
+    for (int i = 0; i < sHex.length(); i++){
+        QChar ch = sHex.at(i);
+        if(gMapHEX2BIN.contains(ch)){
+            sResult += gMapHEX2BIN[ch];
+        }else{
+            std::cerr << "[ERROR] Unknown hex char\n";
+        }
+    }
+    return sResult;
+}
+
+// ----------------------------------------------------------------
+
+QString BNAConvertBinToHex(QString sBin) {
+    QString result = "";
+    unsigned char c = 0;
+    for(int i = 0; i < sBin.length(); i++){
+        QChar ch = sBin.at(i);
+        if(i % 4 == 0 && i != 0){
+            result += BNAConvertCharToHexCode(c);
+            c = 0x00;
+        }
+        c = (c << 1) | (ch == '1' ? 0x01 : 0x00);
+    }
+    result += BNAConvertCharToHexCode(c);
+    return result;
+}
+
+// ----------------------------------------------------------------
+
+int BNACalculateBinDistance(QString sBin1, QString sBin2){
+    if(sBin1.length() != sBin2.length()){
+        std::cerr << "[ERROR] Different length \n";
+        return 0;
+    }
+
+    if(sBin1.length() == 0 || sBin2.length() == 0){
+        std::cerr << "[ERROR] Length is 0 - wrong \n";
+        return 0;
+    }
+    int nDistance = 0;
+    for (int i = 0; i < sBin1.length(); i++){
+        QChar ch1 = sBin1.at(i);
+        QChar ch2 = sBin2.at(i);
+        if(ch1 == ch2){
+            nDistance++;
+        }
+    }
+    return nDistance;
+}
+
+// ----------------------------------------------------------------
+
 QString BNAConvertVBoolHEXString(QVector<BNABit> &vars) {
     QString result = "";
     unsigned char c = 0;
@@ -146,6 +234,101 @@ void BNAConvertArrayToVBool(QByteArray &in, QVector<BNABit> &vars, int size) {
     while (vars.size() < size) {
         vars.push_back(B_0);
     }
+}
+
+// -----------------------------------------------------------------
+
+QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const QString &sMd5ExpectedHex){
+    // TODO create input funtor
+    QByteArray result_md5 = QCryptographicHash::hash(arrReversedText, QCryptographicHash::Md5);
+    QString sReverseHash1 = QString(result_md5.toHex());
+
+    QString sMd5ExpectedHex_bin = BNAConvertHexToBin(sMd5ExpectedHex);
+    QString sReverseHash1_bin = BNAConvertHexToBin(sReverseHash1);
+    int nPrevDistance = BNACalculateBinDistance(sReverseHash1_bin, sMd5ExpectedHex_bin);
+    QString sPrevText = BNAConvertHexToBin(arrReversedText.toHex());
+
+    bool bExists = true;
+    int nRound = 0;
+    while(bExists){
+        bExists = false;
+        std::cout << "Round(1) #" << nRound << "\n";
+        nRound++;
+        QString sTmpPrevText = QString(sPrevText);
+        for(int i = 0; i < sTmpPrevText.length(); i++){
+            QChar ch = sTmpPrevText.at(i);
+            ch = ch == '1' ? '0' : '1';
+            sTmpPrevText[i] = ch;
+            QString sTmpHex = BNAConvertBinToHex(sTmpPrevText);
+            QByteArray bTmpText =  QByteArray::fromHex(sTmpHex.toLatin1());
+            QByteArray sTmpMD5 = QCryptographicHash::hash(bTmpText, QCryptographicHash::Md5);
+            QString sTmpMD5_hex = QString(sTmpMD5.toHex());
+            QString sTmpMD5_bin = BNAConvertHexToBin(sTmpMD5_hex);
+            int nNewDistance = BNACalculateBinDistance(sMd5ExpectedHex_bin, sTmpMD5_bin);
+            if(nNewDistance > nPrevDistance){
+                sPrevText = QString(sTmpPrevText);
+                nPrevDistance = nNewDistance;
+                bExists = true;
+            }
+            ch = ch == '1' ? '0' : '1';
+            sTmpPrevText[i] = ch;
+        }
+    }
+
+    QByteArray bTmpText =  QByteArray::fromHex(BNAConvertBinToHex(sPrevText).toLatin1());
+    return bTmpText;
+
+}
+
+// -----------------------------------------------------------------
+
+QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const QString &sMd5ExpectedHex){
+    // TODO create input funtor
+    QByteArray result_md5 = QCryptographicHash::hash(arrReversedText, QCryptographicHash::Md5);
+    QString sReverseHash1 = QString(result_md5.toHex());
+
+    QString sMd5ExpectedHex_bin = BNAConvertHexToBin(sMd5ExpectedHex);
+    QString sReverseHash1_bin = BNAConvertHexToBin(sReverseHash1);
+    int nPrevDistance = BNACalculateBinDistance(sReverseHash1_bin, sMd5ExpectedHex_bin);
+    QString sPrevText = BNAConvertHexToBin(arrReversedText.toHex());
+
+    bool bExists = true;
+    int nRound = 0;
+    while(bExists){
+        bExists = false;
+        std::cout << "Round(2) #" << nRound << "\n";
+        nRound++;
+        QString sTmpPrevText = QString(sPrevText);
+        for(int x = 0; x < sTmpPrevText.length(); x++){
+            for(int y = 0; y < sTmpPrevText.length(); y++){
+                if(x == y) continue;
+                QChar chX = sTmpPrevText.at(x);
+                QChar chY = sTmpPrevText.at(y);
+                chX = chX == '1' ? '0' : '1';
+                chY = chY == '1' ? '0' : '1';
+                sTmpPrevText[x] = chX;
+                sTmpPrevText[y] = chY;
+                QString sTmpHex = BNAConvertBinToHex(sTmpPrevText);
+                QByteArray bTmpText =  QByteArray::fromHex(sTmpHex.toLatin1());
+                QByteArray sTmpMD5 = QCryptographicHash::hash(bTmpText, QCryptographicHash::Md5);
+                QString sTmpMD5_hex = QString(sTmpMD5.toHex());
+                QString sTmpMD5_bin = BNAConvertHexToBin(sTmpMD5_hex);
+                int nNewDistance = BNACalculateBinDistance(sMd5ExpectedHex_bin, sTmpMD5_bin);
+                if(nNewDistance > nPrevDistance){
+                    sPrevText = QString(sTmpPrevText);
+                    nPrevDistance = nNewDistance;
+                    bExists = true;
+                }
+                chX = chX == '1' ? '0' : '1';
+                chY = chY == '1' ? '0' : '1';
+                sTmpPrevText[x] = chX;
+                sTmpPrevText[y] = chY;
+            }
+        }
+    }
+
+    QByteArray bTmpText =  QByteArray::fromHex(BNAConvertBinToHex(sPrevText).toLatin1());
+    return bTmpText;
 }
 
 // -----------------------------------------------------------------
