@@ -25,8 +25,7 @@ struct Reverse_Test_Struct{
 
 bool UnitTestBrute::run() {
     bool bTestSuccess = true;
-    compareB(bTestSuccess, "Not implemented", true, false);
-
+    std::string sOrigHash = "81dc9bdb52d04dc20036dbd8313ed055";
 
     /*QString sOrigHash = "81dc9bdb52d04dc20036dbd8313ed055";
     // QString sReverseHash0 = "c19173c3d173cc7e07cf5f19c28d0083";
@@ -93,6 +92,8 @@ bool UnitTestBrute::run() {
     std::cout << "Original: " << sReverseText.toStdString() << "\n";
     std::cout << "Reverted: " << QString(text.toHex()).toStdString() << "\n";
     */
+
+    compareB(bTestSuccess, "Not implemented", true, false);
     return bTestSuccess;
 }
 

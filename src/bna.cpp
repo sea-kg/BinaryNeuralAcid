@@ -409,10 +409,10 @@ void BNAExpr::exec(){
 // -----------------------------------------------------------------
 // Phisicly assotiation with expressions
 
-BNAItem::BNAItem(unsigned short x, unsigned short y, unsigned char t){
+BNAItem::BNAItem(unsigned short x, unsigned short y, const std::string &sOperationType){
     m_nX = x;
     m_nY = y;
-    m_cT = t;
+    m_sOperationType = sOperationType;
 }
 
 // -----------------------------------------------------------------
@@ -420,7 +420,7 @@ BNAItem::BNAItem(unsigned short x, unsigned short y, unsigned char t){
 BNAItem::BNAItem() {
     m_nX = 0;
     m_nY = 0;
-    m_cT = 0;
+    m_sOperationType = "";
 }
 
 // -----------------------------------------------------------------
@@ -437,8 +437,8 @@ unsigned short BNAItem::getY(){
 
 // -----------------------------------------------------------------
 
-unsigned char BNAItem::getT(){
-    return m_cT;
+std::string BNAItem::getOperationType(){
+    return m_sOperationType;
 }
 
 // -----------------------------------------------------------------
@@ -455,8 +455,8 @@ void BNAItem::setY(unsigned short y){
 
 // -----------------------------------------------------------------
 
-void BNAItem::setT(unsigned char t){
-    m_cT = t;
+void BNAItem::setOperationType(const std::string &sOperationType){
+    m_sOperationType = sOperationType;
 }
 
 // -----------------------------------------------------------------
@@ -469,11 +469,9 @@ void BNAItem::setT(unsigned char t){
 
 // -----------------------------------------------------------------
 
-// void BNAItem::writeXYT(QDataStream &stream){
-//     stream << m_nX;
-//     stream << m_nY;
-//     stream << m_cT;
-// }
+void BNAItem::writeXYT(std::ofstream &file){
+    file << " item " << m_nX << " " << m_nY << " " << m_sOperationType;
+}
 
 // -----------------------------------------------------------------
 
@@ -521,12 +519,13 @@ BNABit BNAOperOr::calc(BNABit b1, BNABit b2){
 BNA::BNA(){
 	m_nInput = 1; // Default
 	m_nOutput = 1; // 16 bytes of md5 hash
-    m_vOpers.push_back(new BNAOperXor());
-    m_vOpers.push_back(new BNAOperNotXor());
-    m_vOpers.push_back(new BNAOperAnd());
-    m_vOpers.push_back(new BNAOperOr());
-    m_nOperSize = m_vOpers.size();
+    registryOperationType(new BNAOperXor());
+    registryOperationType(new BNAOperNotXor());
+    registryOperationType(new BNAOperAnd());
+    registryOperationType(new BNAOperOr());
+    m_nOperSize = m_vOperationList.size();
     TAG = "BNA";
+    m_nBnaVersion = 1;
 }
 
 // ----------------------------------------------------------------
@@ -543,8 +542,9 @@ unsigned int BNA::outputCount(){
 
 // ----------------------------------------------------------------
 
-BNA::~BNA(){
-    m_vOpers.clear();
+BNA::~BNA() {
+    m_vOperations.clear();
+    m_vOperationList.clear();
     m_vItems.clear();
     clearResources();
 }
@@ -554,6 +554,11 @@ BNA::~BNA(){
 bool BNA::load(std::string filename){
     WsjcppLog::err(TAG, "TODO load");
 
+    m_vOperations.clear();
+    m_vOperationList.clear();
+    m_vItems.clear();
+    clearResources();
+    return false;
 	/*QFile file(filename);
 	if (!file.exists()) {
         std::cerr << "BNA:  File did not exists: " << filename.toStdString() << "\n";
@@ -567,27 +572,28 @@ bool BNA::load(std::string filename){
 	QDataStream stream(&file);
     readFromStream(stream);
     file.close();*/
-	return true;
+	// return true;
 }
 
 // ----------------------------------------------------------------
 
-bool BNA::save(std::string filename){
+bool BNA::save(const std::string &sFilename){
     WsjcppLog::err(TAG, "TODO save");
-	/*QFile file(filename);
-	if (file.exists()) {
-        if(!file.remove()){
-            std::cerr << "Could not remove file: " << filename.toStdString() << "\n";
+    std::string sFilename0 = sFilename + ".bna";
+    if (WsjcppCore::fileExists(sFilename0)) {
+        if (!WsjcppCore::removeFile(sFilename0)) {
+            WsjcppLog::err(TAG, "save: could not remove file: " + sFilename0);
+            return false;
         }
-	}
-	if ( !file.open(QIODevice::WriteOnly) ) {
-        std::cerr << "Could not write file: " << filename.toStdString() << "\n";
+    }
+    std::ofstream file;
+    file.open(sFilename0, std::ios::out | std::ios::binary);
+    if (!file.is_open()) {
+        WsjcppLog::err(TAG, "save: could not open file to write: " + sFilename0);
 		return false;
-	}
-    file.seek(0);
-    QDataStream stream( &file );
-    writeToStream(stream);
-    file.close();*/
+    }
+    writeToFileBna(file);
+    file.close();
 	return true;
 }
 
@@ -598,11 +604,12 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
 	m_nInput = nInput;
 	m_nOutput = nOutput;
 	nSize = nSize + m_nInput + m_nOutput;
-	for(int i = 0; i < nSize; i++){
+	for (int i = 0; i < nSize; i++) {
         BNAItem *pItem = new BNAItem();
         pItem->setX(rand());
         pItem->setY(rand());
-        pItem->setT(rand());
+        int nOper = rand() % m_nOperSize;
+        pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vItems.push_back(pItem);
 	}
 	normalize();
@@ -616,7 +623,7 @@ void BNA::normalize(){
     for(int i = 0; i < m_vItems.size(); i++){
         m_vItems[i]->setX(m_vItems[i]->getX() % nodes);
         m_vItems[i]->setY(m_vItems[i]->getY() % nodes);
-        m_vItems[i]->setT(m_vItems[i]->getT() % m_nOperSize);
+        m_vItems[i]->setOperationType(m_vItems[i]->getOperationType());
         nodes++;
     }
 
@@ -632,11 +639,11 @@ void BNA::normalize(){
     for(int i = 0; i < m_vItems.size(); i++){
         int x = m_vItems[i]->getX();
         int y = m_vItems[i]->getY();
-        int t = m_vItems[i]->getT();
+        std::string sOperationType = m_vItems[i]->getOperationType();
         BNAExpr *pExpr = new BNAExpr();
         pExpr->op1(m_vCalcVars[x]);
         pExpr->op2(m_vCalcVars[y]);
-        pExpr->oper(m_vOpers[t]);
+        pExpr->oper(m_vOperations[sOperationType]);
         BNAVar *pVar = new BNAVar();
         pVar->name("node" + std::to_string(i));
         m_vCalcVars.push_back(pVar);
@@ -659,7 +666,7 @@ void BNA::compare(BNA &bna){
     }
     if(bna.m_vItems.size() == m_vItems.size()){
         for(int i = 0; i < m_vItems.size(); i++){
-            if(m_vItems[i]->getT() != bna.m_vItems[i]->getT()){
+            if(m_vItems[i]->getOperationType() != bna.m_vItems[i]->getOperationType()){
                 std::cout << "\t T not equal in " << i << "\n";
             }
 
@@ -848,12 +855,25 @@ void BNA::clearResources(){
 
 // ----------------------------------------------------------------
 
-// void BNA::writeToStream(QDataStream &stream){
-//     stream << m_nInput << m_nOutput;
-//     for (int i = 0; i < m_vItems.size(); i++) {
-//         m_vItems[i]->writeXYT(stream);
-//     }
-// }
+void BNA::writeToFileBna(std::ofstream &file){
+    // basic information about file
+    file << "BNA"; 
+    file << " version " << m_nBnaVersion;
+    file << " input " << m_nInput;
+    file << " output " << m_nOutput;
+    for (int i = 0; i < m_vItems.size(); i++) {
+        m_vItems[i]->writeXYT(file);
+    }
+}
+
+// ----------------------------------------------------------------
+
+bool BNA::registryOperationType(IBNAOper *pOper) {
+    // TODO check aredy registered
+    m_vOperations[pOper->type()] = pOper;
+    m_vOperationList.push_back(pOper);
+    return true;
+}
 
 // ----------------------------------------------------------------
 

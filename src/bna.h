@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 #include <json.hpp>
+#include <iostream>
+#include <fstream>
 
 enum BNABit{
     B_0 = 0x00,
@@ -100,25 +102,25 @@ class BNAExpr{
 
 // -----------------------------------------------------------------
 
-class BNAItem{
+class BNAItem {
     public:
-        BNAItem(unsigned short x, unsigned short y, unsigned char t);
+        BNAItem(unsigned short x, unsigned short y, const std::string &sOperationType);
         BNAItem();
         unsigned short getX();
         unsigned short getY();
-        unsigned char getT();
+        std::string getOperationType();
 
         void setX(unsigned short x);
         void setY(unsigned short y);
-        void setT(unsigned char t);
+        void setOperationType(const std::string &sOperationType);
 
         // void readXYT(QDataStream &stream);
-        // void writeXYT(QDataStream &stream);
+        void writeXYT(std::ofstream &file);
 
     private:
         unsigned short m_nX;
         unsigned short m_nY;
-        unsigned char m_cT;
+        std::string m_sOperationType;
 };
 
 // -----------------------------------------------------------------
@@ -128,7 +130,7 @@ class BNA {
 		BNA();
         ~BNA();
 		bool load(std::string filename);
-		bool save(std::string filename);
+		bool save(const std::string &sFilename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
@@ -145,12 +147,15 @@ class BNA {
         void compare(BNA &bna);
 	private:
         std::string TAG;
+        int m_nBnaVersion;
 		unsigned int m_nInput;
 		unsigned int m_nOutput;
         // void readFromStream(QDataStream &stream);
-        // void writeToStream(QDataStream &stream);
+        void writeToFileBna(std::ofstream &file);
 
-        std::vector<IBNAOper *> m_vOpers;
+        bool registryOperationType(IBNAOper *pOper);
+        std::map<std::string, IBNAOper *> m_vOperations;
+        std::vector<IBNAOper *> m_vOperationList;
         int m_nOperSize;
 
         void clearResources();
