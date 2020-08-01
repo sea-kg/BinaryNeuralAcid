@@ -1,27 +1,34 @@
-#include "brut_test.h"
-#include <iostream>
-#include <QByteArray>
-#include <QVector>
-#include <QFile>
-#include <QMap>
-#include <QDir>
-#include <QByteArray>
-#include <QCryptographicHash>
-#include <bna.h>
+#include "unit_test_brute.h"
+#include <vector>
+#include <wsjcpp_core.h>
 
-QString Brut_Test::name(){
-	return "Reverse_Test";
+REGISTRY_WSJCPP_UNIT_TEST(UnitTestBrute)
+
+UnitTestBrute::UnitTestBrute()
+    : WsjcppUnitTestBase("UnitTestBrute") {
 }
 
+// ---------------------------------------------------------------------
+
+void UnitTestBrute::init() {
+    // nothing
+}
+
+// ---------------------------------------------------------------------
+
+/*
 struct Reverse_Test_Struct{
     Reverse_Test_Struct(QString md5, QString text) : md5(md5), text(text) {}
     QString md5;
     QString text;
-};
+};*/
 
-bool Brut_Test::run(){
-	
-	QString sOrigHash = "81dc9bdb52d04dc20036dbd8313ed055";
+bool UnitTestBrute::run() {
+    bool bTestSuccess = true;
+    compareB(bTestSuccess, "Not implemented", true, false);
+
+
+    /*QString sOrigHash = "81dc9bdb52d04dc20036dbd8313ed055";
     // QString sReverseHash0 = "c19173c3d173cc7e07cf5f19c28d0083";
     QString sReverseText = "6467756476606062606262606000404000000000000000001000000000220000000000002080000000000002002000004200140202515b";
     QByteArray text =  QByteArray::fromHex(sReverseText.toLatin1());
@@ -85,7 +92,7 @@ bool Brut_Test::run(){
 
     std::cout << "Original: " << sReverseText.toStdString() << "\n";
     std::cout << "Reverted: " << QString(text.toHex()).toStdString() << "\n";
-
-	return false;
+    */
+    return bTestSuccess;
 }
 

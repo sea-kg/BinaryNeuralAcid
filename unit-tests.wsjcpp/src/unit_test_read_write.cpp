@@ -1,18 +1,25 @@
-#include "readwrite_test.h"
-#include <iostream>
-#include <QDir>
-#include <QDebug>
-#include <QTemporaryFile>
-#include <QFile>
-#include <QCryptographicHash>
-#include <bna.h>
+#include "unit_test_read_write.h"
+#include <vector>
+#include <wsjcpp_core.h>
 
+REGISTRY_WSJCPP_UNIT_TEST(UnitTestReadWrite)
 
-QString ReadWrite_Test::name(){
-	return "ReadWrite_Test";
-};
+UnitTestReadWrite::UnitTestReadWrite()
+    : WsjcppUnitTestBase("UnitTestReadWrite") {
+}
 
-bool ReadWrite_Test::run(){
+// ---------------------------------------------------------------------
+
+void UnitTestReadWrite::init() {
+    // nothing
+}
+
+// ---------------------------------------------------------------------
+
+bool UnitTestReadWrite::run() {
+    bool bTestSuccess = true;
+    compareB(bTestSuccess, "Not implemented", true, false);
+    /*
     BNA bna;
     bna.randomGenerate(128,1,256);
 
@@ -65,7 +72,7 @@ bool ReadWrite_Test::run(){
 	if(size1 != size2 || size2 != size3 || size1 != size3 || size1 != size4 || size2 != size4 || size3 != size4){
 		return false;
 	}
- 
-	return true;
-};
+    */
+    return bTestSuccess;
+}
 

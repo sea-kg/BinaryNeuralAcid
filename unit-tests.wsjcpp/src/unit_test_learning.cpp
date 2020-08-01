@@ -1,21 +1,26 @@
-#include "learning_test.h"
-#include <iostream>
-#include <QByteArray>
-#include <QVector>
-#include <QFile>
-#include <QMap>
-#include <QDir>
-#include <QThread>
-#include <bna.h>
-#include <QCryptographicHash>
+#include "unit_test_learning.h"
+#include <vector>
+#include <wsjcpp_core.h>
 
-QString Learning_Test::name(){
-    return "Learning_Test";
+REGISTRY_WSJCPP_UNIT_TEST(UnitTestLearning)
+
+UnitTestLearning::UnitTestLearning()
+    : WsjcppUnitTestBase("UnitTestLearning") {
 }
 
-bool Learning_Test::run(){
+// ---------------------------------------------------------------------
 
-    QString sFolder = "tmp_tests_bna_md5_2";
+void UnitTestLearning::init() {
+    // nothing
+}
+
+// ---------------------------------------------------------------------
+
+bool UnitTestLearning::run() {
+    bool bTestSuccess = true;
+    compareB(bTestSuccess, "Not implemented", true, false);
+
+    /*QString sFolder = "tmp_tests_bna_md5_2";
     BNAProject bnaProject;
     if(!bnaProject.open(sFolder)){
         std::cerr << "Could not open project, try create\n";
@@ -81,7 +86,8 @@ bool Learning_Test::run(){
             }
         }
     }
+    */
 
-    return false;
+    return bTestSuccess;
 }
 

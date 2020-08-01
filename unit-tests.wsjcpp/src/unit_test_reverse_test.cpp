@@ -1,24 +1,32 @@
-#include "reverse_test.h"
-#include <iostream>
-#include <QByteArray>
-#include <QVector>
-#include <QFile>
-#include <QMap>
-#include <QDir>
-#include <bna.h>
+#include "unit_test_reverse_test.h"
+#include <vector>
+#include <wsjcpp_core.h>
 
-QString Reverse_Test::name(){
-	return "Reverse_Test";
+REGISTRY_WSJCPP_UNIT_TEST(UnitTestReverseTest)
+
+UnitTestReverseTest::UnitTestReverseTest()
+    : WsjcppUnitTestBase("UnitTestReverseTest") {
 }
 
-struct Reverse_Test_Struct{
-    Reverse_Test_Struct(QString md5, QString text) : md5(md5), text(text) {}
-    QString md5;
-    QString text;
-};
+// ---------------------------------------------------------------------
 
-bool Reverse_Test::run(){
+void UnitTestReverseTest::init() {
+    // nothing
+}
 
+// ---------------------------------------------------------------------
+
+// struct Reverse_Test_Struct{
+//     Reverse_Test_Struct(QString md5, QString text) : md5(md5), text(text) {}
+//     QString md5;
+//     QString text;
+// };
+
+bool UnitTestReverseTest::run() {
+    bool bTestSuccess = true;
+    compareB(bTestSuccess, "Not implemented", true, false);
+
+/*
     QString sFolder = "tmp_tests_bna_md5_2";
 
     std::vector<Reverse_Test_Struct> tests;
@@ -69,7 +77,8 @@ bool Reverse_Test::run(){
 		}
         int  nPersent = (nCheck * 100) / bnaProject.getOutputBits();
         std::cout << "\t " << key.toStdString() << " => " << text.toStdString() << "; reverted " << nPersent << "% [" << nCheck << "/" << bnaProject.getOutputBits() << " bits]\n";
-    }
-	return false;
+    }*/
+
+    return bTestSuccess;
 }
 
