@@ -2,6 +2,8 @@
 #include <iostream>
 #include <algorithm>
 #include <wsjcpp_core.h>
+#include <wsjcpp_arguments.h>
+#include "argument_processor_main.h"
 
 int main(int argc, const char* argv[]) {
     std::string TAG = "MAIN";
@@ -10,9 +12,11 @@ int main(int argc, const char* argv[]) {
     if (!WsjcppCore::dirExists(".logs")) {
         WsjcppCore::makeDir(".logs");
     }
-    WsjcppLog::setPrefixLogFile("wsjcpp");
+    WsjcppLog::setPrefixLogFile("bna");
     WsjcppLog::setLogDirectory(".logs");
-    // TODO your code here
-    return 0;
+    
+    ArgumentProcessorMain *pMain = new ArgumentProcessorMain();
+    WsjcppArguments prog(argc, argv, pMain);
+    return prog.exec();
 }
 

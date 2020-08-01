@@ -15,6 +15,8 @@ list (APPEND WSJCPP_SOURCES "src/bna.h")
 list (APPEND WSJCPP_SOURCES "src/bna.cpp")
 
 #### BEGIN_WSJCPP_APPEND
+list (APPEND WSJCPP_SOURCES "./src/argument_processor_main.h")
+list (APPEND WSJCPP_SOURCES "./src/argument_processor_main.cpp")
 #### END_WSJCPP_APPEND
 
 include_directories(${WSJCPP_INCLUDE_DIRS})
@@ -29,4 +31,5 @@ install(
     RUNTIME DESTINATION
         /usr/bin
 )
+
 

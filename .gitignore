@@ -1,5 +1,6 @@
 .wsjcpp/*
 bna
+.logs/*
 
 # Compiled Object files
 *.slo
