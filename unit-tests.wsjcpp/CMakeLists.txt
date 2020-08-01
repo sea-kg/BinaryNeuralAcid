@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(unit-tests C CXX)
 add_definitions(-DWSJCPP_APP_VERSION="ut-v0.0.1")
-add_definitions(-DWSJCPP_APP_NAME="unit-tests-bna.git")
+add_definitions(-DWSJCPP_APP_NAME="unit-tests-bna")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
@@ -29,11 +29,19 @@ list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests_main.cp
 list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_resources_manager.h")
 list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_resources_manager.cpp")
 
-# bna.git:v0.0.1
+# nlohmann/json:v3.9.0
+list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/nlohmann_json/")
+list (APPEND WSJCPP_SOURCES "../src.wsjcpp/nlohmann_json/json.hpp")
+
+# bna:v0.0.1
 list (APPEND WSJCPP_INCLUDE_DIRS "../src")
+list (APPEND WSJCPP_SOURCES "../src/bna.h")
+list (APPEND WSJCPP_SOURCES "../src/bna.cpp")
 
 # unit-tests
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
+list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_bna_oper.h")
+list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_bna_oper.cpp")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.user-custom.txt)
 

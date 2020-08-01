@@ -1,4 +1,4 @@
-name: "bna.git"
+name: "bna"
 version: "v0.0.1"
 cmake_minimum_required: "3.0"
 cmake_cxx_standard: "11"
@@ -11,9 +11,27 @@ origins:
     type: "package-registry"
 keywords:
   - "c++"
+
 dependencies:
   - name: "wsjcpp-core"
     version: "v0.1.7"
     url: "https://github.com/wsjcpp/wsjcpp-core:master"
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_core"
+  - name: "nlohmann/json"
+    version: "v3.9.0"
+    url: "https://github.com/nlohmann/json:develop"
+    origin: "https://github.com/"
+    installation-dir: "./src.wsjcpp/nlohmann_json"
+
+distribution:
+  - source-file: "src/bna.h"
+    target-file: "bna.h"
+    type: "source-code"
+  - source-file: "src/bna.cpp"
+    target-file: "bna.cpp"
+    type: "source-code"
+unit-tests:
+  cases:
+    - name: "BnaOper"
+      description: "Test operations"

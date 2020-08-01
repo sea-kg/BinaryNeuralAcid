@@ -1,46 +1,46 @@
-#ifndef BNA_H
-#define BNA_H
+#ifndef SEA5KG_BNA_H
+#define SEA5KG_BNA_H
 
-#include <QString>
-#include <QVector>
-#include <QJsonObject>
-#include <QMap>
+#include <string>
+#include <vector>
+#include <map>
+#include <json.hpp>
 
 enum BNABit{
     B_0 = 0x00,
     B_1 = 0x01
 };
 
-void BNAConvertHEXStringToVBool(QString &in, QVector<BNABit> &vars, int size);
-void BNAConvertArrayToVBool(QByteArray &in, QVector<BNABit> &vars, int size);
-QString BNAConvertVBoolHEXString(QVector<BNABit> &vars);
-QString BNAConvertCharToHexCode(unsigned char c);
-QString BNAConvertHexToBin(QString sHex);
-QString BNAConvertBinToHex(QString sBin);
-int BNACalculateBinDistance(QString sBin1, QString sBin2);
+void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
+// void BNAConvertArrayToVBool(QByteArray &in, std::vector<BNABit> &vars, int size);
+std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars);
+std::string BNAConvertCharToHexCode(unsigned char c);
+std::string BNAConvertHexToBin(std::string sHex);
+std::string BNAConvertBinToHex(std::string sBin);
+int BNACalculateBinDistance(std::string sBin1, std::string sBin2);
 
-QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const QString &md5ExpectedHex);
-QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const QString &md5ExpectedHex);
+// QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
+// QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
 
 // -----------------------------------------------------------------
 
 class BNAVar{
     public:
         BNAVar();
-        QString name();
-        void name(QString name);
+        std::string name();
+        void name(std::string name);
         BNABit val();
         void val(BNABit bVal);
     private:
         BNABit m_bVal;
-        QString m_sName;
+        std::string m_sName;
 };
 
 // -----------------------------------------------------------------
 
 class IBNAOper {
     public:
-        virtual QString type() = 0;
+        virtual std::string type() = 0;
         virtual BNABit calc(BNABit b1, BNABit b2) = 0;
 };
 
@@ -48,7 +48,7 @@ class IBNAOper {
 
 class BNAOperXor : public IBNAOper{
     public:
-        virtual QString type();
+        virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
@@ -56,7 +56,7 @@ class BNAOperXor : public IBNAOper{
 
 class BNAOperNotXor : public IBNAOper{
     public:
-        virtual QString type();
+        virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
@@ -64,7 +64,7 @@ class BNAOperNotXor : public IBNAOper{
 
 class BNAOperAnd : public IBNAOper {
     public:
-        virtual QString type();
+        virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
@@ -72,7 +72,7 @@ class BNAOperAnd : public IBNAOper {
 
 class BNAOperOr : public IBNAOper {
     public:
-        virtual QString type();
+        virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
@@ -112,8 +112,8 @@ class BNAItem{
         void setY(unsigned short y);
         void setT(unsigned char t);
 
-        void readXYT(QDataStream &stream);
-        void writeXYT(QDataStream &stream);
+        // void readXYT(QDataStream &stream);
+        // void writeXYT(QDataStream &stream);
 
     private:
         unsigned short m_nX;
@@ -127,38 +127,38 @@ class BNA {
 	public:
 		BNA();
         ~BNA();
-		bool load(QString filename);
-		bool save(QString filename);
+		bool load(std::string filename);
+		bool save(std::string filename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
-		bool exportToDot(QString filename, QString graphname);
-		bool exportToCpp(QString filename, QString funcname);
-        QByteArray exportToByteArray();
-        void importFromByteArray(QByteArray data);
-		QJsonObject toJson();
+		bool exportToDot(std::string filename, std::string graphname);
+		bool exportToCpp(std::string filename, std::string funcname);
+        // QByteArray exportToByteArray();
+        // void importFromByteArray(QByteArray data);
+		nlohmann::json toJson();
         void generateRandomMutations(int nRandomCicles);
         void appendRandomData(int nRandomCicles);
-        BNABit calc(const QVector<BNABit> &vInputs, int nOutput);
+        BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
 
 
         unsigned int inputCount();
         unsigned int outputCount();
         void compare(BNA &bna);
 	private:
-
+        std::string TAG;
 		unsigned int m_nInput;
 		unsigned int m_nOutput;
-        void readFromStream(QDataStream &stream);
-        void writeToStream(QDataStream &stream);
+        // void readFromStream(QDataStream &stream);
+        // void writeToStream(QDataStream &stream);
 
-        QVector<IBNAOper *> m_vOpers;
+        std::vector<IBNAOper *> m_vOpers;
         int m_nOperSize;
 
         void clearResources();
         void normalize();
-        QVector<BNAItem *> m_vItems;
-        QVector<BNAExpr *> m_vCalcExprs;
-        QVector<BNAVar *> m_vCalcVars;
-        QVector<BNAVar *> m_vCalcOutVars;
+        std::vector<BNAItem *> m_vItems;
+        std::vector<BNAExpr *> m_vCalcExprs;
+        std::vector<BNAVar *> m_vCalcVars;
+        std::vector<BNAVar *> m_vCalcOutVars;
 };
 
 // -----------------------------------------------------------------
@@ -166,16 +166,17 @@ class BNA {
 class BNAMemoryItem {
     public:
         BNAMemoryItem(int nInputBits, int nOutputBits);
-        QByteArray input;
-        QByteArray output;
-        const QVector<BNABit> &inputToVectorBool();
-        const QVector<BNABit> &outputToVectorBool();
+        char* input;
+        char* output;
+        const std::vector<BNABit> &inputToVectorBool();
+        const std::vector<BNABit> &outputToVectorBool();
 
     private:
+        std::string TAG;
         int m_nInputBits;
         int m_nOutputBits;
-        QVector<BNABit> m_vInput;
-        QVector<BNABit> m_vOutput;
+        std::vector<BNABit> m_vInput;
+        std::vector<BNABit> m_vOutput;
 };
 
 // -----------------------------------------------------------------
@@ -183,18 +184,18 @@ class BNAMemoryItem {
 class BNAMemory {
     public:
         BNAMemory(int nInputBits, int nOutputBits);
-        void load(QString filename);
-        void save(QString filename);
+        void load(std::string filename);
+        void save(std::string filename);
         int size();
         BNAMemoryItem *at(int i);
         BNAMemoryItem *createItem();
         void append(BNAMemoryItem *pItem);
         void printData();
     private:
-
+        std::string TAG;
         int m_nInputBits;
         int m_nOutputBits;
-        QVector<BNAMemoryItem *> m_vItems;
+        std::vector<BNAMemoryItem *> m_vItems;
 };
 
 // -----------------------------------------------------------------
@@ -203,37 +204,38 @@ class BNAProject {
 
     public:
         BNAProject();
-        bool open(QString sDirPath);
+        bool open(std::string sDirPath);
         void setInputBits(int nInputBits);
         int getInputBits();
         void setOutputBits(int nOutputBits);
         int getOutputBits();
         void setDefaultCountNodes(int nDefaultCountNodes);
-        bool create(QString sDirPath);
+        bool create(std::string sDirPath);
         BNAMemory *getBNAMemory();
         void saveBNAMemory();
         int calculate(int bitid, bool bEnableSleep = false);
         void saveResult(int bitid, int nSuccess);
         int loadResult(int bitid);
-        QMap<int,int> &getResults();
+        std::map<int,int> &getResults();
         BNA *getBNA(int bitid);
         void saveBNA(int bitid);
 
     private:
-        QString prepareName(int bitid);
-        QString prepareSubdir(int bitid);
+        std::string TAG;
+        std::string prepareName(int bitid);
+        std::string prepareSubdir(int bitid);
         void saveProjFile();
         void loadProjFile();
 
-        QString m_sDirPath;
+        std::string m_sDirPath;
         BNAMemory *m_pBNAMemory;
         int m_nInputBits;
         int m_nOutputBits;
         int m_nDefaultCountNodes;
-        QString m_sMemoryFileName;
-        QMap<int,BNA *> m_mBNA;
-        QMap<int,int> m_mapResults;
+        std::string m_sMemoryFileName;
+        std::map<int,BNA *> m_mBNA;
+        std::map<int,int> m_mapResults;
 };
 
 
-#endif // BNA_H
+#endif // SEA5KG_BNA_H
