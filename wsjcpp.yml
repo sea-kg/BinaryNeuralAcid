@@ -40,3 +40,5 @@ unit-tests:
   cases:
     - name: "BnaOper"
       description: "Test operations"
+    - name: "CallOut"
+      description: "Test calculation"

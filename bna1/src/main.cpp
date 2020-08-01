@@ -1,6 +1,5 @@
 #include <iostream>
 #include "memory.h"
-#include "tests/tests.h"
 #include <reversehashd_server.h>
 #include <QString>
 #include <QList>
@@ -22,12 +21,10 @@
 void print_help(QVector<QString> &vParams) {
 	std::cout << "\n"
 		<< "  Please usage: " << vParams[0].toStdString() << " [command] [parameters]\n"
-		<< "\t --run-tests                           - run tests\n"
         << "\t --run-learning-test                   - run learning test\n"
         << "\t --run-brut-test                       - run brut test\n"
 		<< "\t --run-random-remove-vertex-test       - run random remove vertex test\n"
 		<< "\t --reset-persents                      - reset last persents from every bit and create missing files\n" 
-        << "\t --server                              - start server\n"
         << "\t --generate-md5-bna                    - test bna\n"
         << "\n";
 };
@@ -50,11 +47,6 @@ int main(int argc, char* argv[])
         print_help(vParams);
         return 0;
     }
-
-	if(vParams.contains("--run-tests")){
-		runtests();
-		return 0;
-	}
 	
 	if(vParams.contains("--gencode")){
 		
