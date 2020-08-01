@@ -28,6 +28,11 @@ dependencies:
     url: "https://github.com/wsjcpp/wsjcpp-arguments:master"
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_arguments"
+  - name: "wsjcpp-hashes"
+    version: "v0.1.0"
+    url: "https://github.com/wsjcpp/wsjcpp-hashes:master"
+    origin: "https://github.com/"
+    installation-dir: "./src.wsjcpp/wsjcpp_hashes"
 
 distribution:
   - source-file: "src/bna.h"
