@@ -1,0 +1,152 @@
+<html>
+<head>
+	<title>reversehashd</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="author" content="sea-kg" />
+	<meta name="copyright" lang="ru" content="sea-kg" />
+	<meta name="description" content="generic algorithm for reverse hash" />
+	<meta name="keywords" content="reversehash" />
+
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css?ver=1"/>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-grid.min.css?ver=1"/>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-reboot.min.css?ver=1"/>
+	<link rel="stylesheet" type="text/css" href="css/reversehashd.css?ver=1"/>
+	
+	<script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+	<script type="text/javascript" src="js/popper.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/reversehashd.api.js?ver=1"></script>
+	<script type="text/javascript" src="js/index.js?ver=1"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+	<div class="container">
+	  <a class="navbar-brand" href="#">BNA</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+		  <li class="nav-item active">
+			<a class="nav-link" href="#">Reverse <span class="sr-only">(current)</span></a>
+		  </li>
+		  
+		  <li class="nav-item">
+			<a class="nav-link" href="./visualizer/">Visualizer</a>
+		  </li>
+		  
+		</ul>
+	  </div>
+	</div>
+</nav>
+
+<div class="background"></div>
+
+<div class="container">
+	
+	<div id="statistics_page">
+		Statistics (white - cool, black - not cool):<br>
+		<canvas id="cnv_statistics" width="442" height="25"></canvas><br>
+		<a href="javascript:void(0);" onclick="cnv_statistics_more();">Show more</a>
+		<div id="cnv_statistics_more" style="display: none"></div>
+	</div>
+	
+	<br><br>
+	<div id="reverse_page">
+		<div class="form-group">
+			<label for="input_md5">MD5 hash</label>
+			<!-- 86fb269d190d2c85f6e0468ceca42a20 -->
+			<input type="text" class="form-control" size="32" value="81dc9bdb52d04dc20036dbd8313ed055" id="input_md5" aria-describedby="emailHelp" placeholder="e99f33420f577ee8ce54b67080a80d1e">
+		</div>
+		<button id="try_reverse" class="btn btn-primary">Try reverse</button>
+		<br><br>
+		<h3>Step 1:</h3>
+		<table>
+			<tr>
+				<td align=center>
+					<b>md5 expected (binary)</b>
+					<div id="md5_expected"></div>
+				</td>
+				<td></td>
+				<td align=center>
+					<b>md5 got (binary)</b>
+					<div id="md5_got"></div>
+				</td>
+				<td></td>
+				<td align=center>
+					<b>Equals:</b>
+					<div id="md5_xor_sum"></div>
+				</td>
+			</tr>
+			<tr>
+				<td align=center>
+					<canvas id="cnv_md5_1" width="258" height="130"></canvas>
+				</td>
+				<td align=center>
+					XOR
+				</td>
+				<td align=center>
+					<canvas id="cnv_md5_2" width="258" height="130"></canvas>
+				</td>
+				<td align=center>
+					=
+				</td>
+				<td align=center>
+					<canvas id="cnv_md5_3" width="258" height="130"></canvas>
+				</td>
+			</tr>
+		</table>
+		<pre id="reverse_result"></pre>
+		<h3>Step 2:</h3>
+		<table>
+			<tr>
+				<td align=center>
+					<b>md5 expected (binary)</b>
+					<div id="md5_expected2"></div>
+				</td>
+				<td></td>
+				<td align=center>
+					<b>md5 got (binary)</b>
+					<div id="md5_got2"></div>
+				</td>
+				<td></td>
+				<td align=center>
+					<b>Equals:</b>
+					<div id="md5_xor_sum2"></div>
+				</td>
+			</tr>
+			<tr>
+				<td align=center>
+					<canvas id="cnv_md5_2_1" width="258" height="130"></canvas>
+				</td>
+				<td align=center>
+					XOR
+				</td>
+				<td align=center>
+					<canvas id="cnv_md5_2_2" width="258" height="130"></canvas>
+				</td>
+				<td align=center>
+					=
+				</td>
+				<td align=center>
+					<canvas id="cnv_md5_2_3" width="258" height="130"></canvas>
+				</td>
+			</tr>
+		</table>
+		<pre id="reverse_result2"></pre>
+	</div>
+	
+	<div id="training_message" class="alert alert-danger" role="alert">...</div>
+	
+</div>
+
+<footer class="footer">
+  <div class="container">
+	<span class="text-muted">Copyright © 2016-2018 sea-kg.</span>
+  </div>
+</footer>
+
+</body>
+</html>
