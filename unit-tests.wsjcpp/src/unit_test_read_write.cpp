@@ -40,8 +40,11 @@ bool UnitTestReadWrite::run() {
 
     compareN(bTestSuccess, "test read write 0", bResult, bna.calc(vInputs, 0));
 
-    bna.save("./temporary-unit-tests-data/read-write-test1");
-    bna.load("./temporary-unit-tests-data/read-write-test1");
+    bool bSave1 = bna.save("./temporary-unit-tests-data/read-write-test1");
+    compareB(bTestSuccess, "save1", bSave0, true);
+
+    bool bLoad1 = bna.load("./temporary-unit-tests-data/read-write-test1");
+    compareB(bTestSuccess, "load1", bLoad1, true);
 
     compareN(bTestSuccess, "test read write 1", bResult, bna.calc(vInputs, 0));
 

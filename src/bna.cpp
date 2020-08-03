@@ -461,11 +461,11 @@ void BNAItem::setOperationType(const std::string &sOperationType){
 
 // -----------------------------------------------------------------
 
-// void BNAItem::readXYT(QDataStream &stream){
-//     stream >> m_nX;
-//     stream >> m_nY;
-//     stream >> m_cT;
-// }
+void BNAItem::readXYT(std::ifstream &file){
+    file >> m_nX;
+    file >> m_nY;
+    file >> m_sOperationType;
+}
 
 // -----------------------------------------------------------------
 
@@ -551,38 +551,32 @@ BNA::~BNA() {
 
 // ----------------------------------------------------------------
 
-bool BNA::load(std::string filename){
-    WsjcppLog::err(TAG, "TODO load");
-
-    m_vOperations.clear();
-    m_vOperationList.clear();
-    m_vItems.clear();
+bool BNA::load(const std::string &sFilename){
     clearResources();
-    return false;
-	/*QFile file(filename);
-	if (!file.exists()) {
-        std::cerr << "BNA:  File did not exists: " << filename.toStdString() << "\n";
+
+    std::string sFilename0 = sFilename + ".bna";
+    if (!WsjcppCore::fileExists(sFilename0)) {
+        WsjcppLog::err(TAG, "load: file not exists '" + sFilename0 + "'");
+        return false;
+    }
+    std::ifstream file;
+    file.open(sFilename0, std::ios::in | std::ios::binary);
+    if (!file.is_open()) {
+        WsjcppLog::err(TAG, "load: could not open file to read '" + sFilename0 + "'");
 		return false;
-	}
-	if (!file.open(QIODevice::ReadOnly) ) {
-        std::cerr << "BNA: Could not open file " << filename.toStdString() << "\n";
-		return false;
-	}
-    file.seek(0);
-	QDataStream stream(&file);
-    readFromStream(stream);
-    file.close();*/
-	// return true;
+    }
+    bool bResult = readFromFileBna(file);
+    file.close(); // TODO file will be automaticly closed on return of scope?
+	return bResult;
 }
 
 // ----------------------------------------------------------------
 
 bool BNA::save(const std::string &sFilename){
-    WsjcppLog::err(TAG, "TODO save");
     std::string sFilename0 = sFilename + ".bna";
     if (WsjcppCore::fileExists(sFilename0)) {
         if (!WsjcppCore::removeFile(sFilename0)) {
-            WsjcppLog::err(TAG, "save: could not remove file: " + sFilename0);
+            WsjcppLog::err(TAG, "save: could not remove file '" + sFilename0 + "'");
             return false;
         }
     }
@@ -592,9 +586,9 @@ bool BNA::save(const std::string &sFilename){
         WsjcppLog::err(TAG, "save: could not open file to write: " + sFilename0);
 		return false;
     }
-    writeToFileBna(file);
-    file.close();
-	return true;
+    bool bResult = writeToFileBna(file);
+    file.close(); // TODO file will be automaticly closed on return of scope?
+	return bResult;
 }
 
 // ----------------------------------------------------------------
@@ -636,7 +630,7 @@ void BNA::normalize(){
     }
 
     int nItemsSize = m_vItems.size();
-    for(int i = 0; i < m_vItems.size(); i++){
+    for (int i = 0; i < m_vItems.size(); i++) {
         int x = m_vItems[i]->getX();
         int y = m_vItems[i]->getY();
         std::string sOperationType = m_vItems[i]->getOperationType();
@@ -839,23 +833,56 @@ void BNA::clearResources(){
 
 // ----------------------------------------------------------------
 
-// void BNA::readFromStream(QDataStream &stream){
-//     clearResources();
-
-//     stream >> m_nInput;
-//     stream >> m_nOutput;
-
-//     while(!stream.atEnd()){
-//         BNAItem *pItem = new BNAItem();
-//         pItem->readXYT(stream);
-//         m_vItems.push_back(pItem);
-//     }
-//     normalize();
-// }
+bool BNA::readFromFileBna(std::ifstream &file){
+    clearResources();
+    std::string sStr; 
+    file >> sStr;
+    if (sStr != "BNA") {
+        WsjcppLog::err(TAG, "readFromFileBna, is not a BNA file");
+        return false;
+    }
+    file >> sStr;
+    if (sStr != "version") {
+        WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'version'");
+        return false;
+    }
+    int nBnaVersion = 0;
+    file >> nBnaVersion;
+    if (nBnaVersion != m_nBnaVersion) {
+        WsjcppLog::err(TAG, "readFromFileBna, Version expected '" + std::to_string(m_nBnaVersion) + "', but got '" + std::to_string(nBnaVersion) + "'");
+        return false;
+    }
+    file >> sStr;
+    if (sStr != "input") {
+        WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'input'");
+        return false;
+    }
+    file >> m_nInput;
+    // TODO check value of input
+    
+    file >> sStr;
+    if (sStr != "output") {
+        WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'output'");
+        return false;
+    }
+    file >> m_nOutput;
+    // TODO check value of output
+    
+    file >> sStr;
+    while (sStr == "item") {
+        BNAItem *pItem = new BNAItem();
+        pItem->readXYT(file);
+        m_vItems.push_back(pItem);
+        sStr = "";
+        file >> sStr;
+    }
+    normalize(); // TODO really need this or just check format ????
+    return true;
+}
 
 // ----------------------------------------------------------------
 
-void BNA::writeToFileBna(std::ofstream &file){
+bool BNA::writeToFileBna(std::ofstream &file){
     // basic information about file
     file << "BNA"; 
     file << " version " << m_nBnaVersion;
@@ -864,12 +891,13 @@ void BNA::writeToFileBna(std::ofstream &file){
     for (int i = 0; i < m_vItems.size(); i++) {
         m_vItems[i]->writeXYT(file);
     }
+    return true;
 }
 
 // ----------------------------------------------------------------
 
 bool BNA::registryOperationType(IBNAOper *pOper) {
-    // TODO check aredy registered
+    // TODO check aready registered
     m_vOperations[pOper->type()] = pOper;
     m_vOperationList.push_back(pOper);
     return true;

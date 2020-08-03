@@ -114,7 +114,7 @@ class BNAItem {
         void setY(unsigned short y);
         void setOperationType(const std::string &sOperationType);
 
-        // void readXYT(QDataStream &stream);
+        void readXYT(std::ifstream &file);
         void writeXYT(std::ofstream &file);
 
     private:
@@ -129,7 +129,7 @@ class BNA {
 	public:
 		BNA();
         ~BNA();
-		bool load(std::string filename);
+		bool load(const std::string &sFilename);
 		bool save(const std::string &sFilename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
 		bool exportToDot(std::string filename, std::string graphname);
@@ -150,8 +150,8 @@ class BNA {
         int m_nBnaVersion;
 		unsigned int m_nInput;
 		unsigned int m_nOutput;
-        // void readFromStream(QDataStream &stream);
-        void writeToFileBna(std::ofstream &file);
+        bool readFromFileBna(std::ifstream &file);
+        bool writeToFileBna(std::ofstream &file);
 
         bool registryOperationType(IBNAOper *pOper);
         std::map<std::string, IBNAOper *> m_vOperations;
