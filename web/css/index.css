@@ -41,11 +41,14 @@ body {
 
 .bna-column-diagram {
 	display: table-cell;
+	text-align: center;
 }
 
-.navbar.fixed-top{
-   border-bottom: 1px solid black;
+.bna-canvas-diagram {
+	margin: 20px;
 }
+
+/* >>> old >>> */
 
 .background {
 	position: absolute;
@@ -72,24 +75,6 @@ body {
     bottom: 100px;
 }
 
-.card-bit{
-    width: 250px;
-    display: inline-block;
-    margin: 10px;
-}
-
-.card-background{
-	position: absolute;
-    height: 100%;
-    width: 30%;
-    background-color: red;
-    opacity: 0.2;
-}
-
-.card-body{
-	z-index: 10;
-    background-color: transparent;
-}
 
 .content{
 	display: block;

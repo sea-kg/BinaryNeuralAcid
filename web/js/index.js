@@ -266,5 +266,18 @@ function prepareHex(hex){
 
 document.addEventListener('DOMContentLoaded', function(){
     window.bnaRender = new BnaRender("bna_tree");
-
+    bnaRender.setData({ // example tree
+        input: 128,
+        output: 1,
+        items: [{
+            x: 59,
+            y: 104,
+            o: "OR"
+        }, {
+            x: 118,
+            y: 80,
+            o: "OR"
+        }]
+    });
+    bnaRender.render();
 });
