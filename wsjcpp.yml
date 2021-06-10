@@ -31,10 +31,11 @@ dependencies:
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_arguments"
   - name: "wsjcpp-hashes"
-    version: "v0.1.0"
+    version: "v0.1.3"
     url: "https://github.com/wsjcpp/wsjcpp-hashes:master"
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_hashes"
+    installation-datetime: "Thu, 10 Jun 2021 04:04:17 GMT"
 distribution:
   - source-file: "src/bna.h"
     target-file: "bna.h"

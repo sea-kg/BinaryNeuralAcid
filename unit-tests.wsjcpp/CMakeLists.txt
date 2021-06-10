@@ -36,7 +36,7 @@ list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/wsjcpp_arguments/")
 list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_arguments/wsjcpp_arguments.cpp")
 list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_arguments/wsjcpp_arguments.h")
 
-# wsjcpp-hashes:v0.1.0
+# wsjcpp-hashes:v0.1.3
 list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/wsjcpp_hashes/")
 list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/md5.cpp")
 list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/md5.h")
