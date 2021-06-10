@@ -10,8 +10,8 @@ UnitTestRandomMutation::UnitTestRandomMutation()
 
 // ---------------------------------------------------------------------
 
-void UnitTestRandomMutation::init() {
-    // nothing
+bool UnitTestRandomMutation::doBeforeTest() {
+    return false;
 }
 
 // ---------------------------------------------------------------------
@@ -57,9 +57,8 @@ void UnitTestRandomMutation::init() {
 //     return nCounterSuccess;
 // }
 
-bool UnitTestRandomMutation::run() {
-    bool bTestSuccess = true;
-    compareB(bTestSuccess, "Not implemented", true, false);
+void UnitTestRandomMutation::executeTest() {
+    compare("Not implemented", true, false);
 
     /* QVector< DictonaryTest *> dict;
     dict.push_back(new DictonaryTest(createInputs(B_1, B_1, B_1), true));
@@ -111,6 +110,10 @@ bool UnitTestRandomMutation::run() {
     // std::cout << "New value: " << (bResult ? "yes" : "no" ) << "\n";
     return prev_p == 8;
     */
-    return bTestSuccess;
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestRandomMutation::doAfterTest() {
+    return false;
+}

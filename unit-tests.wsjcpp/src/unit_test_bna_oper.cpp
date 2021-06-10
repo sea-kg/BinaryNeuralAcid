@@ -11,17 +11,13 @@ UnitTestBnaOper::UnitTestBnaOper()
 
 // ---------------------------------------------------------------------
 
-void UnitTestBnaOper::init() {
-    // nothing
+bool UnitTestBnaOper::doBeforeTest() {
+    return false;
 }
 
 // ---------------------------------------------------------------------
 
-
-
-bool UnitTestBnaOper::run() {
-    bool bTestSuccess = true;
-    bool bError = false;
+void UnitTestBnaOper::executeTest() {
     BNAOperXor *pOperXor = new BNAOperXor();
     BNAOperNotXor *pOperNotXor = new BNAOperNotXor();
     BNAOperAnd *pOperAnd = new BNAOperAnd();
@@ -39,7 +35,7 @@ bool UnitTestBnaOper::run() {
         BNABit m_b2;
         BNABit m_bExpected;
         BNABit calc() {
-            m_pOper->calc(m_b1, m_b2);
+            return m_pOper->calc(m_b1, m_b2);
         }
     };
 
@@ -73,9 +69,12 @@ bool UnitTestBnaOper::run() {
         LocalDataTest test = vTests[i];
         BNABit b = test.calc();
         std::string sTestTag = std::to_string(i) + " " + test.m_pOper->type();
-        compareN(bTestSuccess, sTestTag, b, test.m_bExpected);
+        compare(sTestTag, b, test.m_bExpected);
     }
-    
-    return bTestSuccess;
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestBnaOper::doAfterTest() {
+    return false;
+}

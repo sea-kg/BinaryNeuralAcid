@@ -7,8 +7,9 @@
 class UnitTestCallOut : public WsjcppUnitTestBase {
     public:
         UnitTestCallOut();
-        virtual void init();
-        virtual bool run();
+        virtual bool doBeforeTest() override;
+        virtual void executeTest() override;
+        virtual bool doAfterTest() override;
 };
 
 #endif // UNIT_TEST_CALL_OUT_H

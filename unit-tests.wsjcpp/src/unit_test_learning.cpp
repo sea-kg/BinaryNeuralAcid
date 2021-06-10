@@ -10,15 +10,15 @@ UnitTestLearning::UnitTestLearning()
 
 // ---------------------------------------------------------------------
 
-void UnitTestLearning::init() {
-    // nothing
+bool UnitTestLearning::doBeforeTest() {
+    return false;
 }
 
 // ---------------------------------------------------------------------
 
-bool UnitTestLearning::run() {
+void UnitTestLearning::executeTest() {
     bool bTestSuccess = true;
-    compareB(bTestSuccess, "Not implemented", true, false);
+    compare("Not implemented", true, false);
 
     /*QString sFolder = "tmp_tests_bna_md5_2";
     BNAProject bnaProject;
@@ -87,7 +87,10 @@ bool UnitTestLearning::run() {
         }
     }
     */
-
-    return bTestSuccess;
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestLearning::doAfterTest() {
+    return false;
+}

@@ -10,8 +10,8 @@ UnitTestReverseTest::UnitTestReverseTest()
 
 // ---------------------------------------------------------------------
 
-void UnitTestReverseTest::init() {
-    // nothing
+bool UnitTestReverseTest::doBeforeTest() {
+    return false;
 }
 
 // ---------------------------------------------------------------------
@@ -22,9 +22,8 @@ void UnitTestReverseTest::init() {
 //     QString text;
 // };
 
-bool UnitTestReverseTest::run() {
-    bool bTestSuccess = true;
-    compareB(bTestSuccess, "Not implemented", true, false);
+void UnitTestReverseTest::executeTest() {
+    compare("Not implemented", true, false);
 
 /*
     QString sFolder = "tmp_tests_bna_md5_2";
@@ -78,7 +77,10 @@ bool UnitTestReverseTest::run() {
         int  nPersent = (nCheck * 100) / bnaProject.getOutputBits();
         std::cout << "\t " << key.toStdString() << " => " << text.toStdString() << "; reverted " << nPersent << "% [" << nCheck << "/" << bnaProject.getOutputBits() << " bits]\n";
     }*/
-
-    return bTestSuccess;
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestReverseTest::doAfterTest() {
+    return false;
+}

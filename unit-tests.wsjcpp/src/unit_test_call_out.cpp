@@ -11,14 +11,13 @@ UnitTestCallOut::UnitTestCallOut()
 
 // ---------------------------------------------------------------------
 
-void UnitTestCallOut::init() {
-    // nothing
+bool UnitTestCallOut::doBeforeTest() {
+    return false;
 }
 
 // ---------------------------------------------------------------------
 
-bool UnitTestCallOut::run() {
-    bool bTestSuccess = true;
+void UnitTestCallOut::executeTest() {
     BNA bna;
     
     // TODO  no random generate
@@ -29,7 +28,10 @@ bool UnitTestCallOut::run() {
         vInputs.push_back(B_1);
     }
     bna.calc(vInputs, 0);
-    
-    return bTestSuccess;
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestCallOut::doAfterTest() {
+    return true;
+}

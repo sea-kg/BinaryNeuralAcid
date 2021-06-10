@@ -11,13 +11,13 @@ UnitTestReadWrite::UnitTestReadWrite()
 
 // ---------------------------------------------------------------------
 
-void UnitTestReadWrite::init() {
-    // nothing
+bool UnitTestReadWrite::doBeforeTest() {
+    return false;
 }
 
 // ---------------------------------------------------------------------
 
-bool UnitTestReadWrite::run() {
+void UnitTestReadWrite::executeTest() {
     bool bTestSuccess = true;
     WsjcppCore::makeDir("./temporary-unit-tests-data");
 
@@ -33,21 +33,24 @@ bool UnitTestReadWrite::run() {
     BNABit bResult = bna.calc(vInputs, 0);
 
     bool bSave0 = bna.save("./temporary-unit-tests-data/read-write-test0");
-    compareB(bTestSuccess, "save0", bSave0, true);
+    compare("save0", bSave0, true);
 
     bool bLoad0 = bna.load("./temporary-unit-tests-data/read-write-test0");
-    compareB(bTestSuccess, "load0", bLoad0, true);
+    compare("load0", bLoad0, true);
 
-    compareN(bTestSuccess, "test read write 0", bResult, bna.calc(vInputs, 0));
+    compare("test read write 0", bResult, bna.calc(vInputs, 0));
 
     bool bSave1 = bna.save("./temporary-unit-tests-data/read-write-test1");
-    compareB(bTestSuccess, "save1", bSave0, true);
+    compare("save1", bSave0, true);
 
     bool bLoad1 = bna.load("./temporary-unit-tests-data/read-write-test1");
-    compareB(bTestSuccess, "load1", bLoad1, true);
+    compare("load1", bLoad1, true);
 
-    compareN(bTestSuccess, "test read write 1", bResult, bna.calc(vInputs, 0));
-
-    return bTestSuccess;
+    compare("test read write 1", bResult, bna.calc(vInputs, 0));
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestReadWrite::doAfterTest() {
+    return false;
+}

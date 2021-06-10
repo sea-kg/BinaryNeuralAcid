@@ -10,10 +10,9 @@ UnitTestBrute::UnitTestBrute()
 
 // ---------------------------------------------------------------------
 
-void UnitTestBrute::init() {
-    // nothing
+bool UnitTestBrute::doBeforeTest() {
+    return false;
 }
-
 // ---------------------------------------------------------------------
 
 /*
@@ -23,7 +22,7 @@ struct Reverse_Test_Struct{
     QString text;
 };*/
 
-bool UnitTestBrute::run() {
+void UnitTestBrute::executeTest() {
     bool bTestSuccess = true;
     std::string sOrigHash = "81dc9bdb52d04dc20036dbd8313ed055";
 
@@ -93,7 +92,11 @@ bool UnitTestBrute::run() {
     std::cout << "Reverted: " << QString(text.toHex()).toStdString() << "\n";
     */
 
-    compareB(bTestSuccess, "Not implemented", true, false);
-    return bTestSuccess;
+    compare("Not implemented", true, false);
 }
 
+// ---------------------------------------------------------------------
+
+bool UnitTestBrute::doAfterTest() {
+    return false;
+}
