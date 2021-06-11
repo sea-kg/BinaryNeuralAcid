@@ -44,6 +44,12 @@ distribution:
   - source-file: "src/bna.cpp"
     target-file: "bna.cpp"
     type: "source-code"
+  - source-file: "src/bna_types.h"
+    target-file: "bna_types.h"
+    type: "source-code"
+  - source-file: "src/bna_types.cpp"
+    target-file: "bna_types.cpp"
+    type: "source-code"
 unit-tests:
   cases:
     - name: "BnaOper"

@@ -2,16 +2,11 @@
 #define SEA5KG_BNA_H
 
 #include <string>
-#include <vector>
 #include <map>
 #include <json.hpp>
 #include <iostream>
 #include <fstream>
-
-enum BNABit{
-    B_0 = 0x00,
-    B_1 = 0x01
-};
+#include "bna_types.h"
 
 void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
 // void BNAConvertArrayToVBool(QByteArray &in, std::vector<BNABit> &vars, int size);

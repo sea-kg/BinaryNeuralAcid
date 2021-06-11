@@ -7,20 +7,6 @@
 // -----------------------------------------------------------------
 // function for convert hex string to array bna bit
 
-struct BNABit4 {
-    BNABit4(BNABit b1, BNABit b2, BNABit b3, BNABit b4) : b1(b1), b2(b2), b3(b3), b4(b4) {}
-    void appendToVector(std::vector<BNABit> &vars){
-        vars.push_back(b1);
-        vars.push_back(b2);
-        vars.push_back(b3);
-        vars.push_back(b4);
-    }
-    BNABit b1;
-    BNABit b2;
-    BNABit b3;
-    BNABit b4;
-};
-
 static std::map<char, BNABit4 *> gMapHEX;
 
 void initMapHEX(){

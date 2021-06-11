@@ -11,7 +11,7 @@ set(EXECUTABLE_OUTPUT_PATH ${bna_SOURCE_DIR})
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
 
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
-list (APPEND WSJCPP_SOURCES "src/bna.h")
+list (APPEND WSJCPP_SOURCES "src/bna_types.cpp")
 list (APPEND WSJCPP_SOURCES "src/bna.cpp")
 
 #### BEGIN_WSJCPP_APPEND

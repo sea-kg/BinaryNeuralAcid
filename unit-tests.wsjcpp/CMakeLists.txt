@@ -49,6 +49,8 @@ list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.h")
 list (APPEND WSJCPP_INCLUDE_DIRS "../src")
 list (APPEND WSJCPP_SOURCES "../src/bna.h")
 list (APPEND WSJCPP_SOURCES "../src/bna.cpp")
+list (APPEND WSJCPP_SOURCES "../src/bna_types.h")
+list (APPEND WSJCPP_SOURCES "../src/bna_types.cpp")
 
 # unit-tests
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
