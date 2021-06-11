@@ -12,22 +12,34 @@ UnitTestCallOut::UnitTestCallOut()
 // ---------------------------------------------------------------------
 
 bool UnitTestCallOut::doBeforeTest() {
-    return false;
+    return true;
 }
 
 // ---------------------------------------------------------------------
 
 void UnitTestCallOut::executeTest() {
     BNA bna;
-    
-    // TODO  no random generate
+
     bna.randomGenerate(15, 1, 100);
     std::vector<BNABit> vInputs;
+    int nPositiveOutputs = 0;
+    int nNegativeOutputs = 0;
 
-    for (int i = 0; i < 15; i++) {
-        vInputs.push_back(B_1);
+    for (int t = 0; t < 1500; t++) {
+        vInputs.clear();
+        for (int i = 0; i < 15; i++) {
+            vInputs.push_back(t*i % 2 == 1 ?  B_1 : B_0);
+        }
+        if (bna.calc(vInputs, 0) == B_1) {
+            nPositiveOutputs++;
+        }
+        if (bna.calc(vInputs, 0) == B_0) {
+            nNegativeOutputs++;
+        }
     }
-    bna.calc(vInputs, 0);
+
+    compare("random_positive", nPositiveOutputs != 0, true);
+    compare("random_negative", nNegativeOutputs != 0, true);
 }
 
 // ---------------------------------------------------------------------

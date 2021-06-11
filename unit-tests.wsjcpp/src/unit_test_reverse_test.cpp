@@ -11,7 +11,7 @@ UnitTestReverseTest::UnitTestReverseTest()
 // ---------------------------------------------------------------------
 
 bool UnitTestReverseTest::doBeforeTest() {
-    return false;
+    return true;
 }
 
 // ---------------------------------------------------------------------
@@ -82,5 +82,5 @@ void UnitTestReverseTest::executeTest() {
 // ---------------------------------------------------------------------
 
 bool UnitTestReverseTest::doAfterTest() {
-    return false;
+    return true;
 }

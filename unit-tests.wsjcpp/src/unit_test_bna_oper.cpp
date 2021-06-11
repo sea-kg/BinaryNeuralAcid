@@ -12,7 +12,7 @@ UnitTestBnaOper::UnitTestBnaOper()
 // ---------------------------------------------------------------------
 
 bool UnitTestBnaOper::doBeforeTest() {
-    return false;
+    return true;
 }
 
 // ---------------------------------------------------------------------
@@ -76,5 +76,5 @@ void UnitTestBnaOper::executeTest() {
 // ---------------------------------------------------------------------
 
 bool UnitTestBnaOper::doAfterTest() {
-    return false;
+    return true;
 }

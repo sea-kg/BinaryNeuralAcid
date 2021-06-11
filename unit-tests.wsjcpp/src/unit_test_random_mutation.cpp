@@ -11,7 +11,7 @@ UnitTestRandomMutation::UnitTestRandomMutation()
 // ---------------------------------------------------------------------
 
 bool UnitTestRandomMutation::doBeforeTest() {
-    return false;
+    return true;
 }
 
 // ---------------------------------------------------------------------
@@ -115,5 +115,5 @@ void UnitTestRandomMutation::executeTest() {
 // ---------------------------------------------------------------------
 
 bool UnitTestRandomMutation::doAfterTest() {
-    return false;
+    return true;
 }

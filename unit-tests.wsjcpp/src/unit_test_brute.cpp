@@ -11,7 +11,7 @@ UnitTestBrute::UnitTestBrute()
 // ---------------------------------------------------------------------
 
 bool UnitTestBrute::doBeforeTest() {
-    return false;
+    return true;
 }
 // ---------------------------------------------------------------------
 
@@ -98,5 +98,5 @@ void UnitTestBrute::executeTest() {
 // ---------------------------------------------------------------------
 
 bool UnitTestBrute::doAfterTest() {
-    return false;
+    return true;
 }

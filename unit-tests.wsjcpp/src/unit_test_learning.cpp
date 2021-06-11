@@ -11,7 +11,7 @@ UnitTestLearning::UnitTestLearning()
 // ---------------------------------------------------------------------
 
 bool UnitTestLearning::doBeforeTest() {
-    return false;
+    return true;
 }
 
 // ---------------------------------------------------------------------
@@ -92,5 +92,5 @@ void UnitTestLearning::executeTest() {
 // ---------------------------------------------------------------------
 
 bool UnitTestLearning::doAfterTest() {
-    return false;
+    return true;
 }

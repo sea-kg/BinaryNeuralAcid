@@ -12,7 +12,7 @@ UnitTestReadWrite::UnitTestReadWrite()
 // ---------------------------------------------------------------------
 
 bool UnitTestReadWrite::doBeforeTest() {
-    return false;
+    return true;
 }
 
 // ---------------------------------------------------------------------
@@ -52,5 +52,5 @@ void UnitTestReadWrite::executeTest() {
 // ---------------------------------------------------------------------
 
 bool UnitTestReadWrite::doAfterTest() {
-    return false;
+    return true;
 }
