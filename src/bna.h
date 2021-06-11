@@ -1,12 +1,12 @@
 #ifndef SEA5KG_BNA_H
 #define SEA5KG_BNA_H
 
-#include <string>
 #include <map>
 #include <json.hpp>
 #include <iostream>
 #include <fstream>
 #include "bna_types.h"
+#include "bna_operations.h"
 
 void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
 // void BNAConvertArrayToVBool(QByteArray &in, std::vector<BNABit> &vars, int size);
@@ -18,60 +18,6 @@ int BNACalculateBinDistance(std::string sBin1, std::string sBin2);
 
 // QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
 // QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
-
-// -----------------------------------------------------------------
-
-class BNAVar{
-    public:
-        BNAVar();
-        std::string name();
-        void name(std::string name);
-        BNABit val();
-        void val(BNABit bVal);
-    private:
-        BNABit m_bVal;
-        std::string m_sName;
-};
-
-// -----------------------------------------------------------------
-
-class IBNAOper {
-    public:
-        virtual std::string type() = 0;
-        virtual BNABit calc(BNABit b1, BNABit b2) = 0;
-};
-
-// -----------------------------------------------------------------
-
-class BNAOperXor : public IBNAOper{
-    public:
-        virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
-};
-
-// -----------------------------------------------------------------
-
-class BNAOperNotXor : public IBNAOper{
-    public:
-        virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
-};
-
-// -----------------------------------------------------------------
-
-class BNAOperAnd : public IBNAOper {
-    public:
-        virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
-};
-
-// -----------------------------------------------------------------
-
-class BNAOperOr : public IBNAOper {
-    public:
-        virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
-};
 
 // -----------------------------------------------------------------
 

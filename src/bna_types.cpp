@@ -16,3 +16,28 @@ void BNABit4::appendToVector(std::vector<BNABit> &vars){
     vars.push_back(b3);
     vars.push_back(b4);
 }
+
+
+// -----------------------------------------------------------------
+// BNAVar just contains boolean variable
+
+BNAVar::BNAVar() {
+   m_bVal = B_0;
+   m_sName = "";
+}
+
+void BNAVar::name(std::string name){
+    m_sName = name;
+}
+
+std::string BNAVar::name(){
+    return m_sName;
+}
+
+BNABit BNAVar::val(){
+    return m_bVal;
+}
+
+void BNAVar::val(BNABit bVal){
+    m_bVal = bVal;
+}

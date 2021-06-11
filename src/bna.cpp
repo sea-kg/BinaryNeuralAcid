@@ -312,37 +312,6 @@ std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
 //     return bTmpText;
 // }
 
-// -----------------------------------------------------------------
-// BNA Var just contains boolean variable
-
-BNAVar::BNAVar() {
-   m_bVal = B_0;
-   m_sName = "";
-}
-
-// -----------------------------------------------------------------
-
-void BNAVar::name(std::string name){
-    m_sName = name;
-}
-
-// -----------------------------------------------------------------
-
-std::string BNAVar::name(){
-    return m_sName;
-}
-
-// -----------------------------------------------------------------
-
-BNABit BNAVar::val(){
-    return m_bVal;
-}
-
-// -----------------------------------------------------------------
-
-void BNAVar::val(BNABit bVal){
-    m_bVal = bVal;
-}
 
 // -----------------------------------------------------------------
 // BNA Expr class for calculation by operation
@@ -459,46 +428,6 @@ void BNAItem::writeXYT(std::ofstream &file){
     file << " item " << m_nX << " " << m_nY << " " << m_sOperationType;
 }
 
-// -----------------------------------------------------------------
-
-std::string BNAOperXor::type(){ return std::string("XOR"); }
-
-BNABit BNAOperXor::calc(BNABit b1, BNABit b2){
-    unsigned char c1 = b1;
-    unsigned char c2 = b2;
-    c1 = (c1 ^ c2) & 0x01;
-    return c1 == 0 ? B_0 : B_1;
-}
-
-// -----------------------------------------------------------------
-
-std::string BNAOperNotXor::type(){ return std::string("NXOR"); }
-BNABit BNAOperNotXor::calc(BNABit b1, BNABit b2){
-    unsigned char c1 = b1;
-    unsigned char c2 = b2;
-    c1 = (!(c1 ^ c2)) & 0x01;
-    return c1 == 0 ? B_0 : B_1;
-}
-
-// -----------------------------------------------------------------
-
-std::string BNAOperAnd::type(){ return std::string("AND"); }
-BNABit BNAOperAnd::calc(BNABit b1, BNABit b2){
-    unsigned char c1 = b1;
-    unsigned char c2 = b2;
-    c1 = (c1 & c2) & 0x01;
-    return c1 == 0 ? B_0 : B_1;
-}
-
-// -----------------------------------------------------------------
-
-std::string BNAOperOr::type(){ return std::string("OR"); }
-BNABit BNAOperOr::calc(BNABit b1, BNABit b2){
-    unsigned char c1 = b1;
-    unsigned char c2 = b2;
-    c1 = (c1 | c2) & 0x01;
-    return c1 == 0 ? B_0 : B_1;
-}
 
 // -----------------------------------------------------------------
 
