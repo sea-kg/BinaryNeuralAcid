@@ -18,13 +18,11 @@ bool UnitTestReadWrite::doBeforeTest() {
 // ---------------------------------------------------------------------
 
 void UnitTestReadWrite::executeTest() {
-    bool bTestSuccess = true;
     WsjcppCore::makeDir("./temporary-unit-tests-data");
 
-    
     BNA bna;
     bna.randomGenerate(128,1,256);
-    
+
     // fill the input vector
     std::vector<BNABit> vInputs;
     for (int i = 0; i < 128; i++) {

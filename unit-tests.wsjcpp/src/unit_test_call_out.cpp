@@ -35,6 +35,33 @@ void UnitTestCallOut::executeTest() {
     compare("callout_1_0_1", bna.calc({B_1, B_0, B_1}, 0), B_0);
     compare("callout_1_1_0", bna.calc({B_1, B_1, B_0}, 0), B_1);
     compare("callout_1_1_1", bna.calc({B_1, B_1, B_1}, 0), B_1);
+
+
+    WsjcppCore::makeDir("./temporary-unit-tests-data");
+    
+    bool bSave0 = bna.save("./temporary-unit-tests-data/callout-test0");
+    compare("save0", bSave0, true);
+
+    compare("callout_after_save_0_0_0", bna.calc({B_0, B_0, B_0}, 0), B_0);
+    compare("callout_after_save_0_0_1", bna.calc({B_0, B_0, B_1}, 0), B_0);
+    compare("callout_after_save_0_1_0", bna.calc({B_0, B_1, B_0}, 0), B_0);
+    compare("callout_after_save_0_1_1", bna.calc({B_0, B_1, B_1}, 0), B_0);
+    compare("callout_after_save_1_0_0", bna.calc({B_1, B_0, B_0}, 0), B_0);
+    compare("callout_after_save_1_0_1", bna.calc({B_1, B_0, B_1}, 0), B_0);
+    compare("callout_after_save_1_1_0", bna.calc({B_1, B_1, B_0}, 0), B_1);
+    compare("callout_after_save_1_1_1", bna.calc({B_1, B_1, B_1}, 0), B_1);
+
+    bool bLoad1 = bna.load("./temporary-unit-tests-data/callout-test0");
+    compare("load1", bLoad1, true);
+
+    compare("callout_after_load_0_0_0", bna.calc({B_0, B_0, B_0}, 0), B_0);
+    compare("callout_after_load_0_0_1", bna.calc({B_0, B_0, B_1}, 0), B_0);
+    compare("callout_after_load_0_1_0", bna.calc({B_0, B_1, B_0}, 0), B_0);
+    compare("callout_after_load_0_1_1", bna.calc({B_0, B_1, B_1}, 0), B_0);
+    compare("callout_after_load_1_0_0", bna.calc({B_1, B_0, B_0}, 0), B_0);
+    compare("callout_after_load_1_0_1", bna.calc({B_1, B_0, B_1}, 0), B_0);
+    compare("callout_after_load_1_1_0", bna.calc({B_1, B_1, B_0}, 0), B_1);
+    compare("callout_after_load_1_1_1", bna.calc({B_1, B_1, B_1}, 0), B_1);
 }
 
 // ---------------------------------------------------------------------
