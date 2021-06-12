@@ -69,12 +69,16 @@ class BNAItem {
 class BNA {
 	public:
 		BNA();
+        BNA(int nInput, int nOutput);
         ~BNA();
 		bool load(const std::string &sFilename);
 		bool save(const std::string &sFilename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
+        int addItem(int nInX, int nInY, const std::string &sOperType);
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
+        
+
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);
 		nlohmann::json toJson();

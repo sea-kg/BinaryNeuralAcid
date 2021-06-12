@@ -18,28 +18,23 @@ bool UnitTestCallOut::doBeforeTest() {
 // ---------------------------------------------------------------------
 
 void UnitTestCallOut::executeTest() {
-    BNA bna;
+    BNA bna(3,1);
 
-    bna.randomGenerate(15, 1, 100);
-    std::vector<BNABit> vInputs;
-    int nPositiveOutputs = 0;
-    int nNegativeOutputs = 0;
+    int nodeN1 = bna.addItem(0, 1, "AND");
+    compare("nodeN1", nodeN1, 3);
+    int nodeN2 = bna.addItem(1, 2, "OR");
+    compare("nodeN2", nodeN2, 4);
+    int nodeN3 = bna.addItem(nodeN1, nodeN2, "OR");
+    compare("nodeN3", nodeN3, 5);
 
-    for (int t = 0; t < 1500; t++) {
-        vInputs.clear();
-        for (int i = 0; i < 15; i++) {
-            vInputs.push_back(t*i % 2 == 1 ?  B_1 : B_0);
-        }
-        if (bna.calc(vInputs, 0) == B_1) {
-            nPositiveOutputs++;
-        }
-        if (bna.calc(vInputs, 0) == B_0) {
-            nNegativeOutputs++;
-        }
-    }
-
-    compare("random_positive", nPositiveOutputs != 0, true);
-    compare("random_negative", nNegativeOutputs != 0, true);
+    compare("callout_0_0_0", bna.calc({B_0, B_0, B_0}, 0), B_0);
+    compare("callout_0_0_1", bna.calc({B_0, B_0, B_1}, 0), B_0);
+    compare("callout_0_1_0", bna.calc({B_0, B_1, B_0}, 0), B_0);
+    compare("callout_0_1_1", bna.calc({B_0, B_1, B_1}, 0), B_0);
+    compare("callout_1_0_0", bna.calc({B_1, B_0, B_0}, 0), B_0);
+    compare("callout_1_0_1", bna.calc({B_1, B_0, B_1}, 0), B_0);
+    compare("callout_1_1_0", bna.calc({B_1, B_1, B_0}, 0), B_1);
+    compare("callout_1_1_1", bna.calc({B_1, B_1, B_1}, 0), B_1);
 }
 
 // ---------------------------------------------------------------------

@@ -443,7 +443,10 @@ BNA::BNA(){
     m_nBnaVersion = 1;
 }
 
-// ----------------------------------------------------------------
+BNA::BNA(int nInput, int nOutput) : BNA() {
+    m_nInput = nInput;
+	m_nOutput = nOutput;
+}
 
 unsigned int BNA::inputCount(){
     return m_nInput;
@@ -522,6 +525,16 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
         m_vItems.push_back(pItem);
 	}
 	normalize();
+}
+
+int BNA::addItem(int nInX, int nInY, const std::string &sOperType) {
+    BNAItem *pItem = new BNAItem();
+    pItem->setX(nInX);
+    pItem->setY(nInY);
+    pItem->setOperationType(sOperType);
+    m_vItems.push_back(pItem);
+    normalize();
+    return m_vItems.size() - 1 + m_nInput;
 }
 
 // ----------------------------------------------------------------
