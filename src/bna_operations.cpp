@@ -28,9 +28,11 @@ BNABit BNAOperNotXor::calc(BNABit b1, BNABit b2){
 // -----------------------------------------------------------------
 // BNAOperAnd
 
-std::string BNAOperAnd::type(){ return std::string("AND"); }
+std::string BNAOperAnd::type() {
+    return std::string("AND");
+}
 
-BNABit BNAOperAnd::calc(BNABit b1, BNABit b2){
+BNABit BNAOperAnd::calc(BNABit b1, BNABit b2) {
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 & c2) & 0x01;

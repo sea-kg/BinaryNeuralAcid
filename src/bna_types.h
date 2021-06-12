@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-enum BNABit{
+enum BNABit {
     B_0 = 0x00,
     B_1 = 0x01
 };
@@ -19,7 +19,7 @@ class BNABit4 {
         BNABit b4;
 };
 
-class BNAVar{
+class BNAVar {
     public:
         BNAVar();
         std::string name();
