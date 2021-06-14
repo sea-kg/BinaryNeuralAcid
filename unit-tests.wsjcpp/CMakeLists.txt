@@ -53,6 +53,8 @@ list (APPEND WSJCPP_SOURCES "../src/bna_types.h")
 list (APPEND WSJCPP_SOURCES "../src/bna_types.cpp")
 list (APPEND WSJCPP_SOURCES "../src/bna_operations.h")
 list (APPEND WSJCPP_SOURCES "../src/bna_operations.cpp")
+list (APPEND WSJCPP_SOURCES "../src/bna_expression.h")
+list (APPEND WSJCPP_SOURCES "../src/bna_expression.cpp")
 
 # unit-tests
 list (APPEND WSJCPP_INCLUDE_DIRS "src")

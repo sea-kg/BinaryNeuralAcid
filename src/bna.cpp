@@ -312,55 +312,6 @@ std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
 //     return bTmpText;
 // }
 
-
-// -----------------------------------------------------------------
-// BNA Expr class for calculation by operation
-
-BNAExpr::BNAExpr(){
-    m_pVar1 = NULL;
-    m_pVar2 = NULL;
-    m_pVarOut = NULL;
-    m_pOper = NULL;
-}
-
-// -----------------------------------------------------------------
-
-void BNAExpr::op1(BNAVar *pVar1){ m_pVar1 = pVar1; }
-BNAVar *BNAExpr::op1(){ return m_pVar1; }
-void BNAExpr::op2(BNAVar *pVar2){ m_pVar2 = pVar2; }
-BNAVar * BNAExpr::op2(){ return m_pVar2; }
-void BNAExpr::oper(IBNAOper *pOper){ m_pOper = pOper; }
-IBNAOper * BNAExpr::oper(){ return m_pOper; }
-void BNAExpr::out(BNAVar *pVarOut){ m_pVarOut = pVarOut; }
-BNAVar * BNAExpr::out(){ return m_pVarOut; }
-
-// -----------------------------------------------------------------
-
-void BNAExpr::exec(){
-    if(m_pVar1 == NULL){
-        std::cerr << "[ERROR] m_pVar1 is NULL\n";
-        return;
-    }
-
-    if(m_pVar2 == NULL){
-        std::cerr << "[ERROR] m_pVar2 is NULL\n";
-        return;
-    }
-
-    if(m_pVarOut == NULL){
-        std::cerr << "[ERROR] m_pVarOut is NULL\n";
-        return;
-    }
-
-    if(m_pOper == NULL){
-        std::cerr << "[ERROR] m_pOper is NULL\n";
-        return;
-    }
-    BNABit b1 = m_pVar1->val();
-    BNABit b2 = m_pVar2->val();
-    m_pVarOut->val(m_pOper->calc(b1, b2));
-}
-
 // -----------------------------------------------------------------
 // Phisicly assotiation with expressions
 
@@ -446,6 +397,7 @@ BNA::BNA(){
 BNA::BNA(int nInput, int nOutput) : BNA() {
     m_nInput = nInput;
 	m_nOutput = nOutput;
+    m_bCompiled = false;
 }
 
 unsigned int BNA::inputCount(){
@@ -524,32 +476,27 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vItems.push_back(pItem);
 	}
-	normalize();
+	compile();
 }
 
-int BNA::addItem(int nInX, int nInY, const std::string &sOperType) {
+int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
     BNAItem *pItem = new BNAItem();
     pItem->setX(nInX);
     pItem->setY(nInY);
     pItem->setOperationType(sOperType);
     m_vItems.push_back(pItem);
-    normalize();
+    m_bCompiled = false;
     return m_vItems.size() - 1 + m_nInput;
 }
 
-// ----------------------------------------------------------------
-
-void BNA::normalize(){
-    // normalize
-    int nodes = m_nInput;
-    for(int i = 0; i < m_vItems.size(); i++){
-        m_vItems[i]->setX(m_vItems[i]->getX() % nodes);
-        m_vItems[i]->setY(m_vItems[i]->getY() % nodes);
-        m_vItems[i]->setOperationType(m_vItems[i]->getOperationType());
-        nodes++;
+bool BNA::compile() {
+    if (m_bCompiled) {
+        return true; // already compiled
     }
+    
+    clearCalcExprsVars();
 
-    // prepare for calculations
+    // prepare input nodes
     for(unsigned int i  = 0; i < m_nInput; i++){
         BNAVar *pVar = new BNAVar();
         pVar->val(B_0);
@@ -557,24 +504,29 @@ void BNA::normalize(){
         m_vCalcVars.push_back(pVar);
     }
 
+    // prepare and normalize input nodes
+    normalizeInputNodes();
+
     int nItemsSize = m_vItems.size();
     for (int i = 0; i < m_vItems.size(); i++) {
         int x = m_vItems[i]->getX();
         int y = m_vItems[i]->getY();
         std::string sOperationType = m_vItems[i]->getOperationType();
-        BNAExpr *pExpr = new BNAExpr();
-        pExpr->op1(m_vCalcVars[x]);
-        pExpr->op2(m_vCalcVars[y]);
+        BNAExpression *pExpr = new BNAExpression();
+        pExpr->setOperandLeft(m_vCalcVars[x]);
+        pExpr->setOperandRight(m_vCalcVars[y]);
         pExpr->oper(m_vOperations[sOperationType]);
         BNAVar *pVar = new BNAVar();
         pVar->name("node" + std::to_string(i));
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
-        if(nItemsSize - i <= (int)m_nOutput){
+        if (nItemsSize - i <= (int)m_nOutput) {
             m_vCalcOutVars.push_back(pVar);
         }
     }
+    m_bCompiled = true;
+    return true;
 }
 
 // ----------------------------------------------------------------
@@ -606,11 +558,11 @@ void BNA::compare(BNA &bna){
 
     if(bna.m_vCalcExprs.size() == m_vCalcExprs.size()){
         for(int i = 0; i < m_vCalcExprs.size(); i++){
-            if(m_vCalcExprs[i]->op1()->name() != bna.m_vCalcExprs[i]->op1()->name()){
-                std::cout << "\t op1 not equal in " << i << "\n";
+            if(m_vCalcExprs[i]->getOperandLeft()->name() != bna.m_vCalcExprs[i]->getOperandLeft()->name()){
+                std::cout << "\t operand_left not equal in " << i << "\n";
             }
             if(m_vCalcExprs[i]->op2()->name() != bna.m_vCalcExprs[i]->op2()->name()){
-                std::cout << "\t op2 not equal in " << i << "\n";
+                std::cout << "\t operand_right not equal in " << i << "\n";
             }
             if(m_vCalcExprs[i]->out()->name() != bna.m_vCalcExprs[i]->out()->name()){
                 std::cout << "\t out not equal in " << i << "\n";
@@ -741,22 +693,12 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
 // ----------------------------------------------------------------
 
 void BNA::clearResources(){
+    clearCalcExprsVars();
+
     for(int i = 0; i < m_vItems.size(); i++){
         delete m_vItems[i];
     }
     m_vItems.clear();
-
-    for(int i = 0; i < m_vCalcExprs.size(); i++){
-        delete m_vCalcExprs[i];
-    }
-    m_vCalcExprs.clear();
-
-    for(int i = 0; i < m_vCalcVars.size(); i++){
-        delete m_vCalcVars[i];
-    }
-    m_vCalcVars.clear();
-    m_vCalcOutVars.clear();
-
 }
 
 // ----------------------------------------------------------------
@@ -804,8 +746,7 @@ bool BNA::readFromFileBna(std::ifstream &file){
         sStr = "";
         file >> sStr;
     }
-    normalize(); // TODO really need this or just check format ????
-    return true;
+    return compile(); // need for process expressions
 }
 
 // ----------------------------------------------------------------
@@ -910,6 +851,9 @@ nlohmann::json BNA::toJson(){
 
 BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
     // prepare calculate exprs
+    if (!m_bCompiled) {
+        std::cout << "Not compiled" << std::endl;    
+    }
 
     if((unsigned int)vInputs.size() != m_nInput){
         std::cerr << "[ERROR] invalid input count " << vInputs.size() << "(Expected: " << m_nInput << ") \n";
@@ -925,6 +869,29 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
     }
 
     return m_vCalcOutVars[nOutput]->val();
+}
+
+void BNA::clearCalcExprsVars() {
+    for(int i = 0; i < m_vCalcExprs.size(); i++){
+        delete m_vCalcExprs[i];
+    }
+    m_vCalcExprs.clear();
+
+    for(int i = 0; i < m_vCalcVars.size(); i++){
+        delete m_vCalcVars[i];
+    }
+    m_vCalcVars.clear();
+    m_vCalcOutVars.clear();
+}
+
+void BNA::normalizeInputNodes() {
+    int nNodes = m_nInput;
+    for(int i = 0; i < m_vItems.size(); i++){
+        m_vItems[i]->setX(m_vItems[i]->getX() % nNodes);
+        m_vItems[i]->setY(m_vItems[i]->getY() % nNodes);
+        // m_vItems[i]->setOperationType(m_vItems[i]->getOperationType());
+        nNodes++;
+    }
 }
 
 // ----------------------------------------------------------------

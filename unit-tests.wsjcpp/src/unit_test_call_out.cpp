@@ -20,12 +20,13 @@ bool UnitTestCallOut::doBeforeTest() {
 void UnitTestCallOut::executeTest() {
     BNA bna(3,1);
 
-    int nodeN1 = bna.addItem(0, 1, "AND");
+    int nodeN1 = bna.addNode(0, 1, "AND");
     compare("nodeN1", nodeN1, 3);
-    int nodeN2 = bna.addItem(1, 2, "OR");
+    int nodeN2 = bna.addNode(1, 2, "OR");
     compare("nodeN2", nodeN2, 4);
-    int nodeN3 = bna.addItem(nodeN1, nodeN2, "OR");
+    int nodeN3 = bna.addNode(nodeN1, nodeN2, "AND");
     compare("nodeN3", nodeN3, 5);
+    bna.compile();
 
     compare("callout_0_0_0", bna.calc({B_0, B_0, B_0}, 0), B_0);
     compare("callout_0_0_1", bna.calc({B_0, B_0, B_1}, 0), B_0);
@@ -62,6 +63,9 @@ void UnitTestCallOut::executeTest() {
     compare("callout_after_load_1_0_1", bna.calc({B_1, B_0, B_1}, 0), B_0);
     compare("callout_after_load_1_1_0", bna.calc({B_1, B_1, B_0}, 0), B_1);
     compare("callout_after_load_1_1_1", bna.calc({B_1, B_1, B_1}, 0), B_1);
+
+    bool bSave1 = bna.save("./temporary-unit-tests-data/callout-test1");
+    compare("save1", bSave1, true);
 }
 
 // ---------------------------------------------------------------------

@@ -7,6 +7,7 @@
 #include <fstream>
 #include "bna_types.h"
 #include "bna_operations.h"
+#include "bna_expression.h"
 
 void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
 // void BNAConvertArrayToVBool(QByteArray &in, std::vector<BNABit> &vars, int size);
@@ -18,28 +19,6 @@ int BNACalculateBinDistance(std::string sBin1, std::string sBin2);
 
 // QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
 // QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
-
-// -----------------------------------------------------------------
-
-class BNAExpr{
-    public:
-        BNAExpr();
-        void op1(BNAVar *pVar1);
-        BNAVar *op1();
-        void op2(BNAVar *pVar2);
-        BNAVar *op2();
-        void oper(IBNAOper *pOper);
-        IBNAOper *oper();
-        void out(BNAVar *pVarOut);
-        BNAVar *out();
-        void exec();
-
-    private:
-        BNAVar *m_pVar1;
-        BNAVar *m_pVar2;
-        BNAVar *m_pVarOut;
-        IBNAOper *m_pOper;
-};
 
 // -----------------------------------------------------------------
 
@@ -74,7 +53,9 @@ class BNA {
 		bool load(const std::string &sFilename);
 		bool save(const std::string &sFilename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
-        int addItem(int nInX, int nInY, const std::string &sOperType);
+        int addNode(int nInX, int nInY, const std::string &sOperType);
+        bool compile();
+
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
         
@@ -90,8 +71,10 @@ class BNA {
         unsigned int inputCount();
         unsigned int outputCount();
         void compare(BNA &bna);
+
 	private:
         std::string TAG;
+        bool m_bCompiled;
         int m_nBnaVersion;
 		unsigned int m_nInput;
 		unsigned int m_nOutput;
@@ -104,9 +87,11 @@ class BNA {
         int m_nOperSize;
 
         void clearResources();
-        void normalize();
         std::vector<BNAItem *> m_vItems;
-        std::vector<BNAExpr *> m_vCalcExprs;
+        
+        void clearCalcExprsVars();
+        void normalizeInputNodes();
+        std::vector<BNAExpression *> m_vCalcExprs;
         std::vector<BNAVar *> m_vCalcVars;
         std::vector<BNAVar *> m_vCalcOutVars;
 };
