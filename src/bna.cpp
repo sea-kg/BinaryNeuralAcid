@@ -376,7 +376,7 @@ void BNAItem::readXYT(std::ifstream &file){
 // -----------------------------------------------------------------
 
 void BNAItem::writeXYT(std::ofstream &file){
-    file << " item " << m_nX << " " << m_nY << " " << m_sOperationType;
+    file << " node " << m_nX << " " << m_nY << " " << m_sOperationType;
 }
 
 
@@ -739,7 +739,7 @@ bool BNA::readFromFileBna(std::ifstream &file){
     // TODO check value of output
     
     file >> sStr;
-    while (sStr == "item") {
+    while (sStr == "node") {
         BNAItem *pItem = new BNAItem();
         pItem->readXYT(file);
         m_vItems.push_back(pItem);
@@ -882,6 +882,7 @@ void BNA::clearCalcExprsVars() {
     }
     m_vCalcVars.clear();
     m_vCalcOutVars.clear();
+    m_bCompiled = false;
 }
 
 void BNA::normalizeInputNodes() {
