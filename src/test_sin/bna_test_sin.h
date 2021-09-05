@@ -41,6 +41,8 @@ class BNATestSin {
         bool saveDataTests();
         int printCounters();
         void calculateCurrentCounters();
+        bool onStart();
+        void doIterattion();
         std::string TAG;
 
         std::string m_sBNAFilename;
