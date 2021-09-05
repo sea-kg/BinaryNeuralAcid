@@ -376,15 +376,15 @@ void BNAItem::readXYT(std::ifstream &file){
 // -----------------------------------------------------------------
 
 void BNAItem::writeXYT(std::ofstream &file){
-    file << " node " << m_nX << " " << m_nY << " " << m_sOperationType;
+    file << "node " << m_nX << " " << m_nY << " " << m_sOperationType << "\n";
 }
 
 
 // -----------------------------------------------------------------
 
 BNA::BNA(){
-	m_nInput = 1; // Default
-	m_nOutput = 1; // 16 bytes of md5 hash
+    m_nInput = 1; // Default
+    m_nOutput = 1; // 16 bytes of md5 hash
     registryOperationType(new BNAOperXor());
     registryOperationType(new BNAOperNotXor());
     registryOperationType(new BNAOperAnd());
@@ -396,7 +396,7 @@ BNA::BNA(){
 
 BNA::BNA(int nInput, int nOutput) : BNA() {
     m_nInput = nInput;
-	m_nOutput = nOutput;
+    m_nOutput = nOutput;
     m_bCompiled = false;
 }
 
@@ -433,11 +433,11 @@ bool BNA::load(const std::string &sFilename){
     file.open(sFilename0, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
         WsjcppLog::err(TAG, "load: could not open file to read '" + sFilename0 + "'");
-		return false;
+        return false;
     }
     bool bResult = readFromFileBna(file);
     file.close(); // TODO file will be automaticly closed on return of scope?
-	return bResult;
+    return bResult;
 }
 
 // ----------------------------------------------------------------
@@ -454,29 +454,29 @@ bool BNA::save(const std::string &sFilename){
     file.open(sFilename0, std::ios::out | std::ios::binary);
     if (!file.is_open()) {
         WsjcppLog::err(TAG, "save: could not open file to write: " + sFilename0);
-		return false;
+        return false;
     }
     bool bResult = writeToFileBna(file);
     file.close(); // TODO file will be automaticly closed on return of scope?
-	return bResult;
+    return bResult;
 }
 
 // ----------------------------------------------------------------
 
 void BNA::randomGenerate(int nInput, int nOutput, int nSize){
     clearResources();
-	m_nInput = nInput;
-	m_nOutput = nOutput;
-	nSize = nSize + m_nInput + m_nOutput;
-	for (int i = 0; i < nSize; i++) {
+    m_nInput = nInput;
+    m_nOutput = nOutput;
+    nSize = nSize + m_nInput + m_nOutput;
+    for (int i = 0; i < nSize; i++) {
         BNAItem *pItem = new BNAItem();
         pItem->setX(rand());
         pItem->setY(rand());
         int nOper = rand() % m_nOperSize;
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vItems.push_back(pItem);
-	}
-	compile();
+    }
+    compile();
 }
 
 int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
@@ -583,16 +583,16 @@ void BNA::compare(BNA &bna){
 bool BNA::exportToDot(std::string filename, std::string graphname){
     WsjcppLog::err(TAG, "TODO exportToCpp");
 
-	/*QFile file(filename);
-	if (file.exists()) {
-		file.remove();
-	}
-	if ( !file.open(QIODevice::WriteOnly) ) {
+    /*QFile file(filename);
+    if (file.exists()) {
+        file.remove();
+    }
+    if ( !file.open(QIODevice::WriteOnly) ) {
         std::cerr << "Could not write file: " << filename.toStdString() << "\n";
-		return false;
-	}
-	QTextStream stream( &file );
-	stream << "digraph " << graphname << " {\n";
+        return false;
+    }
+    QTextStream stream( &file );
+    stream << "digraph " << graphname << " {\n";
 
     int nExprsSize = m_vCalcExprs.size();
     for(int i = 0; i < m_vCalcExprs.size(); i++){
@@ -606,88 +606,88 @@ bool BNA::exportToDot(std::string filename, std::string graphname){
     }
 
     stream << "}\n";
-	file.close();*/
-	return true;
+    file.close();*/
+    return true;
 }
 
 // ----------------------------------------------------------------
 
 bool BNA::exportToCpp(std::string filename, std::string funcname){
     WsjcppLog::err(TAG, "TODO exportToCpp");
-	/*QFile file(filename);
-	QFileInfo fi(filename);
-	if(fi.suffix() != "cpp"){
+    /*QFile file(filename);
+    QFileInfo fi(filename);
+    if(fi.suffix() != "cpp"){
         std::cerr << "[ERROR]" << filename.toStdString() << " file must be have suffix 'cpp'\n";
-		return false;
-	}
-	
-	std::string filename_h = filename.left(filename.length() - 3);
-	filename_h += "h";
-	
-	if (file.exists()) {
-		file.remove();
-	}
-	
-	QFile file_h(filename_h);
-	if (file_h.exists()) {
-		file_h.remove();
-	}
-	
-	if ( !file.open(QIODevice::WriteOnly) ) {
+        return false;
+    }
+    
+    std::string filename_h = filename.left(filename.length() - 3);
+    filename_h += "h";
+    
+    if (file.exists()) {
+        file.remove();
+    }
+    
+    QFile file_h(filename_h);
+    if (file_h.exists()) {
+        file_h.remove();
+    }
+    
+    if ( !file.open(QIODevice::WriteOnly) ) {
         std::cerr << "Could not write file: " << filename.toStdString() << "\n";
-		return false;
-	}
-	
-	if ( !file_h.open(QIODevice::WriteOnly) ) {
+        return false;
+    }
+    
+    if ( !file_h.open(QIODevice::WriteOnly) ) {
         std::cerr << "Could not write file: " << filename_h.toStdString() << "\n";
-		return false;
-	}
-	
-	QTextStream stream_h( &file_h );
-	stream_h << "#ifndef BNA_MD5_" << funcname.toUpper() << "_H\r\n";
-	stream_h << "#define BNA_MD5_" << funcname.toUpper() << "_H\r\n\r\n";
-	stream_h << "void " << funcname << "(";
-	
-	QTextStream stream( &file );
-	stream << "#include \"" << fi.baseName() << ".h\"\r\n";
-	stream << "void " << funcname << "(";
-	for(unsigned int i = 0; i < m_nInput; i++){
-		stream << "\r\n\tbool in" << i << ", ";
-		stream_h << "\r\n\tbool in" << i << ", ";
-	}
-	
-	for(unsigned  int i = 0; i < m_nOutput; i++){
-		stream << "\r\n\tbool &out" << i;
-		stream_h << "\r\n\tbool &out" << i;
-		if(i < m_nOutput-1){
-			stream << ", ";
-			stream_h << ", ";
-		}
-	}
-	stream << "\r\n) {\r\n";
-	stream_h << "\r\n);\r\n\r\n";
-	stream_h << "#endif //BNA_MD5_" << funcname.toUpper() << "_H\r\n";
-	
-	
-	int nodes = m_nInput;
-	for(int i = 0; i < m_vItems.size(); i++){
+        return false;
+    }
+    
+    QTextStream stream_h( &file_h );
+    stream_h << "#ifndef BNA_MD5_" << funcname.toUpper() << "_H\r\n";
+    stream_h << "#define BNA_MD5_" << funcname.toUpper() << "_H\r\n\r\n";
+    stream_h << "void " << funcname << "(";
+    
+    QTextStream stream( &file );
+    stream << "#include \"" << fi.baseName() << ".h\"\r\n";
+    stream << "void " << funcname << "(";
+    for(unsigned int i = 0; i < m_nInput; i++){
+        stream << "\r\n\tbool in" << i << ", ";
+        stream_h << "\r\n\tbool in" << i << ", ";
+    }
+    
+    for(unsigned  int i = 0; i < m_nOutput; i++){
+        stream << "\r\n\tbool &out" << i;
+        stream_h << "\r\n\tbool &out" << i;
+        if(i < m_nOutput-1){
+            stream << ", ";
+            stream_h << ", ";
+        }
+    }
+    stream << "\r\n) {\r\n";
+    stream_h << "\r\n);\r\n\r\n";
+    stream_h << "#endif //BNA_MD5_" << funcname.toUpper() << "_H\r\n";
+    
+    
+    int nodes = m_nInput;
+    for(int i = 0; i < m_vItems.size(); i++){
         std::string sX = (m_vItems[i]->getX() < m_nInput ? "in" : "node") + std::to_string(m_vItems[i]->getX());
         std::string sY = (m_vItems[i]->getY() < m_nInput ? "in" : "node") + std::to_string(m_vItems[i]->getY());
-		std::string sNode = "node" + std::string::number(nodes); 
-		stream << "\tbool " << sNode << " = " << sX << "|" << sY << ";\n";
-		nodes++;
-	}
-	int out_nodes = nodes-m_nOutput;
-	
-	for(int i = out_nodes; i < nodes; i++){
-		std::string sOut = "out" + std::to_string(i-out_nodes);
-		std::string sNode = "node" + std::to_string(i);
-		stream << "\t" << sOut << " = " << sNode << ";\n";
-	}
+        std::string sNode = "node" + std::string::number(nodes); 
+        stream << "\tbool " << sNode << " = " << sX << "|" << sY << ";\n";
+        nodes++;
+    }
+    int out_nodes = nodes-m_nOutput;
+    
+    for(int i = out_nodes; i < nodes; i++){
+        std::string sOut = "out" + std::to_string(i-out_nodes);
+        std::string sNode = "node" + std::to_string(i);
+        stream << "\t" << sOut << " = " << sNode << ";\n";
+    }
 
-	stream << "}\n";
-	file.close();*/
-	return true;
+    stream << "}\n";
+    file.close();*/
+    return true;
 }
 
 // ----------------------------------------------------------------
@@ -753,10 +753,9 @@ bool BNA::readFromFileBna(std::ifstream &file){
 
 bool BNA::writeToFileBna(std::ofstream &file){
     // basic information about file
-    file << "BNA"; 
-    file << " version " << m_nBnaVersion;
-    file << " input " << m_nInput;
-    file << " output " << m_nOutput;
+    file << "BNA version " << m_nBnaVersion << "\n";
+    file << "input " << m_nInput << "\n"; 
+    file << "output " << m_nOutput << "\n";
     for (int i = 0; i < m_vItems.size(); i++) {
         m_vItems[i]->writeXYT(file);
     }
@@ -797,28 +796,17 @@ bool BNA::registryOperationType(IBNAOper *pOper) {
 // ----------------------------------------------------------------
 
 void BNA::generateRandomMutations(int nRandomCicles){
-    WsjcppLog::err(TAG, "TODO generateRandomMutations");
-
-    /*QByteArray data = exportToByteArray();
-
-    // random mutations data (exclude first 8 byte)
-    int nOffset = 8;
-    int nSize = data.size() - nOffset;
-    if(nSize <= 0) {
-        std::cout << "[FAIL] generateRandomMutations failed size " << nSize << "\n";
-        return;
+    for (int i = 0; i < nRandomCicles; i++) {
+        m_bCompiled = false;
+        int nItemIndex = rand() % m_vItems.size();
+        m_vItems[nItemIndex]->setX(rand());
+        m_vItems[nItemIndex]->setY(rand());
+        int nOper = rand() % m_nOperSize;
+        m_vItems[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
     }
-    char buf[1];
-    for(int i = 0; i < nRandomCicles; i++){
-        int x = rand() % nSize;
-        unsigned char ch = data.data()[x + nOffset];
-        buf[0] = ch + rand();
-        // std::cout << (int)ch << " -> " << (int)buf[0] << "\n";
-        data.data()[x + nOffset] = buf[0];
-        // data = data.replace(x + nOffset, 1, buf);
+    if (!m_bCompiled) {
+        compile();
     }
-    importFromByteArray(data);
-    */
 }
 
 // ----------------------------------------------------------------
@@ -1285,44 +1273,44 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
 void BNAProject::saveResult(int bitid, int nResult){
     WsjcppLog::err(TAG, "TODO");
 
-	/*std::string m_sBitid = prepareName(bitid);
-	std::string subdir = prepareSubdir(bitid);
-	std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
-	
-	QFile file(m_sFilename);
-	if (file.exists()) {
-		file.remove();
-	}
-	if ( !file.open(QIODevice::WriteOnly) ) {
-		std::cout << "BNAProject/savePersent: Could not write file: " << m_sFilename.toStdString() << "\n";
-		return;
-	}
-	QDataStream stream( &file );
+    /*std::string m_sBitid = prepareName(bitid);
+    std::string subdir = prepareSubdir(bitid);
+    std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
+    
+    QFile file(m_sFilename);
+    if (file.exists()) {
+        file.remove();
+    }
+    if ( !file.open(QIODevice::WriteOnly) ) {
+        std::cout << "BNAProject/savePersent: Could not write file: " << m_sFilename.toStdString() << "\n";
+        return;
+    }
+    QDataStream stream( &file );
     stream << nResult;
     m_mapResults[bitid] = nResult;
-	file.close();*/
+    file.close();*/
 }
 
 // ----------------------------------------------------------------
 
 int BNAProject::loadResult(int bitid){
-	/*std::string m_sBitid = prepareName(bitid);
-	std::string subdir = prepareSubdir(bitid);
-	std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
-	
+    /*std::string m_sBitid = prepareName(bitid);
+    std::string subdir = prepareSubdir(bitid);
+    std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
+    
     int nResult = 0;
-	// load persent
-	QFile file(m_sFilename);
-	if (!file.exists()) {
-		std::cout << "BNAProject/loadPersent:  File did not exists: " << m_sFilename.toStdString() << "\n";
-	}else{
-		if (!file.open(QIODevice::ReadOnly) ) {
-			std::cout << "BNAProject/loadPersent: Could not open file " << m_sFilename.toStdString() << "\n";
-		}else{
-			QDataStream stream(&file);
+    // load persent
+    QFile file(m_sFilename);
+    if (!file.exists()) {
+        std::cout << "BNAProject/loadPersent:  File did not exists: " << m_sFilename.toStdString() << "\n";
+    }else{
+        if (!file.open(QIODevice::ReadOnly) ) {
+            std::cout << "BNAProject/loadPersent: Could not open file " << m_sFilename.toStdString() << "\n";
+        }else{
+            QDataStream stream(&file);
             stream >> nResult;
-		}
-	}
+        }
+    }
     m_mapResults[bitid] = nResult;
     return nResult;*/
 }

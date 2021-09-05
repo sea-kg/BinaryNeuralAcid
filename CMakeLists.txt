@@ -15,6 +15,7 @@ list (APPEND WSJCPP_SOURCES "src/bna_types.cpp")
 list (APPEND WSJCPP_SOURCES "src/bna_operations.cpp")
 list (APPEND WSJCPP_SOURCES "src/bna_expression.cpp")
 list (APPEND WSJCPP_SOURCES "src/bna.cpp")
+list (APPEND WSJCPP_SOURCES "src/bna_test_sin.cpp")
 
 #### BEGIN_WSJCPP_APPEND
 list (APPEND WSJCPP_SOURCES "./src/argument_processor_main.h")

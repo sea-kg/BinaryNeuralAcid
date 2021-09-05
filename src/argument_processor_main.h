@@ -21,4 +21,11 @@ class ArgumentProcessorStartServer : public WsjcppArgumentProcessor {
         virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
 };
 
+
+class ArgumentProcessorTestSin : public WsjcppArgumentProcessor {
+    public:
+        ArgumentProcessorTestSin();
+        virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
+};
+
 #endif // ARGUMENT_PROCESSOR_MAIN_H

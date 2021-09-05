@@ -41,6 +41,7 @@ test/*
 *.vertexgraph
 *.rhmem
 *.bna
+*.bnadatatest
 
 etc/reversehashd/conf.ini
 !var/www/html/reversehashd/

@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-enum BNABit {
+enum BNABit : char {
     B_0 = 0x00,
     B_1 = 0x01
 };
