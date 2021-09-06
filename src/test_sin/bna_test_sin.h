@@ -2,6 +2,7 @@
 #define SEA5KG_BNA_TEST_SIN_H
 
 #include "bna.h"
+#include "render_window.h"
 
 class BNATestSinItem {
     public:
@@ -23,11 +24,16 @@ class BNATestSinItem {
 };
 
 
-class BNATestSin {
+class BNATestSin : public ICallbacksRenderBNA {
     public:
         BNATestSin();
 
         bool run();
+
+        // ICallbacksRenderBNA
+        virtual bool onStart() override;
+        virtual void doIterattion() override;
+        virtual BNA* getBNA() override;
 
     private:
         // void floatToByteArray(const float &f, unsigned char *pResult4);
@@ -41,8 +47,7 @@ class BNATestSin {
         bool saveDataTests();
         int printCounters();
         void calculateCurrentCounters();
-        bool onStart();
-        void doIterattion();
+        
         std::string TAG;
 
         std::string m_sBNAFilename;

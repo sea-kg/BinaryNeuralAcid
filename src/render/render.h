@@ -39,6 +39,7 @@ class RenderLine : public RenderObject {
         const CoordXY &getCoord1();
         const CoordXY &getCoord2();
         void updateAbsoluteCoords(const CoordXY &p1, const CoordXY &p2);
+        void updateColor(const RenderColor &);
 
     private:
         RenderColor m_color;
@@ -56,56 +57,17 @@ class RenderRect : public RenderObject {
         virtual void draw(SDL_Renderer* renderer) override;
         bool hasPoint(const CoordXY &p0);
         void updateCoord(const CoordXY &p0, int w, int h);
+        void updateXY(int x, int y);
+        const CoordXY &getCoord();
+        void updateColor(const RenderColor &);
+        const RenderColor &getColor();
+
     private:
         CoordXY m_coord1;
         int m_nW;
         int m_nH;
 
         RenderColor m_color;
-};
-
-class RenderTriangle : public RenderObject {
-
-    public:
-        RenderTriangle(
-            const CoordXY &p1,
-            const CoordXY &p2,
-            const CoordXY &p3,
-            const RenderColor &color = RenderColor(255,255,255,255),
-            int nPositionZ = 0
-        );
-        virtual void modify(const AppState& state) override;
-        virtual void draw(SDL_Renderer* renderer) override;
-
-    private:
-        RenderLine m_line1;
-        RenderLine m_line2;
-        RenderLine m_line3;
-        RenderColor m_color;
-        CoordXY m_middlePoint;
-};
-
-class RenderArea : public RenderObject {
-
-    public:
-        RenderArea(
-            const std::vector<CoordXY> &vPoints,
-            const RenderColor &color = RenderColor(255,255,255,255),
-            int nPositionZ = 0
-        );
-        virtual void modify(const AppState& state) override;
-        virtual void draw(SDL_Renderer* renderer) override;
-
-        bool hasMoveblePoint(const CoordXY &p0, RenderRect *&pRect);
-        void updatePointCoord(RenderRect *pRect, const CoordXY &newCoord);
-        const std::vector<CoordXY> &getPoints();
-
-    private:
-        std::vector<CoordXY> m_vPoints;
-        std::vector<RenderLine *> m_vLines;
-        std::vector<RenderRect *> m_vRects;
-        RenderColor m_color;
-        int m_nRectBorderSize;
 };
 
 class RenderMouse : public RenderObject {
@@ -161,3 +123,27 @@ class RenderAbsoluteTextBlock : public RenderObject {
 
         SDL_Rect currentFrame;
 };
+
+/*
+class RenderBNA : public RenderObject {
+
+    public:
+        RenderBNA(
+            const CoordXY &p0,
+            const std::string &sText,
+            int nPositionZ = 0
+        );
+        virtual void modify(const AppState& state) override;
+        virtual void draw(SDL_Renderer* renderer) override;
+        void updateText(const std::string &sNewText);
+
+    private:
+        CoordXY m_coordCenter;
+        std::string m_sText;
+        std::string m_sUpdateText;
+        TTF_Font* m_pFont;
+        SDL_Color m_color;
+
+        SDL_Rect currentFrame;
+};
+*/

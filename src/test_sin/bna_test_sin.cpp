@@ -1,11 +1,6 @@
 
 #include "bna_test_sin.h"
 #include <wsjcpp_core.h>
-#include <iostream>
-#include <cstdint>
-#include <cstring>
-#include "render_window.h"
-#include "app_state.h"
 
 // -----------------------------------------------------------------
 // BNATestSinItem
@@ -55,7 +50,7 @@ BNATestSin::BNATestSin() {
     m_sBNAFilename = "testsin";
     m_pBNA = new BNA(32,32);
     m_sDataTestsFilename = "testsin.bnadatatest";
-    m_nDataTestsSize = 5000;
+    m_nDataTestsSize = 2000;
 
     // init counters
     m_prevCounters.resize(32);
@@ -67,84 +62,58 @@ BNATestSin::BNATestSin() {
 }
 
 bool BNATestSin::run() {
+    RenderBNA render(this);
+    return render.run();
+}
 
-    onStart();
-
-    if (SDL_Init(SDL_INIT_VIDEO) > 0) {
-        std::cerr << "HEY.. SDL_Init HAS FAILED. SDL_ERROR: " << SDL_GetError() << std::endl;
-        return -1;
-    }
-
-    if (TTF_Init() == -1) {
-        printf("TTF_Init: %s\n", TTF_GetError());
-        return -1;
-    }
-
-    // init window
-    int nWindowWidth = 1280;
-    int nWindowHeight = 720;
-    CoordXY centerPoint(nWindowWidth/2, nWindowHeight/2);
-    AppState appState(nWindowWidth, nWindowHeight);
-    RenderWindow window(
-        "bna - test-sin",
-        appState.windowWidth(),
-        appState.windowHeight()
-    );
-    RenderAbsoluteTextBlock *pFpsText = new RenderAbsoluteTextBlock(CoordXY(50,20), "FPS: ----", 1000);
-    window.addObject(pFpsText);
-    RenderColor cursorPointer(255,0,0,190);
-    RenderMouse *pMouse = new RenderMouse(centerPoint, cursorPointer, 2000);
-    window.addObject(pMouse);
-    window.sortObjectsByPositionZ();
-    bool appRunning = true;
-
-    SDL_Event event;
-    long nNumberOfFrames = 0;
-    long nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
-    long nElapsed = 0;
-    appState.init();
-    while (appRunning) {
-        // Get our controls and events
-        while (SDL_PollEvent(&event)) {
-            switch(event.type) {
-                case SDL_QUIT:
-                    appRunning = false;
-                    break;
-                default:
-                    break; // nothing
-            }
+bool BNATestSin::onStart() {
+    // 1. load last bna (or generate randomly)
+    if (WsjcppCore::fileExists(m_sBNAFilename + ".bna")) {
+        if (!m_pBNA->load(m_sBNAFilename)) {
+            std::cout << "ERROR Could not load file " << m_sBNAFilename << ".bna" << std::endl;
+            return false;
         }
-
-        appState.updateElapsedTime();
-        window.clear();
-        window.modifyObjects(appState);
-        window.drawObjects();
-
-        // FPS
-        nNumberOfFrames++;
-        nElapsed = WsjcppCore::getCurrentTimeInMilliseconds() - nStartTime;
-        if (nElapsed > 3000) {
-            double nFPS = nNumberOfFrames;
-            nFPS /= nElapsed;
-            nFPS *= 1000;
-            std::cout << "FPS: " << nFPS << std::endl;
-            nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
-            nNumberOfFrames = 0;
-            pFpsText->updateText("FPS: " + std::to_string(int(nFPS)));
-        }
-        doIterattion();
+    } else {
+        m_pBNA->randomGenerate(32,32, 128);
+        m_pBNA->save(m_sBNAFilename);
     }
-    window.cleanUp();
-    SDL_Quit();
-  
 
-    // BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
+    // 2. load data tests (or generate new)
+    if (!loadDataTests()) {
+        regenDataTests();
+        saveDataTests();
+    }
+
+    // init prev counters
+    calculateCurrentCounters();
+    m_prevCounters = m_currentCounters;
+}
+
+void BNATestSin::doIterattion() {
     // 3. run check 
     // 4. run modifications
     // 5. run check
     // 6. save or reload 
     // 7. go to 4
-    return true;
+
+    // modify 
+    int nModifyCicles = rand() % 15 + 2;
+    std::cout << "ModifyCicles " << nModifyCicles << std::endl;
+    m_pBNA->generateRandomMutations(nModifyCicles);
+    calculateCurrentCounters();
+    int nDiff = printCounters();
+    if (nDiff > 0) {
+        // oo! nice current calculation better
+        m_pBNA->save(m_sBNAFilename);
+        m_prevCounters = m_currentCounters;
+    } else {
+        std::cout << "Reset bna " << std::endl;
+        m_pBNA->load(m_sBNAFilename);
+    }
+}
+
+BNA* BNATestSin::getBNA() {
+    return m_pBNA;
 }
 
 void BNATestSin::byteArrayToFloat(const unsigned char *pBytes, float &nResult) {
@@ -250,45 +219,5 @@ void BNATestSin::calculateCurrentCounters() {
                 m_currentCounters[x]++;
             }
         }
-    }
-}
-
-bool BNATestSin::onStart() {
-    // 1. load last bna (or generate randomly)
-    if (WsjcppCore::fileExists(m_sBNAFilename + ".bna")) {
-        if (!m_pBNA->load(m_sBNAFilename)) {
-            std::cout << "ERROR Could not load file " << m_sBNAFilename << ".bna" << std::endl;
-            return false;
-        }
-    } else {
-        m_pBNA->randomGenerate(32,32, 128);
-        m_pBNA->save(m_sBNAFilename);
-    }
-
-    // 2. load data tests (or generate new)
-    if (!loadDataTests()) {
-        regenDataTests();
-        saveDataTests();
-    }
-
-    // init prev counters
-    calculateCurrentCounters();
-    m_prevCounters = m_currentCounters;
-}
-
-void BNATestSin::doIterattion() {
-    // modify 
-    int nModifyCicles = rand() % 15 + 2;
-    std::cout << "ModifyCicles " << nModifyCicles << std::endl;
-    m_pBNA->generateRandomMutations(nModifyCicles);
-    calculateCurrentCounters();
-    int nDiff = printCounters();
-    if (nDiff > 0) {
-        // oo! nice current calculation better
-        m_pBNA->save(m_sBNAFilename);
-        m_prevCounters = m_currentCounters;
-    } else {
-        std::cout << "Reset bna " << std::endl;
-        m_pBNA->load(m_sBNAFilename);
     }
 }

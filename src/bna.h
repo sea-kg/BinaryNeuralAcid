@@ -59,6 +59,7 @@ class BNA {
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
         
+        const std::vector<BNAItem *> &getItems();
 
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);
@@ -66,7 +67,6 @@ class BNA {
         void generateRandomMutations(int nRandomCicles);
         void appendRandomData(int nRandomCicles);
         BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
-
 
         unsigned int inputCount();
         unsigned int outputCount();

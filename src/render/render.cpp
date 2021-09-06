@@ -74,6 +74,10 @@ void RenderLine::updateAbsoluteCoords(const CoordXY &p1, const CoordXY &p2) {
     m_startCoord2 = p2;
 }
 
+void RenderLine::updateColor(const RenderColor &color) {
+    m_color = color;
+}
+
 // ---------------------------------------------------------------------
 // RenderRect
 
@@ -110,124 +114,20 @@ void RenderRect::updateCoord(const CoordXY &p0, int w, int h) {
     m_nW = h;
 }
 
-// ---------------------------------------------------------------------
-// RenderTriangle
-
-RenderTriangle::RenderTriangle(
-    const CoordXY &p1,
-    const CoordXY &p2,
-    const CoordXY &p3,
-    const RenderColor &color,
-    int nPositionZ
-) : RenderObject(nPositionZ),
-    m_line1(p1,p2,color),
-    m_line2(p2,p3,color),
-    m_line3(p3,p1,color),
-    m_color(color)
-{
-    int nMiddleX = (p1.x() + p2.x() + p3.x())/3;
-    int nMiddleY = (p1.y() + p2.y() + p3.y())/3;
-    m_middlePoint = CoordXY(nMiddleX, nMiddleY);
+void RenderRect::updateXY(int x, int y) {
+    m_coord1.update(x, y);
 }
 
-void RenderTriangle::modify(const AppState& state) {
-    m_line1.modify(state);
-    m_line2.modify(state);
-    m_line3.modify(state);
+const CoordXY &RenderRect::getCoord() {
+    return m_coord1;
 }
 
-void RenderTriangle::draw(SDL_Renderer* renderer) {
-    m_line1.draw(renderer);
-    m_line2.draw(renderer);
-    m_line3.draw(renderer);
-    m_color.changeRenderColor(renderer);
-
-    SDL_Rect srcrect;
-    srcrect.x = m_middlePoint.x()-2;
-    srcrect.y = m_middlePoint.y()-2;
-    srcrect.w = 4;
-    srcrect.h = 4;
-    SDL_RenderFillRect(renderer, &srcrect);
+void RenderRect::updateColor(const RenderColor &color) {
+    m_color = color;
 }
 
-// ---------------------------------------------------------------------
-// RenderArea
-
-RenderArea::RenderArea(
-    const std::vector<CoordXY> &vPoints,
-    const RenderColor &color,
-    int nPositionZ
-) : RenderObject(nPositionZ),
-    m_vPoints(vPoints),
-    m_color(color)
-{
-    m_nRectBorderSize = 8;
-    int nSize = m_vPoints.size();
-    for (int i = 0; i < nSize; i++) {
-        int x0 = i;
-        int x1 = (i+1) % nSize;
-        CoordXY p0(m_vPoints[x0]);
-        RenderLine *pLine = new RenderLine(m_vPoints[x0], m_vPoints[x1], m_color);
-        m_vLines.push_back(pLine);
-        RenderRect *pRect = new RenderRect(
-            CoordXY(p0.x() - m_nRectBorderSize/2, p0.y() - m_nRectBorderSize/2), 
-            m_nRectBorderSize, m_nRectBorderSize, m_color
-        );
-        m_vRects.push_back(pRect);
-    }
-}
-
-void RenderArea::modify(const AppState& state) {
-    for (int i = 0; i < m_vLines.size(); i++) {
-        m_vLines[i]->modify(state);
-    }
-}
-
-void RenderArea::draw(SDL_Renderer* renderer) {
-    m_color.changeRenderColor(renderer);
-    for (int i = 0; i < m_vLines.size(); i++) {
-        m_vLines[i]->draw(renderer);
-    }
-
-    for (int i = 0; i < m_vRects.size(); i++) {
-        m_vRects[i]->draw(renderer);
-    }
-}
-
-bool RenderArea::hasMoveblePoint(const CoordXY &p0, RenderRect *&pRect) {
-    for (int i = 0; i < m_vRects.size(); i++) {
-        if (m_vRects[i]->hasPoint(p0)) {
-            pRect = m_vRects[i];
-            return true;
-        }
-    }
-    return false;
-}
-
-void RenderArea::updatePointCoord(RenderRect *pRect, const CoordXY &newCoord) {
-    bool bContains = false;
-    for (int i = 0; i < m_vRects.size(); i++) {
-        if (m_vRects[i] == pRect) {
-            m_vPoints[i] = newCoord;
-            bContains = true;
-        }
-    }
-
-    if (bContains) {
-        int nSize = m_vPoints.size();
-        for (int i = 0; i < nSize; i++) {
-            int x0 = i;
-            int x1 = (i+1) % nSize;
-            CoordXY p0(m_vPoints[x0]);
-            m_vLines[i]->updateAbsoluteCoords(m_vPoints[x0], m_vPoints[x1]);
-            m_vRects[i]->updateCoord(CoordXY(p0.x() - m_nRectBorderSize/2, p0.y() - m_nRectBorderSize/2), 
-            m_nRectBorderSize, m_nRectBorderSize);
-        }
-    }
-}
-
-const std::vector<CoordXY> &RenderArea::getPoints() {
-    return m_vPoints;
+const RenderColor &RenderRect::getColor() {
+    return m_color;
 }
 
 // ---------------------------------------------------------------------

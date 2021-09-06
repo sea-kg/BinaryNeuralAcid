@@ -9,28 +9,24 @@ class IBNAOper {
         virtual BNABit calc(BNABit b1, BNABit b2) = 0;
 };
 
-// white
 class BNAOperXor : public IBNAOper{
     public:
         virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
-// yellow
 class BNAOperNotXor : public IBNAOper{
     public:
         virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
-// red
 class BNAOperAnd : public IBNAOper {
     public:
         virtual std::string type();
         virtual BNABit calc(BNABit b1, BNABit b2);
 };
 
-// blue
 class BNAOperOr : public IBNAOper {
     public:
         virtual std::string type();

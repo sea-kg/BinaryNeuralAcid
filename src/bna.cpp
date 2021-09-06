@@ -467,7 +467,7 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
     clearResources();
     m_nInput = nInput;
     m_nOutput = nOutput;
-    nSize = nSize + m_nInput + m_nOutput;
+    nSize = nSize + m_nOutput;
     for (int i = 0; i < nSize; i++) {
         BNAItem *pItem = new BNAItem();
         pItem->setX(rand());
@@ -690,7 +690,9 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     return true;
 }
 
-// ----------------------------------------------------------------
+const std::vector<BNAItem *> &BNA::getItems() {
+    return m_vItems;
+}
 
 void BNA::clearResources(){
     clearCalcExprsVars();
@@ -843,16 +845,16 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
         std::cout << "Not compiled" << std::endl;    
     }
 
-    if((unsigned int)vInputs.size() != m_nInput){
+    if ((unsigned int)vInputs.size() != m_nInput) {
         std::cerr << "[ERROR] invalid input count " << vInputs.size() << "(Expected: " << m_nInput << ") \n";
         return B_0;
     }
 
-    for(unsigned int i  = 0; i < m_nInput; i++){
+    for (unsigned int i  = 0; i < m_nInput; i++) {
         m_vCalcVars[i]->val(vInputs[i]);
     }
 
-    for(int i = 0; i < m_vCalcExprs.size(); i++){
+    for (int i = 0; i < m_vCalcExprs.size(); i++) {
         m_vCalcExprs[i]->exec();
     }
 
@@ -860,12 +862,12 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
 }
 
 void BNA::clearCalcExprsVars() {
-    for(int i = 0; i < m_vCalcExprs.size(); i++){
+    for (int i = 0; i < m_vCalcExprs.size(); i++) {
         delete m_vCalcExprs[i];
     }
     m_vCalcExprs.clear();
 
-    for(int i = 0; i < m_vCalcVars.size(); i++){
+    for (int i = 0; i < m_vCalcVars.size(); i++) {
         delete m_vCalcVars[i];
     }
     m_vCalcVars.clear();
