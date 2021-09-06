@@ -211,7 +211,7 @@ RenderAbsoluteTextBlock::RenderAbsoluteTextBlock(const CoordXY &p0, const std::s
     m_coordCenter = p0;
     m_sText = sText;
     m_sUpdateText = m_sText;
-    m_pFont = TTF_OpenFont("./res/fonts/roboto/Roboto-Black.ttf", 18);
+    m_pFont = TTF_OpenFont("./res/fonts/roboto/Roboto-Black.ttf", 10);
     m_color = {255, 255, 255};
     if (!m_pFont) {
         printf("TTF_OpenFont: %s\n", TTF_GetError());

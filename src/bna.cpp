@@ -801,8 +801,10 @@ void BNA::generateRandomMutations(int nRandomCicles){
     for (int i = 0; i < nRandomCicles; i++) {
         m_bCompiled = false;
         int nItemIndex = rand() % m_vItems.size();
-        m_vItems[nItemIndex]->setX(rand());
-        m_vItems[nItemIndex]->setY(rand());
+        // nItemIndex
+        int nMin = (nItemIndex + m_nInput) - 10;
+        m_vItems[nItemIndex]->setX(nMin + rand() % 10);
+        m_vItems[nItemIndex]->setY(nMin + rand() % 10);
         int nOper = rand() % m_nOperSize;
         m_vItems[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
     }

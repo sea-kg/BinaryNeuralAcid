@@ -27,6 +27,8 @@ class ICallbacksRenderBNA {
         virtual bool onStart() = 0;
         virtual void doIterattion() = 0;
         virtual BNA* getBNA() = 0;
+        virtual std::vector<int> &getPrevCounters() = 0;
+        virtual int getDataTestsSize() = 0;
 };
 
 struct BNAItemPosition {
@@ -42,20 +44,24 @@ class RenderBNA {
     private:
         void prepareVectorsSize();
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNAItem *> &vItems, BNAItem *pItem, int nCounter);
-        void prepareYLevels();
-        void prepareXLevels();
+        void prepareLevels();
         void prepareNodes();
         int updateLine(int nIndexLine, RenderRect *, RenderRect *);
+        void updateColorNode(int nIndexNode, const std::string &sOperType);
 
         RenderWindow *m_pWindow;
         ICallbacksRenderBNA *m_pCallbacksRenderBNA;
         std::vector<RenderRect *> m_vRenderNodes;
         std::vector<RenderLine *> m_vRenderConnections;
         std::vector<BNAItemPosition> m_vNodesPositions;
+        std::vector<RenderAbsoluteTextBlock *> m_vRenderOutputsResult;
+        RenderAbsoluteTextBlock * m_vRenderOutputResult;
+
         int m_nWindowWidth;
         int m_nWindowHeight;
         int m_nSizeNode;
         int m_maxYLevel;
+        int m_nPadding;
         std::vector<int> m_maxXLevels;
 
         RenderColor *m_pColorOperAnd;

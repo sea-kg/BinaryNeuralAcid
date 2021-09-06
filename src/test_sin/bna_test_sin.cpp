@@ -116,6 +116,14 @@ BNA* BNATestSin::getBNA() {
     return m_pBNA;
 }
 
+std::vector<int> &BNATestSin::getPrevCounters() {
+    return m_prevCounters;
+}
+
+int BNATestSin::getDataTestsSize() {
+    return m_nDataTestsSize;
+}
+
 void BNATestSin::byteArrayToFloat(const unsigned char *pBytes, float &nResult) {
     std::memcpy(&nResult, pBytes, sizeof(nResult));
 }

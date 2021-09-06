@@ -92,6 +92,7 @@ RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
     m_nWindowWidth = 1280;
     m_nWindowHeight = 720;
     m_nSizeNode = 6;
+    m_nPadding = 100;
     m_pColorOperAnd = new RenderColor(179,244,8,255); // yellow
     m_pColorOperOr = new RenderColor(53,155,61,255); // green
     m_pColorOperXor = new RenderColor(213,25,25,255); // red
@@ -164,11 +165,13 @@ bool RenderBNA::run() {
     }
     m_pWindow->cleanUp();
     SDL_Quit();
+    return false;
 }
 
 void RenderBNA::prepareVectorsSize() {
     const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
 
     // CONNECTIONS
     for (int i = 0; i < vItems.size()*2; i++) {
@@ -209,6 +212,25 @@ void RenderBNA::prepareVectorsSize() {
     }
     // TODO remove extra node positions
 
+
+    // OUTPUT TEXT
+    int nOutputWidth = m_nWindowWidth - m_nPadding*2;
+    nOutputWidth = nOutputWidth / (nOutputCount - 1);
+    for (int i = 0; i < nOutputCount; i++) {
+        RenderAbsoluteTextBlock * pText = new RenderAbsoluteTextBlock(
+            CoordXY(
+                m_nPadding + i * nOutputWidth,
+                m_nWindowHeight - m_nPadding + 20
+            ), "."
+        );
+        m_vRenderOutputsResult.push_back(pText);
+        m_pWindow->addObject(pText);
+    }
+    m_vRenderOutputResult = new RenderAbsoluteTextBlock(
+        CoordXY(m_nWindowWidth/2, m_nWindowHeight - m_nPadding + 40), "result"
+    );
+    m_pWindow->addObject(m_vRenderOutputResult);
+
 }
 
 int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNAItem *> &vItems, BNAItem *pItem, int nCounter) {
@@ -223,19 +245,18 @@ int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNAIt
     return std::max(nLeft, nRight);
 }
 
-void RenderBNA::prepareYLevels() {
-    m_maxYLevel = 0;
+void RenderBNA::prepareLevels() {
     const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
+
+    // prepare Y levels
+    m_maxYLevel = 0;
     for (int i = 0; i < vItems.size(); i++) {
         m_vNodesPositions[i].ylevel = recurciveCalculateYLevel(nInputCount, vItems, vItems[i], 0);
         m_maxYLevel = std::max(m_vNodesPositions[i].ylevel, m_maxYLevel);
     }
-}
 
-void RenderBNA::prepareXLevels() {
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
+    // prepare X levels
     m_maxXLevels.resize(m_maxYLevel+1);
     for (int i = 0; i < m_maxXLevels.size(); i++) {
         m_maxXLevels[i] = 0;
@@ -256,65 +277,59 @@ void RenderBNA::prepareNodes() {
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
 
-    int nYLine = 100;
-    int nPadding = 100;
     int nStartIndex = 0;
     int nEndIndex = 1;
    
     // input nodes
-    int nInputWidth = m_nWindowWidth - nPadding*2;
+    int nInputWidth = m_nWindowWidth - m_nPadding*2;
     nInputWidth = nInputWidth / (nInputCount - 1);
     nStartIndex = 0;
     nEndIndex = nInputCount - 1;
     for (int i = nStartIndex; i <= nEndIndex; i++) {
         m_vRenderNodes[i]->updateXY(
-            nPadding + i * nInputWidth - m_nSizeNode,
-            nYLine
+            m_nPadding + i * nInputWidth - m_nSizeNode,
+            m_nPadding
         );
     }
 
     // middle nodes
-    prepareYLevels();
-    prepareXLevels();
-    int nYStep = m_nWindowHeight - nPadding*2;
-    nYStep = nYStep / (m_maxYLevel);
+    prepareLevels();
+    int nYStep = m_nWindowHeight - m_nPadding*2;
+    std::cout << "m_maxYLevel = " << m_maxYLevel << std::endl;
+    nYStep = nYStep / (m_maxYLevel + 1);
     nStartIndex = nInputCount;
     nEndIndex = m_vRenderNodes.size() - nOutputCount - 1;
     for (int i = nStartIndex; i <= nEndIndex; i++) {
-        int nYLevel = m_vNodesPositions[i - nInputCount].ylevel;
         int nXLevel = m_vNodesPositions[i - nInputCount].xlevel;
-
-        int nXStep = m_nWindowWidth - nPadding*2;
-        nXStep = nXStep / (m_maxXLevels[nYLevel]);
+        int nYLevel = m_vNodesPositions[i - nInputCount].ylevel;
+        
+        int nXStep = m_nWindowWidth - m_nPadding*2;
+        int nXLevelPadding = 0;
+        int nMaxXLevels = m_maxXLevels[nYLevel] + 1;
+        std::cout << "m_maxXLevels[" << nYLevel << "] = " << m_maxXLevels[nYLevel]  << std::endl;
+        if (nMaxXLevels > 0) {
+            nXStep = nXStep / nMaxXLevels;
+        } else {
+            nXStep = nXStep / 2;
+        }
+        // nXLevelPadding = nXStep / 2;
 
         m_vRenderNodes[i]->updateXY(
-            nPadding + nXStep * nXLevel,
-            nPadding + nYStep * nYLevel
+            m_nPadding + nXLevelPadding + (nXStep * (nXLevel+1)),
+            m_nPadding + nYStep * nYLevel
         );
-        const std::string &sOperType = vItems[i - nInputCount]->getOperationType();
-
-        if (sOperType == "AND") {
-            m_vRenderNodes[i]->updateColor(*m_pColorOperAnd);
-        } else if (sOperType == "OR") {
-            m_vRenderNodes[i]->updateColor(*m_pColorOperOr);
-        } else if (sOperType == "XOR") {
-            m_vRenderNodes[i]->updateColor(*m_pColorOperXor);
-        } else if (sOperType == "NXOR") {
-            m_vRenderNodes[i]->updateColor(*m_pColorOperNxor);
-        } else {
-            exit(1);
-        }
+        updateColorNode(i, vItems[i - nInputCount]->getOperationType());
     }
 
     // output nodes
-    int nOutputWidth = m_nWindowWidth - nPadding*2;
+    int nOutputWidth = m_nWindowWidth - m_nPadding*2;
     nOutputWidth = nOutputWidth / (nOutputCount - 1);
     nStartIndex = m_vRenderNodes.size() - nOutputCount;
     nEndIndex = m_vRenderNodes.size() - 1;
     for (int i = nStartIndex; i <= nEndIndex; i++) {
         m_vRenderNodes[i]->updateXY(
-            nPadding + (i - nStartIndex) * nInputWidth,
-            m_nWindowHeight - nPadding
+            m_nPadding + (i - nStartIndex) * nInputWidth,
+            m_nWindowHeight - m_nPadding
         );
     }
 
@@ -331,6 +346,15 @@ void RenderBNA::prepareNodes() {
         RenderRect *pRight = m_vRenderNodes[nInY];
         nIndexLine = updateLine(nIndexLine, pRight, pCurrent);
     }
+
+    // update current results
+
+    int nDataTestsSize = m_pCallbacksRenderBNA->getDataTestsSize();
+    std::vector<int> &vCounters = m_pCallbacksRenderBNA->getPrevCounters();
+    for (int i = 0; i < vCounters.size(); i++) {
+        std::string sNewText = std::to_string(vCounters[i]*100/nDataTestsSize);
+        m_vRenderOutputsResult[i]->updateText(sNewText + "%");
+    }
 }
 
 int RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1) {
@@ -339,4 +363,18 @@ int RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1
     m_vRenderConnections[nIndexLine]->updateAbsoluteCoords(p1, p2);
     m_vRenderConnections[nIndexLine]->updateColor(pRect1->getColor());
     return nIndexLine + 1;
+}
+
+void RenderBNA::updateColorNode(int nIndexNode, const std::string &sOperType) {
+    if (sOperType == "AND") {
+        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperAnd);
+    } else if (sOperType == "OR") {
+        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperOr);
+    } else if (sOperType == "XOR") {
+        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperXor);
+    } else if (sOperType == "NXOR") {
+        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperNxor);
+    } else {
+        exit(1);
+    }
 }

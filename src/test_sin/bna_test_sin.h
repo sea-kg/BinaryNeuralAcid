@@ -34,6 +34,9 @@ class BNATestSin : public ICallbacksRenderBNA {
         virtual bool onStart() override;
         virtual void doIterattion() override;
         virtual BNA* getBNA() override;
+        virtual std::vector<int> &getPrevCounters() override;
+        virtual int getDataTestsSize() override;
+        
 
     private:
         // void floatToByteArray(const float &f, unsigned char *pResult4);
