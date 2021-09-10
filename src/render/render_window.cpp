@@ -63,9 +63,18 @@ void RenderWindow::cleanUp() {
 void RenderWindow::clear() {
     // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     // background color
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 195);
-    
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 50);
+    // alpha
+    SDL_Rect srcrect;
+    srcrect.x = 0;
+    srcrect.y = 0;
+    srcrect.w = 1280;
+    srcrect.h = 720;
+    // m_color.changeRenderColor(renderer);
+    SDL_RenderFillRect(renderer, &srcrect);
+
+    // SDL_RenderClear(renderer);
 }
 
 void RenderWindow::modifyObjects(const AppState& state) {
