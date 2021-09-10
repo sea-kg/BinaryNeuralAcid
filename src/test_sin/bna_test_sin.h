@@ -32,7 +32,8 @@ class BNATestSin : public ICallbacksRenderBNA {
 
         // ICallbacksRenderBNA
         virtual bool onStart() override;
-        virtual void doIterattion() override;
+        virtual void doMutation() override;
+        virtual void doTestAndRevert() override;
         virtual BNA* getBNA() override;
         virtual std::vector<int> &getPrevCounters() override;
         virtual int getDataTestsSize() override;

@@ -124,26 +124,24 @@ class RenderAbsoluteTextBlock : public RenderObject {
         SDL_Rect currentFrame;
 };
 
-/*
-class RenderBNA : public RenderObject {
+class RenderConnection : public RenderObject {
 
     public:
-        RenderBNA(
-            const CoordXY &p0,
-            const std::string &sText,
-            int nPositionZ = 0
-        );
+        RenderConnection(const CoordXY &p1, const CoordXY &p2, const RenderColor &color, int nPositionZ = 0);
         virtual void modify(const AppState& state) override;
         virtual void draw(SDL_Renderer* renderer) override;
-        void updateText(const std::string &sNewText);
+        
+        const CoordXY &getAbsoluteCoord1();
+        const CoordXY &getAbsoluteCoord2();
+        const CoordXY &getCoord1();
+        const CoordXY &getCoord2();
+        void updateAbsoluteCoords(const CoordXY &p1, const CoordXY &p2);
+        void updateColor(const RenderColor &);
 
     private:
-        CoordXY m_coordCenter;
-        std::string m_sText;
-        std::string m_sUpdateText;
-        TTF_Font* m_pFont;
-        SDL_Color m_color;
-
-        SDL_Rect currentFrame;
+        RenderColor m_color;
+        CoordXY m_startCoord1;
+        CoordXY m_startCoord2;
+        CoordXY m_coord1;
+        CoordXY m_coord2;
 };
-*/

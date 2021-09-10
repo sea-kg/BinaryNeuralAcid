@@ -87,19 +87,19 @@ bool BNATestSin::onStart() {
     // init prev counters
     calculateCurrentCounters();
     m_prevCounters = m_currentCounters;
+    return true;
 }
 
-void BNATestSin::doIterattion() {
-    // 3. run check 
-    // 4. run modifications
-    // 5. run check
-    // 6. save or reload 
-    // 7. go to 4
-
-    // modify 
+void BNATestSin::doMutation() {
+     // modify 
     int nModifyCicles = rand() % 15 + 2;
     std::cout << "ModifyCicles " << nModifyCicles << std::endl;
-    m_pBNA->generateRandomMutations(nModifyCicles);
+    // m_pBNA->generateRandomMutations(nModifyCicles);
+    // calculateCurrentCounters();
+    // int nDiff = printCounters();
+}
+
+void BNATestSin::doTestAndRevert() {
     calculateCurrentCounters();
     int nDiff = printCounters();
     if (nDiff > 0) {

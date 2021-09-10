@@ -400,13 +400,13 @@ BNA::BNA(int nInput, int nOutput) : BNA() {
     m_bCompiled = false;
 }
 
-unsigned int BNA::inputCount(){
+unsigned int BNA::inputCount() {
     return m_nInput;
 }
 
 // ----------------------------------------------------------------
 
-unsigned int BNA::outputCount(){
+unsigned int BNA::outputCount() {
     return m_nOutput;
 }
 
@@ -494,6 +494,8 @@ bool BNA::compile() {
         return true; // already compiled
     }
     
+    std::cout << "Compiling..." << std::endl;    
+
     clearCalcExprsVars();
 
     // prepare input nodes
@@ -525,6 +527,10 @@ bool BNA::compile() {
             m_vCalcOutVars.push_back(pVar);
         }
     }
+    // std::cout << "m_vCalcOutVars.size() = " << m_vCalcOutVars.size() << std::endl;
+    // std::cout << "m_vItems.size() = " << m_vItems.size() << std::endl;
+    // std::cout << "m_vCalcExprs.size() = " << m_vCalcExprs.size() << std::endl;
+
     m_bCompiled = true;
     return true;
 }

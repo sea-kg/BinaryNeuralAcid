@@ -25,7 +25,8 @@ class RenderWindow  {
 class ICallbacksRenderBNA {
     public:
         virtual bool onStart() = 0;
-        virtual void doIterattion() = 0;
+        virtual void doMutation() = 0;
+        virtual void doTestAndRevert() = 0;
         virtual BNA* getBNA() = 0;
         virtual std::vector<int> &getPrevCounters() = 0;
         virtual int getDataTestsSize() = 0;
@@ -45,6 +46,12 @@ class RenderBNA {
         void prepareVectorsSize();
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNAItem *> &vItems, BNAItem *pItem, int nCounter);
         void prepareLevels();
+        void updateInputNodesXY();
+        void updateMiddleNodesXY();
+        std::vector<RenderRect *> getChildAndParantNodes(int nIndex);
+        void updateMiddleNodesXY2();
+        void updateOutputNodesXY();
+        void updateNodesConnections();
         void prepareNodes();
         int updateLine(int nIndexLine, RenderRect *, RenderRect *);
         void updateColorNode(int nIndexNode, const std::string &sOperType);
@@ -52,7 +59,7 @@ class RenderBNA {
         RenderWindow *m_pWindow;
         ICallbacksRenderBNA *m_pCallbacksRenderBNA;
         std::vector<RenderRect *> m_vRenderNodes;
-        std::vector<RenderLine *> m_vRenderConnections;
+        std::vector<RenderConnection *> m_vRenderConnections;
         std::vector<BNAItemPosition> m_vNodesPositions;
         std::vector<RenderAbsoluteTextBlock *> m_vRenderOutputsResult;
         RenderAbsoluteTextBlock * m_vRenderOutputResult;
