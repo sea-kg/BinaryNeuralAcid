@@ -494,7 +494,7 @@ bool BNA::compile() {
         return true; // already compiled
     }
     
-    std::cout << "Compiling..." << std::endl;    
+    std::cout << "Compiling..." << std::endl;
 
     clearCalcExprsVars();
 
@@ -532,6 +532,7 @@ bool BNA::compile() {
     // std::cout << "m_vCalcExprs.size() = " << m_vCalcExprs.size() << std::endl;
 
     m_bCompiled = true;
+    std::cout << "Compiled!" << std::endl;
     return true;
 }
 
@@ -808,9 +809,11 @@ void BNA::generateRandomMutations(int nRandomCicles){
         m_bCompiled = false;
         int nItemIndex = rand() % m_vItems.size();
         // nItemIndex
-        int nMin = (nItemIndex + m_nInput) - 10;
-        m_vItems[nItemIndex]->setX(nMin + rand() % 10);
-        m_vItems[nItemIndex]->setY(nMin + rand() % 10);
+        // int nMin = (nItemIndex + m_nInput) - 10;
+        // m_vItems[nItemIndex]->setX(nMin + rand() % 10);
+        // m_vItems[nItemIndex]->setY(nMin + rand() % 10);
+        m_vItems[nItemIndex]->setX(rand());
+        m_vItems[nItemIndex]->setY(rand());
         int nOper = rand() % m_nOperSize;
         m_vItems[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
     }
@@ -885,11 +888,17 @@ void BNA::clearCalcExprsVars() {
 
 void BNA::normalizeInputNodes() {
     int nNodes = m_nInput;
-    for(int i = 0; i < m_vItems.size(); i++){
+    int nIndexOutputNodes = m_vItems.size() - m_nOutput;
+    for (int i = 0; i < m_vItems.size(); i++) {
         m_vItems[i]->setX(m_vItems[i]->getX() % nNodes);
         m_vItems[i]->setY(m_vItems[i]->getY() % nNodes);
         // m_vItems[i]->setOperationType(m_vItems[i]->getOperationType());
-        nNodes++;
+        if (i < nIndexOutputNodes) {
+            nNodes++;
+        } else {
+            nNodes = nIndexOutputNodes;
+        }
+        
     }
 }
 

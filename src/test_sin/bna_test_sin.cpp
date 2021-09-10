@@ -94,7 +94,7 @@ void BNATestSin::doMutation() {
      // modify 
     int nModifyCicles = rand() % 15 + 2;
     std::cout << "ModifyCicles " << nModifyCicles << std::endl;
-    // m_pBNA->generateRandomMutations(nModifyCicles);
+    m_pBNA->generateRandomMutations(nModifyCicles);
     // calculateCurrentCounters();
     // int nDiff = printCounters();
 }

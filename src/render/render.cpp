@@ -251,29 +251,26 @@ void RenderAbsoluteTextBlock::updateText(const std::string &sNewText) {
 // RenderConnection
 
 RenderConnection::RenderConnection(const CoordXY &p1, const CoordXY &p2, const RenderColor &color, int nPositionZ) 
-: m_color(color), RenderObject(nPositionZ) {
+: RenderObject(nPositionZ) {
     m_coord1 = p1;
     m_coord2 = p2;
-    m_startCoord1 = p1;
-    m_startCoord2 = p2;
+
+    m_pLine1 = new RenderLine(p1, p2, color, nPositionZ);
+    m_pLine2 = new RenderLine(p1, p2, color, nPositionZ);
+    m_pLine3 = new RenderLine(p1, p2, color, nPositionZ);
+    updateCoords(p1,p2);
 }
 
 void RenderConnection::modify(const AppState& state) {
-    m_coord1 = state.getCoordLeftTop() + m_startCoord1;
-    m_coord2 = state.getCoordLeftTop() + m_startCoord2;
+    m_pLine1->modify(state);
+    m_pLine2->modify(state);
+    m_pLine3->modify(state);
 }
 
-void RenderConnection::draw(SDL_Renderer* renderer) {
-    m_color.changeRenderColor(renderer);
-    SDL_RenderDrawLine(renderer, m_coord1.x(), m_coord1.y(), m_coord2.x(), m_coord2.y());
-}
-
-const CoordXY &RenderConnection::getAbsoluteCoord1() {
-    return m_startCoord1;
-}
-
-const CoordXY &RenderConnection::getAbsoluteCoord2() {
-    return m_startCoord2;
+void RenderConnection::draw(SDL_Renderer* pRenderer) {
+    m_pLine1->draw(pRenderer);
+    m_pLine2->draw(pRenderer);
+    m_pLine3->draw(pRenderer);
 }
 
 const CoordXY &RenderConnection::getCoord1() {
@@ -284,11 +281,25 @@ const CoordXY &RenderConnection::getCoord2() {
     return m_coord2;
 }
 
-void RenderConnection::updateAbsoluteCoords(const CoordXY &p1, const CoordXY &p2) {
-    m_startCoord1 = p1;
-    m_startCoord2 = p2;
+void RenderConnection::updateCoords(const CoordXY &p1, const CoordXY &p2) {
+    m_pLine1->updateAbsoluteCoords(
+        CoordXY(p1.x(), p1.y()),
+        CoordXY(p1.x(), p1.y() + 15)
+    );
+    m_pLine2->updateAbsoluteCoords(
+        CoordXY(p1.x(), p1.y() + 15),
+        CoordXY(p2.x(), p2.y() - 15)
+    );
+    m_pLine3->updateAbsoluteCoords(
+        CoordXY(p2.x(), p2.y() - 15),
+        CoordXY(p2.x(), p2.y())
+    );
+    m_coord1 = p1;
+    m_coord2 = p2;
 }
 
 void RenderConnection::updateColor(const RenderColor &color) {
-    m_color = color;
+    m_pLine1->updateColor(color);
+    m_pLine2->updateColor(color);
+    m_pLine3->updateColor(color);
 }

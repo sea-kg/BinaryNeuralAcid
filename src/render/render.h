@@ -135,13 +135,14 @@ class RenderConnection : public RenderObject {
         const CoordXY &getAbsoluteCoord2();
         const CoordXY &getCoord1();
         const CoordXY &getCoord2();
-        void updateAbsoluteCoords(const CoordXY &p1, const CoordXY &p2);
+        void updateCoords(const CoordXY &p1, const CoordXY &p2);
         void updateColor(const RenderColor &);
 
     private:
-        RenderColor m_color;
-        CoordXY m_startCoord1;
-        CoordXY m_startCoord2;
         CoordXY m_coord1;
         CoordXY m_coord2;
+
+        RenderLine *m_pLine1;
+        RenderLine *m_pLine2;
+        RenderLine *m_pLine3;
 };
