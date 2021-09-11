@@ -10,15 +10,10 @@
 #include "bna_expression.h"
 
 void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
-// void BNAConvertArrayToVBool(QByteArray &in, std::vector<BNABit> &vars, int size);
 std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars);
 std::string BNAConvertCharToHexCode(unsigned char c);
 std::string BNAConvertHexToBin(std::string sHex);
 std::string BNAConvertBinToHex(std::string sBin);
-int BNACalculateBinDistance(std::string sBin1, std::string sBin2);
-
-// QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
-// QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
 
 class BNANode {
     public:
@@ -108,8 +103,6 @@ class BNAMemoryItem {
         BNAMemoryItem(int nInputBits, int nOutputBits);
         char* input;
         char* output;
-        const std::vector<BNABit> &inputToVectorBool();
-        const std::vector<BNABit> &outputToVectorBool();
 
     private:
         std::string TAG;

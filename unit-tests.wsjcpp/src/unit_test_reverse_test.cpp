@@ -55,7 +55,6 @@ void UnitTestReverseTest::executeTest() {
 		
         QVector<BNABit> vOutputExpected;
         QByteArray originalString = text.toUtf8();
-        BNAConvertArrayToVBool(originalString, vOutputExpected, 440);
 
         QVector<BNABit> vOutput;
         for (int bitid = 0; bitid < bnaProject.getOutputBits(); bitid++) {

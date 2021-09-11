@@ -152,29 +152,6 @@ std::string BNAConvertBinToHex(std::string sBin) {
 
 // ----------------------------------------------------------------
 
-int BNACalculateBinDistance(std::string sBin1, std::string sBin2){
-    if(sBin1.length() != sBin2.length()){
-        std::cerr << "[ERROR] Different length \n";
-        return 0;
-    }
-
-    if(sBin1.length() == 0 || sBin2.length() == 0){
-        std::cerr << "[ERROR] Length is 0 - wrong \n";
-        return 0;
-    }
-    int nDistance = 0;
-    for (int i = 0; i < sBin1.length(); i++){
-        char ch1 = sBin1.at(i);
-        char ch2 = sBin2.at(i);
-        if(ch1 == ch2){
-            nDistance++;
-        }
-    }
-    return nDistance;
-}
-
-// ----------------------------------------------------------------
-
 std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
     std::string result = "";
     unsigned char c = 0;
@@ -188,129 +165,6 @@ std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
     result += BNAConvertCharToHexCode(c);
     return result;
 }
-
-// -----------------------------------------------------------------
-
-// void BNAConvertArrayToVBool(QByteArray &in, std::vector<BNABit> &vars, int size) {
-//     if(size % 8 != 0){
-//         std::cerr << "[error] Size must be % 8 == 0\n";
-//     }
-
-//     vars.clear();
-//     for (int i = 0; i < in.size(); i++)
-//     {
-//         unsigned char ch = in.at(i);
-//         for (int r = 7; r >= 0; r--) {
-//             if (vars.size() > size)
-//                 return;
-//             unsigned char c = (int)ch >> r;
-//             c = c & 0x01;
-//             vars.push_back(c == 1 ? B_1 : B_0);
-//             if(c != 0 && c != 1){
-//                 std::cerr << "[error] C must be 0 or 1\n";
-//             }
-//         }
-//     }
-
-//     while (vars.size() < size) {
-//         vars.push_back(B_0);
-//     }
-// }
-
-// -----------------------------------------------------------------
-
-// QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const std::string &sMd5ExpectedHex){
-//     // TODO create input funtor
-//     QByteArray result_md5 = QCryptographicHash::hash(arrReversedText, QCryptographicHash::Md5);
-//     std::string sReverseHash1 = std::string(result_md5.toHex());
-
-//     std::string sMd5ExpectedHex_bin = BNAConvertHexToBin(sMd5ExpectedHex);
-//     std::string sReverseHash1_bin = BNAConvertHexToBin(sReverseHash1);
-//     int nPrevDistance = BNACalculateBinDistance(sReverseHash1_bin, sMd5ExpectedHex_bin);
-//     std::string sPrevText = BNAConvertHexToBin(arrReversedText.toHex());
-
-//     bool bExists = true;
-//     int nRound = 0;
-//     while(bExists){
-//         bExists = false;
-//         std::cout << "Round(1) #" << nRound << "\n";
-//         nRound++;
-//         std::string sTmpPrevText = std::string(sPrevText);
-//         for(int i = 0; i < sTmpPrevText.length(); i++){
-//             char ch = sTmpPrevText.at(i);
-//             ch = ch == '1' ? '0' : '1';
-//             sTmpPrevText[i] = ch;
-//             std::string sTmpHex = BNAConvertBinToHex(sTmpPrevText);
-//             QByteArray bTmpText =  QByteArray::fromHex(sTmpHex.toLatin1());
-//             QByteArray sTmpMD5 = QCryptographicHash::hash(bTmpText, QCryptographicHash::Md5);
-//             std::string sTmpMD5_hex = std::string(sTmpMD5.toHex());
-//             std::string sTmpMD5_bin = BNAConvertHexToBin(sTmpMD5_hex);
-//             int nNewDistance = BNACalculateBinDistance(sMd5ExpectedHex_bin, sTmpMD5_bin);
-//             if(nNewDistance > nPrevDistance){
-//                 sPrevText = std::string(sTmpPrevText);
-//                 nPrevDistance = nNewDistance;
-//                 bExists = true;
-//             }
-//             ch = ch == '1' ? '0' : '1';
-//             sTmpPrevText[i] = ch;
-//         }
-//     }
-
-//     QByteArray bTmpText =  QByteArray::fromHex(BNAConvertBinToHex(sPrevText).toLatin1());
-//     return bTmpText;
-
-// }
-
-// // -----------------------------------------------------------------
-
-// QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const std::string &sMd5ExpectedHex){
-//     // TODO create input funtor
-//     QByteArray result_md5 = QCryptographicHash::hash(arrReversedText, QCryptographicHash::Md5);
-//     std::string sReverseHash1 = std::string(result_md5.toHex());
-
-//     std::string sMd5ExpectedHex_bin = BNAConvertHexToBin(sMd5ExpectedHex);
-//     std::string sReverseHash1_bin = BNAConvertHexToBin(sReverseHash1);
-//     int nPrevDistance = BNACalculateBinDistance(sReverseHash1_bin, sMd5ExpectedHex_bin);
-//     std::string sPrevText = BNAConvertHexToBin(arrReversedText.toHex());
-
-//     bool bExists = true;
-//     int nRound = 0;
-//     while(bExists){
-//         bExists = false;
-//         std::cout << "Round(2) #" << nRound << "\n";
-//         nRound++;
-//         std::string sTmpPrevText = std::string(sPrevText);
-//         for(int x = 0; x < sTmpPrevText.length(); x++){
-//             for(int y = 0; y < sTmpPrevText.length(); y++){
-//                 if(x == y) continue;
-//                 char chX = sTmpPrevText.at(x);
-//                 char chY = sTmpPrevText.at(y);
-//                 chX = chX == '1' ? '0' : '1';
-//                 chY = chY == '1' ? '0' : '1';
-//                 sTmpPrevText[x] = chX;
-//                 sTmpPrevText[y] = chY;
-//                 std::string sTmpHex = BNAConvertBinToHex(sTmpPrevText);
-//                 QByteArray bTmpText =  QByteArray::fromHex(sTmpHex.toLatin1());
-//                 QByteArray sTmpMD5 = QCryptographicHash::hash(bTmpText, QCryptographicHash::Md5);
-//                 std::string sTmpMD5_hex = std::string(sTmpMD5.toHex());
-//                 std::string sTmpMD5_bin = BNAConvertHexToBin(sTmpMD5_hex);
-//                 int nNewDistance = BNACalculateBinDistance(sMd5ExpectedHex_bin, sTmpMD5_bin);
-//                 if(nNewDistance > nPrevDistance){
-//                     sPrevText = std::string(sTmpPrevText);
-//                     nPrevDistance = nNewDistance;
-//                     bExists = true;
-//                 }
-//                 chX = chX == '1' ? '0' : '1';
-//                 chY = chY == '1' ? '0' : '1';
-//                 sTmpPrevText[x] = chX;
-//                 sTmpPrevText[y] = chY;
-//             }
-//         }
-//     }
-
-//     QByteArray bTmpText =  QByteArray::fromHex(BNAConvertBinToHex(sPrevText).toLatin1());
-//     return bTmpText;
-// }
 
 // -----------------------------------------------------------------
 // BNANode 
@@ -923,28 +777,6 @@ BNAMemoryItem::BNAMemoryItem(int nInputBits, int nOutputBits) {
     TAG = "BNAMemoryItem";
 }
 
-// ----------------------------------------------------------------
-
-const std::vector<BNABit> &BNAMemoryItem::inputToVectorBool(){
-    if (m_vInput.size() == 0) {
-        WsjcppLog::err(TAG, "TODO inputToVectorBool");
-        // BNAConvertArrayToVBool(input, m_vInput, m_nInputBits);
-    }
-    return m_vInput;
-}
-
-// ----------------------------------------------------------------
-
-const std::vector<BNABit> &BNAMemoryItem::outputToVectorBool(){
-    if (m_vOutput.size() == 0) {
-        WsjcppLog::err(TAG, "TODO outputToVectorBool");
-        // BNAConvertArrayToVBool(output, m_vOutput, m_nOutputBits);
-    }
-    return m_vOutput;
-}
-
-// ----------------------------------------------------------------
-
 BNAMemory::BNAMemory(int nInputBits, int nOutputBits){
     m_nInputBits = nInputBits;
     m_nOutputBits = nOutputBits;
@@ -1287,10 +1119,10 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
     int nMemorySize = m_pBNAMemory->size();
     for(int i = 0; i < nMemorySize; i++){
         BNAMemoryItem *pBNAMemoryItem = m_pBNAMemory->at(i);
-        BNABit bResult = pBNA->calc(pBNAMemoryItem->inputToVectorBool(), 0);
-        if (pBNAMemoryItem->outputToVectorBool()[nBitId] == bResult) {
-            nResult++;
-        }
+        BNABit bResult; // = pBNA->calc(pBNAMemoryItem->inputToVectorBool(), 0);
+        // if (pBNAMemoryItem->outputToVectorBool()[nBitId] == bResult) {
+        //     nResult++;
+        // }
 
         if (bEnableSleep && i > 0 && i % 1000 == 0) {
             WsjcppLog::err(TAG, "TODO sleep here");

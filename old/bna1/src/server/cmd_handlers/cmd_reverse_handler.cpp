@@ -33,7 +33,7 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
         BNABit bResult = B_0;
         BNA *pBNA = pBNAProject->getBNA(bitid);
         bResult = pBNA->calc(vInputs, 0);
-		vOutput.push_back(bResult);
+        vOutput.push_back(bResult);
         answer_bin += (bResult == B_1 ? "1" : "0");
 	}
 	jsonData["output_count"] = vOutput.size();

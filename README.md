@@ -14,3 +14,8 @@ Build
 ```
 $ ./build_simple.sh
 ```
+
+Run:
+```
+$ ./bna test-sin
+```
