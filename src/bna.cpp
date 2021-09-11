@@ -313,72 +313,65 @@ std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
 // }
 
 // -----------------------------------------------------------------
-// Phisicly assotiation with expressions
+// BNANode 
 
-BNAItem::BNAItem(unsigned short x, unsigned short y, const std::string &sOperationType){
+BNANode::BNANode(unsigned short x, unsigned short y, const std::string &sOperationType){
     m_nX = x;
     m_nY = y;
     m_sOperationType = sOperationType;
 }
 
-// -----------------------------------------------------------------
-
-BNAItem::BNAItem() {
+BNANode::BNANode() {
     m_nX = 0;
     m_nY = 0;
     m_sOperationType = "";
 }
 
-// -----------------------------------------------------------------
-
-unsigned short BNAItem::getX(){
+unsigned short BNANode::getX(){
     return m_nX;
 }
 
-// -----------------------------------------------------------------
-
-unsigned short BNAItem::getY(){
+unsigned short BNANode::getY(){
     return m_nY;
 }
 
-// -----------------------------------------------------------------
-
-std::string BNAItem::getOperationType(){
+std::string BNANode::getOperationType(){
     return m_sOperationType;
 }
 
-// -----------------------------------------------------------------
-
-void BNAItem::setX(unsigned short x){
+void BNANode::setX(unsigned short x){
     m_nX = x;
 }
 
-// -----------------------------------------------------------------
-
-void BNAItem::setY(unsigned short y){
+void BNANode::setY(unsigned short y){
     m_nY = y;
 }
 
-// -----------------------------------------------------------------
-
-void BNAItem::setOperationType(const std::string &sOperationType){
+void BNANode::setOperationType(const std::string &sOperationType){
     m_sOperationType = sOperationType;
 }
 
-// -----------------------------------------------------------------
-
-void BNAItem::readXYT(std::ifstream &file){
+void BNANode::readXYT(std::ifstream &file){
     file >> m_nX;
     file >> m_nY;
     file >> m_sOperationType;
 }
 
-// -----------------------------------------------------------------
-
-void BNAItem::writeXYT(std::ofstream &file){
+void BNANode::writeXYT(std::ofstream &file){
     file << "node " << m_nX << " " << m_nY << " " << m_sOperationType << "\n";
 }
 
+
+// -----------------------------------------------------------------
+// BNAItemInput
+
+BNAItemInput::BNAItemInput(unsigned short nIndex){
+    m_nIndex = nIndex;
+}
+
+unsigned short BNAItemInput::getIndex() {
+    return m_nIndex;
+}
 
 // -----------------------------------------------------------------
 
@@ -415,7 +408,7 @@ unsigned int BNA::outputCount() {
 BNA::~BNA() {
     m_vOperations.clear();
     m_vOperationList.clear();
-    m_vItems.clear();
+    m_vNodes.clear();
     clearResources();
 }
 
@@ -469,24 +462,36 @@ void BNA::randomGenerate(int nInput, int nOutput, int nSize){
     m_nOutput = nOutput;
     nSize = nSize + m_nOutput;
     for (int i = 0; i < nSize; i++) {
-        BNAItem *pItem = new BNAItem();
+        BNANode *pItem = new BNANode();
         pItem->setX(rand());
         pItem->setY(rand());
         int nOper = rand() % m_nOperSize;
         pItem->setOperationType(m_vOperationList[nOper]->type());
-        m_vItems.push_back(pItem);
+        m_vNodes.push_back(pItem);
     }
     compile();
 }
 
 int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
-    BNAItem *pItem = new BNAItem();
+    BNANode *pItem = new BNANode();
     pItem->setX(nInX);
     pItem->setY(nInY);
     pItem->setOperationType(sOperType);
-    m_vItems.push_back(pItem);
+    m_vNodes.push_back(pItem);
     m_bCompiled = false;
-    return m_vItems.size() - 1 + m_nInput;
+    return m_vNodes.size() - 1 + m_nInput;
+}
+
+void BNA::clearResources() {
+    clearCalcExprsVars();
+    for(int i = 0; i < m_vNodes.size(); i++){
+        delete m_vNodes[i];
+    }
+    m_vNodes.clear();
+    for(int i = 0; i < m_vInputItems.size(); i++){
+        delete m_vInputItems[i];
+    }
+    m_vInputItems.clear();
 }
 
 bool BNA::compile() {
@@ -499,24 +504,32 @@ bool BNA::compile() {
     clearCalcExprsVars();
 
     // prepare input nodes
-    for(unsigned int i  = 0; i < m_nInput; i++){
+    for (unsigned int i  = 0; i < m_nInput; i++) {
         BNAVar *pVar = new BNAVar();
         pVar->val(B_0);
         pVar->name("in" + std::to_string(i));
-        m_vCalcVars.push_back(pVar);
+        m_vCalcInputVars.push_back(pVar);
     }
 
     // prepare and normalize input nodes
     normalizeInputNodes();
 
-    int nItemsSize = m_vItems.size();
-    for (int i = 0; i < m_vItems.size(); i++) {
-        int x = m_vItems[i]->getX();
-        int y = m_vItems[i]->getY();
-        std::string sOperationType = m_vItems[i]->getOperationType();
+    int nItemsSize = m_vNodes.size();
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        int x = m_vNodes[i]->getX();
+        int y = m_vNodes[i]->getY();
+        std::string sOperationType = m_vNodes[i]->getOperationType();
         BNAExpression *pExpr = new BNAExpression();
-        pExpr->setOperandLeft(m_vCalcVars[x]);
-        pExpr->setOperandRight(m_vCalcVars[y]);
+        if (x < m_nInput) {
+            pExpr->setOperandLeft(m_vCalcInputVars[x]);
+        } else {
+            pExpr->setOperandLeft(m_vCalcVars[x - m_nInput]);
+        }
+        if (y < m_nInput) {
+            pExpr->setOperandRight(m_vCalcInputVars[y]);
+        } else {
+            pExpr->setOperandRight(m_vCalcVars[y - m_nInput]);
+        }
         pExpr->oper(m_vOperations[sOperationType]);
         BNAVar *pVar = new BNAVar();
         pVar->name("node" + std::to_string(i));
@@ -528,7 +541,7 @@ bool BNA::compile() {
         }
     }
     // std::cout << "m_vCalcOutVars.size() = " << m_vCalcOutVars.size() << std::endl;
-    // std::cout << "m_vItems.size() = " << m_vItems.size() << std::endl;
+    // std::cout << "m_vNodes.size() = " << m_vNodes.size() << std::endl;
     // std::cout << "m_vCalcExprs.size() = " << m_vCalcExprs.size() << std::endl;
 
     m_bCompiled = true;
@@ -545,22 +558,22 @@ void BNA::compare(BNA &bna){
     if(bna.m_nOutput != m_nOutput){
         std::cout << "outputs not equals\n";
     }
-    if(bna.m_vItems.size() == m_vItems.size()){
-        for(int i = 0; i < m_vItems.size(); i++){
-            if(m_vItems[i]->getOperationType() != bna.m_vItems[i]->getOperationType()){
+    if(bna.m_vNodes.size() == m_vNodes.size()){
+        for (int i = 0; i < m_vNodes.size(); i++) {
+            if (m_vNodes[i]->getOperationType() != bna.m_vNodes[i]->getOperationType()){
                 std::cout << "\t T not equal in " << i << "\n";
             }
 
-            if(m_vItems[i]->getX() != bna.m_vItems[i]->getX()){
+            if (m_vNodes[i]->getX() != bna.m_vNodes[i]->getX()) {
                 std::cout << "\t X not equal in " << i << "\n";
             }
 
-            if(m_vItems[i]->getY() != bna.m_vItems[i]->getY()){
+            if (m_vNodes[i]->getY() != bna.m_vNodes[i]->getY()) {
                 std::cout << "\t Y not equal in " << i << "\n";
             }
         }
-    }else{
-        std::cout << "Item size not equals " << bna.m_vItems.size() << " != " << m_vItems.size() << " \n";
+    } else {
+        std::cout << "Item size not equals " << bna.m_vNodes.size() << " != " << m_vNodes.size() << " \n";
     }
 
     if(bna.m_vCalcExprs.size() == m_vCalcExprs.size()){
@@ -578,8 +591,8 @@ void BNA::compare(BNA &bna){
                 std::cout << "\t oper not equal in " << i << "\n";
             }
         }
-    }else{
-        std::cout << "Exprs size not equals " << bna.m_vItems.size() << " != " << m_vItems.size() << " \n";
+    } else {
+        std::cout << "Exprs size not equals " << bna.m_vNodes.size() << " != " << m_vNodes.size() << " \n";
     }
 
 
@@ -677,9 +690,9 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     
     
     int nodes = m_nInput;
-    for(int i = 0; i < m_vItems.size(); i++){
-        std::string sX = (m_vItems[i]->getX() < m_nInput ? "in" : "node") + std::to_string(m_vItems[i]->getX());
-        std::string sY = (m_vItems[i]->getY() < m_nInput ? "in" : "node") + std::to_string(m_vItems[i]->getY());
+    for(int i = 0; i < m_vNodes.size(); i++){
+        std::string sX = (m_vNodes[i]->getX() < m_nInput ? "in" : "node") + std::to_string(m_vNodes[i]->getX());
+        std::string sY = (m_vNodes[i]->getY() < m_nInput ? "in" : "node") + std::to_string(m_vNodes[i]->getY());
         std::string sNode = "node" + std::string::number(nodes); 
         stream << "\tbool " << sNode << " = " << sX << "|" << sY << ";\n";
         nodes++;
@@ -697,20 +710,9 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     return true;
 }
 
-const std::vector<BNAItem *> &BNA::getItems() {
-    return m_vItems;
+const std::vector<BNANode *> &BNA::getItems() {
+    return m_vNodes;
 }
-
-void BNA::clearResources(){
-    clearCalcExprsVars();
-
-    for(int i = 0; i < m_vItems.size(); i++){
-        delete m_vItems[i];
-    }
-    m_vItems.clear();
-}
-
-// ----------------------------------------------------------------
 
 bool BNA::readFromFileBna(std::ifstream &file){
     clearResources();
@@ -749,9 +751,9 @@ bool BNA::readFromFileBna(std::ifstream &file){
     
     file >> sStr;
     while (sStr == "node") {
-        BNAItem *pItem = new BNAItem();
+        BNANode *pItem = new BNANode();
         pItem->readXYT(file);
-        m_vItems.push_back(pItem);
+        m_vNodes.push_back(pItem);
         sStr = "";
         file >> sStr;
     }
@@ -765,8 +767,8 @@ bool BNA::writeToFileBna(std::ofstream &file){
     file << "BNA version " << m_nBnaVersion << "\n";
     file << "input " << m_nInput << "\n"; 
     file << "output " << m_nOutput << "\n";
-    for (int i = 0; i < m_vItems.size(); i++) {
-        m_vItems[i]->writeXYT(file);
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        m_vNodes[i]->writeXYT(file);
     }
     return true;
 }
@@ -807,15 +809,15 @@ bool BNA::registryOperationType(IBNAOper *pOper) {
 void BNA::generateRandomMutations(int nRandomCicles){
     for (int i = 0; i < nRandomCicles; i++) {
         m_bCompiled = false;
-        int nItemIndex = rand() % m_vItems.size();
+        int nItemIndex = rand() % m_vNodes.size();
         // nItemIndex
         // int nMin = (nItemIndex + m_nInput) - 10;
         // m_vItems[nItemIndex]->setX(nMin + rand() % 10);
         // m_vItems[nItemIndex]->setY(nMin + rand() % 10);
-        m_vItems[nItemIndex]->setX(rand());
-        m_vItems[nItemIndex]->setY(rand());
+        m_vNodes[nItemIndex]->setX(rand());
+        m_vNodes[nItemIndex]->setY(rand());
         int nOper = rand() % m_nOperSize;
-        m_vItems[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
+        m_vNodes[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
     }
     if (!m_bCompiled) {
         compile();
@@ -862,7 +864,7 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
     }
 
     for (unsigned int i  = 0; i < m_nInput; i++) {
-        m_vCalcVars[i]->val(vInputs[i]);
+        m_vCalcInputVars[i]->val(vInputs[i]);
     }
 
     for (int i = 0; i < m_vCalcExprs.size(); i++) {
@@ -873,26 +875,37 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
 }
 
 void BNA::clearCalcExprsVars() {
+    
+    // clear input vars
+    for (int i = 0; i < m_vCalcInputVars.size(); i++) {
+        delete m_vCalcInputVars[i];
+    }
+    m_vCalcInputVars.clear();
+
+    // clear expressions
     for (int i = 0; i < m_vCalcExprs.size(); i++) {
         delete m_vCalcExprs[i];
     }
     m_vCalcExprs.clear();
 
+    // clear vars
     for (int i = 0; i < m_vCalcVars.size(); i++) {
         delete m_vCalcVars[i];
     }
     m_vCalcVars.clear();
+
+    // clear output vars
     m_vCalcOutVars.clear();
     m_bCompiled = false;
 }
 
 void BNA::normalizeInputNodes() {
     int nNodes = m_nInput;
-    int nIndexOutputNodes = m_vItems.size() - m_nOutput;
-    for (int i = 0; i < m_vItems.size(); i++) {
-        m_vItems[i]->setX(m_vItems[i]->getX() % nNodes);
-        m_vItems[i]->setY(m_vItems[i]->getY() % nNodes);
-        // m_vItems[i]->setOperationType(m_vItems[i]->getOperationType());
+    int nIndexOutputNodes = m_vNodes.size() - m_nOutput;
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        m_vNodes[i]->setX(m_vNodes[i]->getX() % nNodes);
+        m_vNodes[i]->setY(m_vNodes[i]->getY() % nNodes);
+        // m_vNodes[i]->setOperationType(m_vNodes[i]->getOperationType());
         if (i < nIndexOutputNodes) {
             nNodes++;
         } else {
@@ -952,7 +965,7 @@ void BNAMemory::load(std::string filename){
         return;
     }
 
-    m_vItems.clear();
+    m_vNodes.clear();
 
     QDataStream stream( &file );
 
@@ -976,7 +989,7 @@ void BNAMemory::load(std::string filename){
         BNAMemoryItem *pBNAMemoryItem = new BNAMemoryItem(nInputBits, nOutputBits);
         stream >> pBNAMemoryItem->input;
         stream >> pBNAMemoryItem->output;
-        m_vItems.push_back(pBNAMemoryItem);
+        m_vNodes.push_back(pBNAMemoryItem);
     }
     */
 };
@@ -994,9 +1007,9 @@ void BNAMemory::save(std::string filename) {
         return;
     }
     QDataStream stream( &file );
-    stream << m_nInputBits << m_nOutputBits << m_vItems.size();
-    for (int i = 0; i < m_vItems.size(); i++) {
-        stream << m_vItems[i]->input << m_vItems[i]->output;
+    stream << m_nInputBits << m_nOutputBits << m_vNodes.size();
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        stream << m_vNodes[i]->input << m_vNodes[i]->output;
     }
     file.close();*/
 };

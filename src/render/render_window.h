@@ -44,7 +44,7 @@ class RenderBNA {
 
     private:
         void prepareVectorsSize();
-        int recurciveCalculateYLevel(int nInputCount, const std::vector<BNAItem *> &vItems, BNAItem *pItem, int nCounter);
+        int recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter);
         void prepareLevels();
         void updateInputNodesXY();
         void updateMiddleNodesXY();

@@ -190,7 +190,7 @@ bool RenderBNA::run() {
 }
 
 void RenderBNA::prepareVectorsSize() {
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
 
@@ -261,20 +261,20 @@ void RenderBNA::prepareVectorsSize() {
     }
 }
 
-int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNAItem *> &vItems, BNAItem *pItem, int nCounter) {
+int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter) {
 
     if (pItem->getX() < nInputCount || pItem->getY() < nInputCount) {
         return nCounter + 1;
     }
-    BNAItem *pItemLeft = vItems[pItem->getX() - nInputCount];
-    BNAItem *pItemRight = vItems[pItem->getY() - nInputCount];
+    BNANode *pItemLeft = vItems[pItem->getX() - nInputCount];
+    BNANode *pItemRight = vItems[pItem->getY() - nInputCount];
     int nLeft = recurciveCalculateYLevel(nInputCount, vItems, pItemLeft, nCounter + 1);
     int nRight = recurciveCalculateYLevel(nInputCount, vItems, pItemRight, nCounter + 1);
     return std::max(nLeft, nRight);
 }
 
 void RenderBNA::prepareLevels() {
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
 
     // prepare Y levels
@@ -298,7 +298,7 @@ void RenderBNA::prepareLevels() {
 }
 
 void RenderBNA::updateInputNodesXY() {
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
 
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
@@ -320,7 +320,7 @@ void RenderBNA::updateInputNodesXY() {
 
 void RenderBNA::updateMiddleNodesXY() {
     prepareLevels();
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
     int nYStep = m_nWindowHeight - m_nPadding*2;
@@ -353,7 +353,7 @@ void RenderBNA::updateMiddleNodesXY() {
 
 std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
     std::vector<RenderRect *> vRet;
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nXIndex = vItems[nIndex - nInputCount]->getX();
     int nYIndex = vItems[nIndex - nInputCount]->getY();
@@ -370,7 +370,7 @@ std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
 
 void RenderBNA::updateMiddleNodesXY2() {
     prepareLevels();
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
     int nYStep = m_nWindowHeight - m_nPadding*2;
@@ -416,7 +416,7 @@ void RenderBNA::updateMiddleNodesXY2() {
 }
 
 void RenderBNA::updateOutputNodesXY() {
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
 
     // output nodes
@@ -446,7 +446,7 @@ void RenderBNA::updateOutputNodesXY() {
 }
 
 void RenderBNA::updateNodesConnections() {
-    const std::vector<BNAItem *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
+    const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
 
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();

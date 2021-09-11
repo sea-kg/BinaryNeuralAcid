@@ -20,12 +20,10 @@ int BNACalculateBinDistance(std::string sBin1, std::string sBin2);
 // QByteArray BNATryBrutFast1(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
 // QByteArray BNATryBrutFast2(const QByteArray &arrReversedText, const std::string &md5ExpectedHex);
 
-// -----------------------------------------------------------------
-
-class BNAItem {
+class BNANode {
     public:
-        BNAItem(unsigned short x, unsigned short y, const std::string &sOperationType);
-        BNAItem();
+        BNANode(unsigned short x, unsigned short y, const std::string &sOperationType);
+        BNANode();
         unsigned short getX();
         unsigned short getY();
         std::string getOperationType();
@@ -43,7 +41,14 @@ class BNAItem {
         std::string m_sOperationType;
 };
 
-// -----------------------------------------------------------------
+class BNAItemInput {
+    public:
+        BNAItemInput(unsigned short nIndex);
+        unsigned short getIndex();
+
+    private:
+        unsigned short m_nIndex;
+};
 
 class BNA {
 	public:
@@ -59,7 +64,7 @@ class BNA {
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
         
-        const std::vector<BNAItem *> &getItems();
+        const std::vector<BNANode *> &getItems();
 
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);
@@ -87,16 +92,16 @@ class BNA {
         int m_nOperSize;
 
         void clearResources();
-        std::vector<BNAItem *> m_vItems;
+        std::vector<BNAItemInput *> m_vInputItems;
+        std::vector<BNANode *> m_vNodes;
         
         void clearCalcExprsVars();
         void normalizeInputNodes();
         std::vector<BNAExpression *> m_vCalcExprs;
+        std::vector<BNAVar *> m_vCalcInputVars;
         std::vector<BNAVar *> m_vCalcVars;
         std::vector<BNAVar *> m_vCalcOutVars;
 };
-
-// -----------------------------------------------------------------
 
 class BNAMemoryItem {
     public:
@@ -114,8 +119,6 @@ class BNAMemoryItem {
         std::vector<BNABit> m_vOutput;
 };
 
-// -----------------------------------------------------------------
-
 class BNAMemory {
     public:
         BNAMemory(int nInputBits, int nOutputBits);
@@ -132,8 +135,6 @@ class BNAMemory {
         int m_nOutputBits;
         std::vector<BNAMemoryItem *> m_vItems;
 };
-
-// -----------------------------------------------------------------
 
 class BNAProject {
 
