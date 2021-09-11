@@ -36,9 +36,9 @@ class BNANode {
         std::string m_sOperationType;
 };
 
-class BNAItemInput {
+class BNANodeInput {
     public:
-        BNAItemInput(unsigned short nIndex);
+        BNANodeInput(unsigned short nIndex);
         unsigned short getIndex();
 
     private:
@@ -59,6 +59,7 @@ class BNA {
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
         
+        const std::vector<BNANodeInput *> &getNodesInput();
         const std::vector<BNANode *> &getItems();
 
         // QByteArray exportToByteArray();
@@ -68,16 +69,15 @@ class BNA {
         void appendRandomData(int nRandomCicles);
         BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
 
-        unsigned int inputCount();
-        unsigned int outputCount();
+        unsigned int getInputSize();
+        unsigned int getOutputSize();
         void compare(BNA &bna);
 
 	private:
         std::string TAG;
         bool m_bCompiled;
         int m_nBnaVersion;
-		unsigned int m_nInput;
-		unsigned int m_nOutput;
+		unsigned int m_nOutputSize;
         bool readFromFileBna(std::ifstream &file);
         bool writeToFileBna(std::ofstream &file);
 
@@ -87,7 +87,7 @@ class BNA {
         int m_nOperSize;
 
         void clearResources();
-        std::vector<BNAItemInput *> m_vInputItems;
+        std::vector<BNANodeInput *> m_vNodesInput;
         std::vector<BNANode *> m_vNodes;
         
         void clearCalcExprsVars();

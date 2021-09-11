@@ -191,8 +191,8 @@ bool RenderBNA::run() {
 
 void RenderBNA::prepareVectorsSize() {
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
-    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
     // CONNECTIONS
     for (int i = 0; i < vItems.size()*2; i++) {
@@ -275,7 +275,7 @@ int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNANo
 
 void RenderBNA::prepareLevels() {
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
 
     // prepare Y levels
     m_maxYLevel = 0;
@@ -300,8 +300,8 @@ void RenderBNA::prepareLevels() {
 void RenderBNA::updateInputNodesXY() {
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
 
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
-    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
     int nStartIndex = 0;
     int nEndIndex = 1;
@@ -321,8 +321,8 @@ void RenderBNA::updateInputNodesXY() {
 void RenderBNA::updateMiddleNodesXY() {
     prepareLevels();
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
-    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
     int nYStep = m_nWindowHeight - m_nPadding*2;
     std::cout << "m_maxYLevel = " << m_maxYLevel << std::endl;
     nYStep = nYStep / (m_maxYLevel + 1);
@@ -354,7 +354,7 @@ void RenderBNA::updateMiddleNodesXY() {
 std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
     std::vector<RenderRect *> vRet;
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
     int nXIndex = vItems[nIndex - nInputCount]->getX();
     int nYIndex = vItems[nIndex - nInputCount]->getY();
     vRet.push_back(m_vRenderNodes[nXIndex]);
@@ -371,8 +371,8 @@ std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
 void RenderBNA::updateMiddleNodesXY2() {
     prepareLevels();
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
-    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
     int nYStep = m_nWindowHeight - m_nPadding*2;
     // std::cout << "m_maxYLevel = " << m_maxYLevel << std::endl;
     nYStep = nYStep / (m_maxYLevel + 1);
@@ -417,7 +417,7 @@ void RenderBNA::updateMiddleNodesXY2() {
 
 void RenderBNA::updateOutputNodesXY() {
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
-    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
     // output nodes
     int nOutputWidth = m_nWindowWidth - m_nPadding*2;
@@ -448,8 +448,8 @@ void RenderBNA::updateOutputNodesXY() {
 void RenderBNA::updateNodesConnections() {
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getItems();
 
-    int nInputCount = m_pCallbacksRenderBNA->getBNA()->inputCount();
-    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->outputCount();
+    int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
+    int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
     // connections
     int nStartIndex = nInputCount;

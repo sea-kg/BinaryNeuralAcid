@@ -217,21 +217,21 @@ void BNANode::writeXYT(std::ofstream &file){
 
 
 // -----------------------------------------------------------------
-// BNAItemInput
+// BNANodeInput
 
-BNAItemInput::BNAItemInput(unsigned short nIndex){
+BNANodeInput::BNANodeInput(unsigned short nIndex){
     m_nIndex = nIndex;
 }
 
-unsigned short BNAItemInput::getIndex() {
+unsigned short BNANodeInput::getIndex() {
     return m_nIndex;
 }
 
 // -----------------------------------------------------------------
 
 BNA::BNA(){
-    m_nInput = 1; // Default
-    m_nOutput = 1; // 16 bytes of md5 hash
+    m_vNodesInput.push_back(new BNANodeInput(0)); // default
+    m_nOutputSize = 1;
     registryOperationType(new BNAOperXor());
     registryOperationType(new BNAOperNotXor());
     registryOperationType(new BNAOperAnd());
@@ -241,20 +241,22 @@ BNA::BNA(){
     m_nBnaVersion = 1;
 }
 
-BNA::BNA(int nInput, int nOutput) : BNA() {
-    m_nInput = nInput;
-    m_nOutput = nOutput;
+BNA::BNA(int nInputSize, int nOutputSize) : BNA() {
+    for (int i = 0; i < nInputSize; i++) {
+        m_vNodesInput.push_back(new BNANodeInput(i));
+    }
+    m_nOutputSize = nOutputSize;
     m_bCompiled = false;
 }
 
-unsigned int BNA::inputCount() {
-    return m_nInput;
+unsigned int BNA::getInputSize() {
+    return m_vNodesInput.size();
 }
 
 // ----------------------------------------------------------------
 
-unsigned int BNA::outputCount() {
-    return m_nOutput;
+unsigned int BNA::getOutputSize() {
+    return m_nOutputSize;
 }
 
 // ----------------------------------------------------------------
@@ -310,11 +312,13 @@ bool BNA::save(const std::string &sFilename){
 
 // ----------------------------------------------------------------
 
-void BNA::randomGenerate(int nInput, int nOutput, int nSize){
+void BNA::randomGenerate(int nInputSize, int nOutput, int nSize){
     clearResources();
-    m_nInput = nInput;
-    m_nOutput = nOutput;
-    nSize = nSize + m_nOutput;
+    for (int i = 0; i < nInputSize; i++) {
+        m_vNodesInput.push_back(new BNANodeInput(i));
+    }
+    m_nOutputSize = nOutput;
+    nSize = nSize + m_nOutputSize;
     for (int i = 0; i < nSize; i++) {
         BNANode *pItem = new BNANode();
         pItem->setX(rand());
@@ -333,7 +337,7 @@ int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
     pItem->setOperationType(sOperType);
     m_vNodes.push_back(pItem);
     m_bCompiled = false;
-    return m_vNodes.size() - 1 + m_nInput;
+    return m_vNodes.size() - 1 + m_vNodesInput.size();
 }
 
 void BNA::clearResources() {
@@ -342,10 +346,10 @@ void BNA::clearResources() {
         delete m_vNodes[i];
     }
     m_vNodes.clear();
-    for(int i = 0; i < m_vInputItems.size(); i++){
-        delete m_vInputItems[i];
+    for(int i = 0; i < m_vNodesInput.size(); i++){
+        delete m_vNodesInput[i];
     }
-    m_vInputItems.clear();
+    m_vNodesInput.clear();
 }
 
 bool BNA::compile() {
@@ -358,7 +362,7 @@ bool BNA::compile() {
     clearCalcExprsVars();
 
     // prepare input nodes
-    for (unsigned int i  = 0; i < m_nInput; i++) {
+    for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
         BNAVar *pVar = new BNAVar();
         pVar->val(B_0);
         pVar->name("in" + std::to_string(i));
@@ -374,15 +378,15 @@ bool BNA::compile() {
         int y = m_vNodes[i]->getY();
         std::string sOperationType = m_vNodes[i]->getOperationType();
         BNAExpression *pExpr = new BNAExpression();
-        if (x < m_nInput) {
+        if (x < m_vNodesInput.size()) {
             pExpr->setOperandLeft(m_vCalcInputVars[x]);
         } else {
-            pExpr->setOperandLeft(m_vCalcVars[x - m_nInput]);
+            pExpr->setOperandLeft(m_vCalcVars[x - m_vNodesInput.size()]);
         }
-        if (y < m_nInput) {
+        if (y < m_vNodesInput.size()) {
             pExpr->setOperandRight(m_vCalcInputVars[y]);
         } else {
-            pExpr->setOperandRight(m_vCalcVars[y - m_nInput]);
+            pExpr->setOperandRight(m_vCalcVars[y - m_vNodesInput.size()]);
         }
         pExpr->oper(m_vOperations[sOperationType]);
         BNAVar *pVar = new BNAVar();
@@ -390,7 +394,7 @@ bool BNA::compile() {
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
-        if (nItemsSize - i <= (int)m_nOutput) {
+        if (nItemsSize - i <= (int)m_nOutputSize) {
             m_vCalcOutVars.push_back(pVar);
         }
     }
@@ -406,10 +410,10 @@ bool BNA::compile() {
 // ----------------------------------------------------------------
 
 void BNA::compare(BNA &bna){
-    if(bna.m_nInput != m_nInput){
+    if(bna.m_vNodesInput.size() != m_vNodesInput.size()){
         std::cout << "inputs not equals\n";
     }
-    if(bna.m_nOutput != m_nOutput){
+    if(bna.m_nOutputSize != m_nOutputSize){
         std::cout << "outputs not equals\n";
     }
     if(bna.m_vNodes.size() == m_vNodes.size()){
@@ -525,7 +529,7 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     QTextStream stream( &file );
     stream << "#include \"" << fi.baseName() << ".h\"\r\n";
     stream << "void " << funcname << "(";
-    for(unsigned int i = 0; i < m_nInput; i++){
+    for(unsigned int i = 0; i < m_vNodesInput.size(); i++){
         stream << "\r\n\tbool in" << i << ", ";
         stream_h << "\r\n\tbool in" << i << ", ";
     }
@@ -543,10 +547,10 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     stream_h << "#endif //BNA_MD5_" << funcname.toUpper() << "_H\r\n";
     
     
-    int nodes = m_nInput;
+    int nodes = m_vNodesInput.size();
     for(int i = 0; i < m_vNodes.size(); i++){
-        std::string sX = (m_vNodes[i]->getX() < m_nInput ? "in" : "node") + std::to_string(m_vNodes[i]->getX());
-        std::string sY = (m_vNodes[i]->getY() < m_nInput ? "in" : "node") + std::to_string(m_vNodes[i]->getY());
+        std::string sX = (m_vNodes[i]->getX() < m_vNodesInput.size() ? "in" : "node") + std::to_string(m_vNodes[i]->getX());
+        std::string sY = (m_vNodes[i]->getY() < m_vNodesInput.size() ? "in" : "node") + std::to_string(m_vNodes[i]->getY());
         std::string sNode = "node" + std::string::number(nodes); 
         stream << "\tbool " << sNode << " = " << sX << "|" << sY << ";\n";
         nodes++;
@@ -562,6 +566,10 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     stream << "}\n";
     file.close();*/
     return true;
+}
+
+const std::vector<BNANodeInput *> &BNA::getNodesInput() {
+    return m_vNodesInput;
 }
 
 const std::vector<BNANode *> &BNA::getItems() {
@@ -592,15 +600,17 @@ bool BNA::readFromFileBna(std::ifstream &file){
         WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'input'");
         return false;
     }
-    file >> m_nInput;
-    // TODO check value of input
-    
+    int nInputSize;
+    file >> nInputSize;
+    for (int i = 0; i < nInputSize; i++) {
+        m_vNodesInput.push_back(new BNANodeInput(i));
+    }
     file >> sStr;
     if (sStr != "output") {
         WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'output'");
         return false;
     }
-    file >> m_nOutput;
+    file >> m_nOutputSize;
     // TODO check value of output
     
     file >> sStr;
@@ -619,8 +629,8 @@ bool BNA::readFromFileBna(std::ifstream &file){
 bool BNA::writeToFileBna(std::ofstream &file){
     // basic information about file
     file << "BNA version " << m_nBnaVersion << "\n";
-    file << "input " << m_nInput << "\n"; 
-    file << "output " << m_nOutput << "\n";
+    file << "input " << m_vNodesInput.size() << "\n"; 
+    file << "output " << m_nOutputSize << "\n";
     for (int i = 0; i < m_vNodes.size(); i++) {
         m_vNodes[i]->writeXYT(file);
     }
@@ -665,7 +675,7 @@ void BNA::generateRandomMutations(int nRandomCicles){
         m_bCompiled = false;
         int nItemIndex = rand() % m_vNodes.size();
         // nItemIndex
-        // int nMin = (nItemIndex + m_nInput) - 10;
+        // int nMin = (nItemIndex + m_vNodesInput.size()) - 10;
         // m_vItems[nItemIndex]->setX(nMin + rand() % 10);
         // m_vItems[nItemIndex]->setY(nMin + rand() % 10);
         m_vNodes[nItemIndex]->setX(rand());
@@ -712,12 +722,12 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
         std::cout << "Not compiled" << std::endl;    
     }
 
-    if ((unsigned int)vInputs.size() != m_nInput) {
-        std::cerr << "[ERROR] invalid input count " << vInputs.size() << "(Expected: " << m_nInput << ") \n";
+    if ((unsigned int)vInputs.size() != m_vNodesInput.size()) {
+        std::cerr << "[ERROR] invalid input count " << vInputs.size() << "(Expected: " << m_vNodesInput.size() << ") \n";
         return B_0;
     }
 
-    for (unsigned int i  = 0; i < m_nInput; i++) {
+    for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
         m_vCalcInputVars[i]->val(vInputs[i]);
     }
 
@@ -754,8 +764,8 @@ void BNA::clearCalcExprsVars() {
 }
 
 void BNA::normalizeInputNodes() {
-    int nNodes = m_nInput;
-    int nIndexOutputNodes = m_vNodes.size() - m_nOutput;
+    int nNodes = m_vNodesInput.size();
+    int nIndexOutputNodes = m_vNodes.size() - m_nOutputSize;
     for (int i = 0; i < m_vNodes.size(); i++) {
         m_vNodes[i]->setX(m_vNodes[i]->getX() % nNodes);
         m_vNodes[i]->setY(m_vNodes[i]->getY() % nNodes);
@@ -770,6 +780,7 @@ void BNA::normalizeInputNodes() {
 }
 
 // ----------------------------------------------------------------
+// BNAMemoryItem
 
 BNAMemoryItem::BNAMemoryItem(int nInputBits, int nOutputBits) {
     m_nInputBits = nInputBits;
