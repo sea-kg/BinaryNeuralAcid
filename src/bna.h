@@ -27,10 +27,11 @@ class BNANode {
         void setY(unsigned short y);
         void setOperationType(const std::string &sOperationType);
 
-        void readXYT(std::ifstream &file);
-        void writeXYT(std::ofstream &file);
+        void readFromFile(std::ifstream &file);
+        void writeToFile(std::ofstream &file);
 
     private:
+        std::string TAG;
         unsigned short m_nX;
         unsigned short m_nY;
         std::string m_sOperationType;
@@ -43,6 +44,19 @@ class BNANodeInput {
 
     private:
         unsigned short m_nIndex;
+};
+
+class BNANodeOutput {
+    public:
+        BNANodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex);
+        unsigned short getOutputIndex();
+        unsigned short getInputNodeIndex();
+        void setInputNodeIndex(unsigned short nInputNodeIndex);
+        void writeToFile(std::ofstream &file);
+
+    private:
+        unsigned short m_nOutputIndex;
+        unsigned short m_nInputNodeIndex;
 };
 
 class BNA {
@@ -60,7 +74,8 @@ class BNA {
 		bool exportToCpp(std::string filename, std::string funcname);
         
         const std::vector<BNANodeInput *> &getNodesInput();
-        const std::vector<BNANode *> &getItems();
+        const std::vector<BNANode *> &getNodes();
+        const std::vector<BNANodeOutput *> &getNodesOutput();
 
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);
@@ -70,6 +85,7 @@ class BNA {
         BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
 
         unsigned int getInputSize();
+        unsigned int getNodesSize();
         unsigned int getOutputSize();
         void compare(BNA &bna);
 
@@ -77,8 +93,8 @@ class BNA {
         std::string TAG;
         bool m_bCompiled;
         int m_nBnaVersion;
-		unsigned int m_nOutputSize;
         bool readFromFileBna(std::ifstream &file);
+        int readParam(std::ifstream &file, const std::string &sParamName);
         bool writeToFileBna(std::ofstream &file);
 
         bool registryOperationType(IBNAOper *pOper);
@@ -89,9 +105,12 @@ class BNA {
         void clearResources();
         std::vector<BNANodeInput *> m_vNodesInput;
         std::vector<BNANode *> m_vNodes;
+        std::vector<BNANodeOutput *> m_vNodesOutput;
         
+
         void clearCalcExprsVars();
         void normalizeInputNodes();
+        BNAVar *getVarByIndex(int nIndex);
         std::vector<BNAExpression *> m_vCalcExprs;
         std::vector<BNAVar *> m_vCalcInputVars;
         std::vector<BNAVar *> m_vCalcVars;

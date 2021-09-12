@@ -45,9 +45,7 @@ class RenderBNA {
     private:
         void prepareVectorsSize();
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter);
-        void prepareLevels();
         void updateInputNodesXY();
-        void updateMiddleNodesXY();
         std::vector<RenderRect *> getChildAndParantNodes(int nIndex);
         void updateMiddleNodesXY2();
         void updateOutputNodesXY();
@@ -67,9 +65,7 @@ class RenderBNA {
         int m_nWindowWidth;
         int m_nWindowHeight;
         int m_nSizeNode;
-        int m_maxYLevel;
         int m_nPadding;
-        std::vector<int> m_maxXLevels;
 
         RenderColor *m_pColorOperAnd;
         RenderColor *m_pColorOperOr;

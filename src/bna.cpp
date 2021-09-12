@@ -170,12 +170,14 @@ std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
 // BNANode 
 
 BNANode::BNANode(unsigned short x, unsigned short y, const std::string &sOperationType){
+    TAG = "BNANode";
     m_nX = x;
     m_nY = y;
     m_sOperationType = sOperationType;
 }
 
 BNANode::BNANode() {
+    TAG = "BNANode";
     m_nX = 0;
     m_nY = 0;
     m_sOperationType = "";
@@ -205,16 +207,20 @@ void BNANode::setOperationType(const std::string &sOperationType){
     m_sOperationType = sOperationType;
 }
 
-void BNANode::readXYT(std::ifstream &file){
+void BNANode::readFromFile(std::ifstream &file){
+    std::string sKeyword = "";
+    file >> sKeyword;
+    if (sKeyword != "node") {
+        WsjcppLog::throw_err(TAG, "BNANode::readFromFile, Expected keyword 'node'");
+    }
     file >> m_nX;
     file >> m_nY;
     file >> m_sOperationType;
 }
 
-void BNANode::writeXYT(std::ofstream &file){
+void BNANode::writeToFile(std::ofstream &file){
     file << "node " << m_nX << " " << m_nY << " " << m_sOperationType << "\n";
 }
-
 
 // -----------------------------------------------------------------
 // BNANodeInput
@@ -228,24 +234,51 @@ unsigned short BNANodeInput::getIndex() {
 }
 
 // -----------------------------------------------------------------
+// BNANodeOutput
+
+BNANodeOutput::BNANodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex){
+    m_nOutputIndex = nOutputIndex;
+    m_nInputNodeIndex = nInputNodeIndex;
+}
+
+unsigned short BNANodeOutput::getOutputIndex() {
+    return m_nOutputIndex;
+}
+
+unsigned short BNANodeOutput::getInputNodeIndex() {
+    return m_nInputNodeIndex;
+}
+
+void BNANodeOutput::setInputNodeIndex(unsigned short nInputNodeIndex) {
+    m_nInputNodeIndex = nInputNodeIndex;
+}
+
+void BNANodeOutput::writeToFile(std::ofstream &file) {
+    file << "output " << m_nInputNodeIndex << "\n";
+}
+
+// -----------------------------------------------------------------
+// BNA
 
 BNA::BNA(){
-    m_vNodesInput.push_back(new BNANodeInput(0)); // default
-    m_nOutputSize = 1;
+    m_vNodesInput.push_back(new BNANodeInput(0));
+    m_vNodesOutput.push_back(new BNANodeOutput(0, 0));
     registryOperationType(new BNAOperXor());
     registryOperationType(new BNAOperNotXor());
     registryOperationType(new BNAOperAnd());
     registryOperationType(new BNAOperOr());
     m_nOperSize = m_vOperationList.size();
     TAG = "BNA";
-    m_nBnaVersion = 1;
+    m_nBnaVersion = 2;
 }
 
 BNA::BNA(int nInputSize, int nOutputSize) : BNA() {
     for (int i = 0; i < nInputSize; i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
     }
-    m_nOutputSize = nOutputSize;
+    for (int i = 0; i < nOutputSize; i++) {
+        m_vNodesOutput.push_back(new BNANodeOutput(i, i));
+    }
     m_bCompiled = false;
 }
 
@@ -253,13 +286,13 @@ unsigned int BNA::getInputSize() {
     return m_vNodesInput.size();
 }
 
-// ----------------------------------------------------------------
-
-unsigned int BNA::getOutputSize() {
-    return m_nOutputSize;
+unsigned int BNA::getNodesSize() {
+    return m_vNodes.size();
 }
 
-// ----------------------------------------------------------------
+unsigned int BNA::getOutputSize() {
+    return m_vNodesOutput.size();
+}
 
 BNA::~BNA() {
     m_vOperations.clear();
@@ -312,13 +345,11 @@ bool BNA::save(const std::string &sFilename){
 
 // ----------------------------------------------------------------
 
-void BNA::randomGenerate(int nInputSize, int nOutput, int nSize){
+void BNA::randomGenerate(int nInputSize, int nOutputSize, int nSize){
     clearResources();
     for (int i = 0; i < nInputSize; i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
     }
-    m_nOutputSize = nOutput;
-    nSize = nSize + m_nOutputSize;
     for (int i = 0; i < nSize; i++) {
         BNANode *pItem = new BNANode();
         pItem->setX(rand());
@@ -326,6 +357,9 @@ void BNA::randomGenerate(int nInputSize, int nOutput, int nSize){
         int nOper = rand() % m_nOperSize;
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vNodes.push_back(pItem);
+    }
+    for (int i = 0; i < nOutputSize; i++) {
+        m_vNodesOutput.push_back(new BNANodeOutput(i, rand()));
     }
     compile();
 }
@@ -342,14 +376,23 @@ int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
 
 void BNA::clearResources() {
     clearCalcExprsVars();
-    for(int i = 0; i < m_vNodes.size(); i++){
-        delete m_vNodes[i];
-    }
-    m_vNodes.clear();
+    // clear input nodes
     for(int i = 0; i < m_vNodesInput.size(); i++){
         delete m_vNodesInput[i];
     }
     m_vNodesInput.clear();
+
+    // clear nodes
+    for(int i = 0; i < m_vNodes.size(); i++){
+        delete m_vNodes[i];
+    }
+    m_vNodes.clear();
+
+    // clear output nodes
+    for(int i = 0; i < m_vNodesOutput.size(); i++){
+        delete m_vNodesOutput[i];
+    }
+    m_vNodesOutput.clear();
 }
 
 bool BNA::compile() {
@@ -378,26 +421,24 @@ bool BNA::compile() {
         int y = m_vNodes[i]->getY();
         std::string sOperationType = m_vNodes[i]->getOperationType();
         BNAExpression *pExpr = new BNAExpression();
-        if (x < m_vNodesInput.size()) {
-            pExpr->setOperandLeft(m_vCalcInputVars[x]);
-        } else {
-            pExpr->setOperandLeft(m_vCalcVars[x - m_vNodesInput.size()]);
-        }
-        if (y < m_vNodesInput.size()) {
-            pExpr->setOperandRight(m_vCalcInputVars[y]);
-        } else {
-            pExpr->setOperandRight(m_vCalcVars[y - m_vNodesInput.size()]);
-        }
+        pExpr->setOperandLeft(getVarByIndex(x));
+        pExpr->setOperandRight(getVarByIndex(y));
         pExpr->oper(m_vOperations[sOperationType]);
         BNAVar *pVar = new BNAVar();
         pVar->name("node" + std::to_string(i));
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
-        if (nItemsSize - i <= (int)m_nOutputSize) {
+        if (nItemsSize - i <= (int)m_vNodesOutput.size()) {
             m_vCalcOutVars.push_back(pVar);
         }
     }
+
+    for (int i = 0; i < m_vNodesOutput.size(); i++) {
+        int nIndex = m_vNodesOutput[i]->getInputNodeIndex();
+        m_vCalcOutVars.push_back(getVarByIndex(nIndex));
+    }
+
     // std::cout << "m_vCalcOutVars.size() = " << m_vCalcOutVars.size() << std::endl;
     // std::cout << "m_vNodes.size() = " << m_vNodes.size() << std::endl;
     // std::cout << "m_vCalcExprs.size() = " << m_vCalcExprs.size() << std::endl;
@@ -410,10 +451,10 @@ bool BNA::compile() {
 // ----------------------------------------------------------------
 
 void BNA::compare(BNA &bna){
-    if(bna.m_vNodesInput.size() != m_vNodesInput.size()){
+    if(bna.getInputSize() != m_vNodesInput.size()){
         std::cout << "inputs not equals\n";
     }
-    if(bna.m_nOutputSize != m_nOutputSize){
+    if(bna.getOutputSize() != m_vNodesOutput.size()){
         std::cout << "outputs not equals\n";
     }
     if(bna.m_vNodes.size() == m_vNodes.size()){
@@ -572,8 +613,12 @@ const std::vector<BNANodeInput *> &BNA::getNodesInput() {
     return m_vNodesInput;
 }
 
-const std::vector<BNANode *> &BNA::getItems() {
+const std::vector<BNANode *> &BNA::getNodes() {
     return m_vNodes;
+}
+
+const std::vector<BNANodeOutput *> &BNA::getNodesOutput() {
+    return m_vNodesOutput;
 }
 
 bool BNA::readFromFileBna(std::ifstream &file){
@@ -584,44 +629,47 @@ bool BNA::readFromFileBna(std::ifstream &file){
         WsjcppLog::err(TAG, "readFromFileBna, is not a BNA file");
         return false;
     }
-    file >> sStr;
-    if (sStr != "version") {
-        WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'version'");
-        return false;
-    }
-    int nBnaVersion = 0;
-    file >> nBnaVersion;
+    int nBnaVersion = readParam(file, "version");
     if (nBnaVersion != m_nBnaVersion) {
         WsjcppLog::err(TAG, "readFromFileBna, Version expected '" + std::to_string(m_nBnaVersion) + "', but got '" + std::to_string(nBnaVersion) + "'");
         return false;
     }
-    file >> sStr;
-    if (sStr != "input") {
-        WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'input'");
-        return false;
-    }
-    int nInputSize;
-    file >> nInputSize;
+    int nInputSize = readParam(file, "input");
+    int nNodesSize = readParam(file, "nodes");
+    int nOutputSize = readParam(file, "output");
+    
+    
     for (int i = 0; i < nInputSize; i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
     }
-    file >> sStr;
-    if (sStr != "output") {
-        WsjcppLog::err(TAG, "readFromFileBna, Expected keyword 'output'");
-        return false;
-    }
-    file >> m_nOutputSize;
-    // TODO check value of output
     
-    file >> sStr;
-    while (sStr == "node") {
+    // read nodes
+    for (int i = 0; i < nNodesSize; i++) {
         BNANode *pItem = new BNANode();
-        pItem->readXYT(file);
+        pItem->readFromFile(file);
         m_vNodes.push_back(pItem);
-        sStr = "";
-        file >> sStr;
     }
+
+    // read outputs
+    for (int i = 0; i < nOutputSize; i++) {
+        m_vNodesOutput.push_back(new BNANodeOutput(i, i));
+        int nInputNodeIndex = readParam(file, "output");
+        m_vNodesOutput[i]->setInputNodeIndex(nInputNodeIndex);
+    }
+    
     return compile(); // need for process expressions
+}
+
+int BNA::readParam(std::ifstream &file, const std::string &sParamName) {
+    std::string sKeyword = "";
+    file >> sKeyword;
+    if (sKeyword != sParamName) {
+        WsjcppLog::throw_err(TAG, "readParam, Expected keyword '" + sParamName + "'");
+        return -1;
+    }
+    int nRet;
+    file >> nRet;
+    return nRet;
 }
 
 // ----------------------------------------------------------------
@@ -629,10 +677,14 @@ bool BNA::readFromFileBna(std::ifstream &file){
 bool BNA::writeToFileBna(std::ofstream &file){
     // basic information about file
     file << "BNA version " << m_nBnaVersion << "\n";
-    file << "input " << m_vNodesInput.size() << "\n"; 
-    file << "output " << m_nOutputSize << "\n";
+    file << "input " << m_vNodesInput.size() << "\n";
+    file << "nodes " << m_vNodes.size() << "\n";
+    file << "output " << m_vNodesOutput.size() << "\n";
     for (int i = 0; i < m_vNodes.size(); i++) {
-        m_vNodes[i]->writeXYT(file);
+        m_vNodes[i]->writeToFile(file);
+    }
+    for (int i = 0; i < m_vNodesOutput.size(); i++) {
+        m_vNodesOutput[i]->writeToFile(file);
     }
     return true;
 }
@@ -764,19 +816,31 @@ void BNA::clearCalcExprsVars() {
 }
 
 void BNA::normalizeInputNodes() {
-    int nNodes = m_vNodesInput.size();
-    int nIndexOutputNodes = m_vNodes.size() - m_nOutputSize;
+    int nNodesSize = m_vNodesInput.size();
+    // normalize nodes
     for (int i = 0; i < m_vNodes.size(); i++) {
-        m_vNodes[i]->setX(m_vNodes[i]->getX() % nNodes);
-        m_vNodes[i]->setY(m_vNodes[i]->getY() % nNodes);
-        // m_vNodes[i]->setOperationType(m_vNodes[i]->getOperationType());
-        if (i < nIndexOutputNodes) {
-            nNodes++;
-        } else {
-            nNodes = nIndexOutputNodes;
-        }
-        
+        m_vNodes[i]->setX(m_vNodes[i]->getX() % nNodesSize);
+        m_vNodes[i]->setY(m_vNodes[i]->getY() % nNodesSize);
+        nNodesSize++;
     }
+    // normalize nodes output
+    for (int i = 0; i < m_vNodesOutput.size(); i++) {
+        m_vNodesOutput[i]->setInputNodeIndex( m_vNodesOutput[i]->getInputNodeIndex() % nNodesSize);
+    }
+}
+
+BNAVar *BNA::getVarByIndex(int nIndex) {
+    if (nIndex < m_vCalcInputVars.size()) {
+        return m_vCalcInputVars[nIndex];
+    }
+    nIndex = nIndex - m_vCalcInputVars.size();
+    if (nIndex < m_vCalcVars.size()) {
+        return m_vCalcVars[nIndex];
+    }
+    // TODO thow error
+    WsjcppLog::throw_err(TAG, "Here 123456");
+    nIndex = nIndex - m_vCalcVars.size();
+    return m_vCalcOutVars[nIndex];
 }
 
 // ----------------------------------------------------------------
