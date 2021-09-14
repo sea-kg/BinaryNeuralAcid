@@ -103,6 +103,7 @@ RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
     m_nWindowHeight = 720;
     m_nSizeNode = 6;
     m_nPadding = 100;
+    m_pColorNodeOutput = new RenderColor(255,255,255,255); // white
     m_pColorOperAnd = new RenderColor(179,244,8,255); // yellow
     m_pColorOperOr = new RenderColor(53,155,61,255); // green
     m_pColorOperXor = new RenderColor(213,25,25,255); // red
@@ -433,6 +434,7 @@ void RenderBNA::updateOutputNodesXY() {
             m_nPadding + i * nOutputWidth,
             m_nWindowHeight - m_nPadding
         );
+        m_vRenderNodes[nIndex]->updateColor(*m_pColorNodeOutput);
     }
 
     // update current results

@@ -71,6 +71,7 @@ class RenderBNA {
         int m_nSizeNode;
         int m_nPadding;
 
+        RenderColor *m_pColorNodeOutput;
         RenderColor *m_pColorOperAnd;
         RenderColor *m_pColorOperOr;
         RenderColor *m_pColorOperXor;

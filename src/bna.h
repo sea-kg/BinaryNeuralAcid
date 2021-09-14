@@ -81,7 +81,8 @@ class BNA {
         // void importFromByteArray(QByteArray data);
 		nlohmann::json toJson();
         void generateRandomMutations(int nRandomCicles);
-        void appendRandomData(int nRandomCicles);
+        void addRandomNodes(int nRandomCicles);
+        void removeRandomNodes(int nRandomCicles);
         BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
 
         unsigned int getInputSize();
@@ -109,7 +110,7 @@ class BNA {
         
 
         void clearCalcExprsVars();
-        void normalizeInputNodes();
+        void normalizeNodes();
         BNAVar *getVarByIndex(int nIndex);
         std::vector<BNAExpression *> m_vCalcExprs;
         std::vector<BNAVar *> m_vCalcInputVars;

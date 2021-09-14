@@ -92,11 +92,15 @@ bool BNATestSin::onStart() {
 
 void BNATestSin::doMutation() {
      // modify 
-    int nModifyCicles = rand() % 15 + 2;
-    std::cout << "ModifyCicles " << nModifyCicles << std::endl;
+    int nModifyCicles = rand() % 15;
+    // std::cout << "ModifyCicles " << nModifyCicles << std::endl;
     m_pBNA->generateRandomMutations(nModifyCicles);
-    // calculateCurrentCounters();
-    // int nDiff = printCounters();
+    nModifyCicles = rand() % 15;
+    m_pBNA->addRandomNodes(nModifyCicles);
+    nModifyCicles = rand() % 15;
+    m_pBNA->removeRandomNodes(nModifyCicles);
+    // std::cout << "m_pBNA->getNodesSize() " << m_pBNA->getNodesSize() << std::endl;
+    m_pBNA->compile();
 }
 
 void BNATestSin::doTestAndRevert() {

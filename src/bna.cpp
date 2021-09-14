@@ -412,8 +412,7 @@ bool BNA::compile() {
         m_vCalcInputVars.push_back(pVar);
     }
 
-    // prepare and normalize input nodes
-    normalizeInputNodes();
+    normalizeNodes();
 
     int nItemsSize = m_vNodes.size();
     for (int i = 0; i < m_vNodes.size(); i++) {
@@ -698,30 +697,6 @@ bool BNA::registryOperationType(IBNAOper *pOper) {
     return true;
 }
 
-// ----------------------------------------------------------------
-
-// QByteArray BNA::exportToByteArray(){
-//     QByteArray data;
-//     QDataStream stream( &data, QIODevice::WriteOnly );
-//     writeToStream(stream);
-//     return data;
-// }
-
-// ----------------------------------------------------------------
-
-// void BNA::importFromByteArray(QByteArray data){
-//     clearResources();
-//     QBuffer buffer;
-//     buffer.setData(data);
-//     buffer.open(QIODevice::ReadOnly);
-//     buffer.seek(0);
-//     QDataStream stream(&buffer);
-//     readFromStream(stream);
-//     return;
-// }
-
-// ----------------------------------------------------------------
-
 void BNA::generateRandomMutations(int nRandomCicles){
     for (int i = 0; i < nRandomCicles; i++) {
         m_bCompiled = false;
@@ -737,29 +712,37 @@ void BNA::generateRandomMutations(int nRandomCicles){
             m_vNodesOutput[nItemIndex]->setInputNodeIndex(rand());
         }
     }
-    if (!m_bCompiled) {
-        compile();
-    }
+    // if (!m_bCompiled) {
+    //     compile();
+    // }
 }
 
-// ----------------------------------------------------------------
-
-void BNA::appendRandomData(int nRandomCicles) {
-    WsjcppLog::err(TAG, "TODO toJson");
-    /*QByteArray data = exportToByteArray();
-
-    // random append data
-    for(int i = 0; i < nRandomCicles; i++){
-        // short x1
-        data.append((char) qrand());
-        data.append((char) qrand());
-        // short y1
-        data.append((char) qrand());
-        data.append((char) qrand());
-        // c0
-        data.append((char) qrand());
+void BNA::addRandomNodes(int nRandomCicles) {
+    for (int i = 0; i < nRandomCicles; i++) {
+        m_bCompiled = false;
+        BNANode *pItem = new BNANode();
+        pItem->setX(rand());
+        pItem->setY(rand());
+        int nOper = rand() % m_nOperSize;
+        pItem->setOperationType(m_vOperationList[nOper]->type());
+        m_vNodes.push_back(pItem);
     }
-    importFromByteArray(data);*/
+    // if (!m_bCompiled) {
+    //     compile();
+    // }
+}
+
+void BNA::removeRandomNodes(int nRandomCicles) {
+    for (int i = 0; i < nRandomCicles; i++) {
+        m_bCompiled = false;
+        int nIndex = rand() % m_vNodes.size();
+        BNANode *pItem = m_vNodes[nIndex];
+        m_vNodes.erase(m_vNodes.begin() + nIndex);
+        delete pItem;
+    }
+    // if (!m_bCompiled) {
+    //     compile();
+    // }
 }
 
 // ----------------------------------------------------------------
@@ -773,7 +756,8 @@ nlohmann::json BNA::toJson(){
 BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
     // prepare calculate exprs
     if (!m_bCompiled) {
-        std::cout << "Not compiled" << std::endl;    
+        // std::cout << "Not compiled" << std::endl;
+        compile();
     }
 
     if ((unsigned int)vInputs.size() != m_vNodesInput.size()) {
@@ -817,7 +801,7 @@ void BNA::clearCalcExprsVars() {
     m_bCompiled = false;
 }
 
-void BNA::normalizeInputNodes() {
+void BNA::normalizeNodes() {
     int nNodesSize = m_vNodesInput.size();
     // normalize nodes
     for (int i = 0; i < m_vNodes.size(); i++) {
@@ -828,6 +812,20 @@ void BNA::normalizeInputNodes() {
     // normalize nodes output
     for (int i = 0; i < m_vNodesOutput.size(); i++) {
         m_vNodesOutput[i]->setInputNodeIndex( m_vNodesOutput[i]->getInputNodeIndex() % nNodesSize);
+    }
+    // TODO remove nodes to noway
+    std::vector<int> vToRemoving;
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        int nNodeIndex = i + m_vNodesInput.size();
+        int nLinks = 0;
+        for (int i0 = 0; i0 < m_vNodes.size(); i0++) {
+            if (m_vNodes[i0]->getX() == nNodeIndex || m_vNodes[i0]->getY() == nNodeIndex) {
+                nLinks++;
+            }
+        }
+        if (nLinks == 0) {
+            // std::cout << "TODO removing " << nNodeIndex << std::endl;
+        }
     }
 }
 
