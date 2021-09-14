@@ -97,6 +97,7 @@ void RenderWindow::drawObjects() {
 // RenderBNA
 
 RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
+    TAG = "RenderBNA";
     m_pCallbacksRenderBNA = pCallbakcs;
     m_nWindowWidth = 1280;
     m_nWindowHeight = 720;
@@ -195,47 +196,61 @@ void RenderBNA::prepareVectorsSize() {
     int nOutputSize = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
     // CONNECTIONS
-    for (int i = 0; i < nNodesSize*2; i++) {
-        if (m_vRenderConnections.size() < i + 1) {
-            RenderConnection *pLine = new RenderConnection(
-                CoordXY(100, 100),
-                CoordXY(200, 200),
-                RenderColor(255,255,255,255)
-            );
-            m_vRenderConnections.push_back(pLine);
-            m_pWindow->addObject(pLine);
-        }
+    int nConnectionsCount = nNodesSize*2;
+    // for (int i = 0; i < nConnectionsCount; i++) {
+    //     if (m_vRenderConnections.size() < i + 1) {
+    //         RenderConnection *pLine = new RenderConnection(
+    //             CoordXY(100, 100),
+    //             CoordXY(200, 200),
+    //             RenderColor(255,255,255,255)
+    //         );
+    //         m_vRenderConnections.push_back(pLine);
+    //         m_pWindow->addObject(pLine);
+    //     }
+    // }
+    
+    while (m_vRenderConnections.size() < nConnectionsCount) {
+        // add new connections
+        RenderConnection *pLine = new RenderConnection(
+            CoordXY(100, 100),
+            CoordXY(200, 200),
+            RenderColor(255,255,255,255)
+        );
+        m_vRenderConnections.push_back(pLine);
+        m_pWindow->addObject(pLine);
     }
-    // std::cout << "m_vRenderConnections.size(): " << m_vRenderConnections.size() << std::endl;
-    // TODO remove extra connections
+
+    while (m_vRenderConnections.size() > nConnectionsCount) {
+        // remove extra conenctions
+        RenderConnection *pLine = m_vRenderConnections.back();
+        m_vRenderConnections.pop_back();
+        m_pWindow->removeObject(pLine);
+        delete pLine;
+    }
 
     // NODES
-    // if not exists
     int nAllCountNodes = nNodesSize + nInputSize + nOutputSize;
-    for (int i = 0; i < nAllCountNodes; i++) {
-        if (m_vRenderNodes.size() < i + 1) {
-            RenderRect *pRect = new RenderRect(
-                CoordXY(100, 100),
-                m_nSizeNode, // width
-                m_nSizeNode, // hwight
-                RenderColor(255,255,255,255), 
-                10 // z
-            );
-            m_vRenderNodes.push_back(pRect);
-            m_pWindow->addObject(pRect);
-        }
+    while (m_vRenderNodes.size() < nAllCountNodes) {
+        // add missing nodes
+        RenderRect *pRect = new RenderRect(
+            CoordXY(100, 100),
+            m_nSizeNode, // width
+            m_nSizeNode, // hwight
+            RenderColor(255,255,255,255), 
+            10 // z
+        );
+        m_vRenderNodes.push_back(pRect);
+        m_pWindow->addObject(pRect);
+        m_vNodesPositions.push_back(BNAItemPosition());
     }
-    // std::cout << "m_vRenderNodes.size(): " << m_vRenderNodes.size() << std::endl;
-
-    // TODO remove extra nodes
-    for (int i = 0; i < nAllCountNodes; i++) {
-        if (m_vNodesPositions.size() < i + 1) {
-            m_vNodesPositions.push_back(BNAItemPosition());
-        }
+    while (m_vRenderNodes.size() > nAllCountNodes) {
+        // remove extra nodes
+        RenderRect *pRect = m_vRenderNodes.back();
+        m_vRenderNodes.pop_back();
+        m_vNodesPositions.pop_back();
+        m_pWindow->removeObject(pRect);
+        delete pRect;
     }
-    // std::cout << "m_vNodesPositions.size(): " << m_vNodesPositions.size() << std::endl;
-    // TODO remove extra node positions
-
 
     // OUTPUT TEXT
     int nOutputWidth = m_nWindowWidth - m_nPadding*2;
@@ -317,6 +332,17 @@ std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
     return vRet;
 }
 
+int RenderBNA::distance(const CoordXY &p0, const CoordXY &p1) {
+    int nRet = sqrt((p1.x()-p0.x())*(p1.x()-p0.x())+(p1.y()-p0.y())*(p1.y()-p0.y()));
+    return nRet;
+}
+
+int RenderBNA::distanceN(int n0, int n1) {
+    int _n0 = std::min(n0,n1);
+    int _n1 = std::max(n0,n1);
+    return _n1 - _n0;
+}
+
 void RenderBNA::updateMiddleNodesXY2() {
     const std::vector<BNANode *> &vItems = m_pCallbacksRenderBNA->getBNA()->getNodes();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
@@ -331,29 +357,63 @@ void RenderBNA::updateMiddleNodesXY2() {
         std::vector<RenderRect *> vNodes = getChildAndParantNodes(i);
         int nX = 0;
         int nY = 0;
+        int nMaxX = 0;
+        int nMaxY = 0;
         for (int n = 0; n < vNodes.size(); n++) {
+            nMaxX = std::max(nMaxX, vNodes[n]->getCoord().x());
+            nMaxY = std::max(nMaxY, vNodes[n]->getCoord().y());
             nX += vNodes[n]->getCoord().x();
             nY += vNodes[n]->getCoord().y();
         }
         if (vNodes.size() > 1) {
             nX /= vNodes.size();
             nY /= vNodes.size();
+            // nY += 10;
         } else {
             nX += 10;
             nY += 10;
         }
-        
+        // if (nMaxY >= nY) {
+            // WsjcppLog::throw_err(TAG, "DDDDD");
+        //   nY = nMaxY;
+        // }
+
         m_vRenderNodes[i]->updateXY(nX, nY);
     }
 
-    for (int x = nStartIndex; x <= nEndIndex; x++) {
-        for (int y = nStartIndex; y <= nEndIndex; y++) {
-            if (x != y) {
-                const CoordXY &pX = m_vRenderNodes[x]->getCoord();
-                const CoordXY &pY = m_vRenderNodes[y]->getCoord();
-                if (pX.x() == pY.x() && pX.y() == pY.y()) {
-                    m_vRenderNodes[x]->updateXY(pX.x() - 20, pX.y() + 10);
-                    m_vRenderNodes[y]->updateXY(pY.x() + 20, pY.y() - 10);
+    bool bDistance = true;
+    while (bDistance) {
+        bDistance = false;
+        for (int i0 = nStartIndex; i0 <= nEndIndex; i0++) {
+            for (int i1 = nStartIndex; i1 <= nEndIndex; i1++) {
+                if (i0 != i1) {
+                    const CoordXY &p0 = m_vRenderNodes[i0]->getCoord();
+                    const CoordXY &p1 = m_vRenderNodes[i1]->getCoord();
+                    if (p0.x() == p1.x() && p0.y() == p1.y()) {
+                        m_vRenderNodes[i0]->updateXY(p0.x() - 20, p0.y() + 10);
+                        m_vRenderNodes[i1]->updateXY(p1.x() + 20, p1.y() - 10);
+                    }
+                    // int nDistance = distance(p0, p1);
+                    // if (nDistance < 20) {
+                    //     bDistance = true;
+                    //     // std::cout << "nDistance = " << nDistance << std::endl;
+                    //     if (distanceN(p0.x(), p1.x()) < 30) {
+                    //         m_vRenderNodes[i0]->updateXY(p0.x() - 20, p0.y());
+                    //         m_vRenderNodes[i1]->updateXY(p1.x() + 20, p1.y());
+                    //     }
+                    //     if (distanceN(p0.y(), p1.y()) < 20) {
+                    //         int nDiff = 40;
+                    //         if (p0.y() - nDiff < 100) {
+                    //             nDiff = p0.y() + 20;
+                    //         }
+                    //         //m_vRenderNodes[i0]->updateXY(p0.x(), p0.y());
+                    //         // m_vRenderNodes[i1]->updateXY(p1.x(), p1.y() + nDiff);
+                    //     }
+                    //     else {
+                    //         m_vRenderNodes[i0]->updateXY(p0.x() - 20, p0.y() + 20);
+                    //         m_vRenderNodes[i1]->updateXY(p1.x() + 20, p1.y() - 20);
+                    //     }
+                    // }
                 }
             }
         }

@@ -725,15 +725,17 @@ bool BNA::registryOperationType(IBNAOper *pOper) {
 void BNA::generateRandomMutations(int nRandomCicles){
     for (int i = 0; i < nRandomCicles; i++) {
         m_bCompiled = false;
-        int nItemIndex = rand() % m_vNodes.size();
-        // nItemIndex
-        // int nMin = (nItemIndex + m_vNodesInput.size()) - 10;
-        // m_vItems[nItemIndex]->setX(nMin + rand() % 10);
-        // m_vItems[nItemIndex]->setY(nMin + rand() % 10);
-        m_vNodes[nItemIndex]->setX(rand());
-        m_vNodes[nItemIndex]->setY(rand());
-        int nOper = rand() % m_nOperSize;
-        m_vNodes[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
+        int nChoose = rand() % (m_vNodes.size() + m_vNodesOutput.size());
+        if (nChoose < m_vNodes.size()) {
+            int nItemIndex = rand() % m_vNodes.size();
+            m_vNodes[nItemIndex]->setX(rand());
+            m_vNodes[nItemIndex]->setY(rand());
+            int nOper = rand() % m_nOperSize;
+            m_vNodes[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
+        } else {
+            int nItemIndex = rand() % m_vNodesOutput.size();
+            m_vNodesOutput[nItemIndex]->setInputNodeIndex(rand());
+        }
     }
     if (!m_bCompiled) {
         compile();

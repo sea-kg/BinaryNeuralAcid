@@ -47,12 +47,16 @@ class RenderBNA {
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter);
         void updateInputNodesXY();
         std::vector<RenderRect *> getChildAndParantNodes(int nIndex);
+        int distance(const CoordXY &p0, const CoordXY &p1);
+        int distanceN(int n0, int n1);
         void updateMiddleNodesXY2();
         void updateOutputNodesXY();
         void updateNodesConnections();
         void prepareNodes();
         int updateLine(int nIndexLine, RenderRect *, RenderRect *);
         void updateColorNode(int nIndexNode, const std::string &sOperType);
+
+        std::string TAG;
 
         RenderWindow *m_pWindow;
         ICallbacksRenderBNA *m_pCallbacksRenderBNA;
