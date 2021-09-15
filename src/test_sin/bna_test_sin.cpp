@@ -51,6 +51,7 @@ BNATestSin::BNATestSin() {
     m_pBNA = new BNA(32,32);
     m_sDataTestsFilename = "testsin.bnadatatest";
     m_nDataTestsSize = 2000;
+    m_pModificationModel = new BNAModificationModel();
 
     // init counters
     m_prevCounters.resize(32);
@@ -91,16 +92,14 @@ bool BNATestSin::onStart() {
 }
 
 void BNATestSin::doMutation() {
-     // modify 
-    int nModifyCicles = rand() % 15;
-    // std::cout << "ModifyCicles " << nModifyCicles << std::endl;
-    m_pBNA->generateRandomMutations(nModifyCicles);
-    nModifyCicles = rand() % 15;
-    m_pBNA->addRandomNodes(nModifyCicles);
-    nModifyCicles = rand() % 15;
-    m_pBNA->removeRandomNodes(nModifyCicles);
-    // std::cout << "m_pBNA->getNodesSize() " << m_pBNA->getNodesSize() << std::endl;
-    m_pBNA->compile();
+    m_pModificationModel->update(
+        rand() % 15,
+        rand() % 15,
+        rand() % 15
+    );
+
+    m_pBNA->randomModify(m_pModificationModel);
+    m_pModificationModel->print();
 }
 
 void BNATestSin::doTestAndRevert() {

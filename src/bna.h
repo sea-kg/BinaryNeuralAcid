@@ -59,6 +59,23 @@ class BNANodeOutput {
         unsigned short m_nInputNodeIndex;
 };
 
+class BNAModificationModel {
+    public:
+        BNAModificationModel();
+        BNAModificationModel(int nMutationCicles, int nAddCicles, int nRemoveCicles);
+        void update(int nMutationCicles, int nAddCicles, int nRemoveCicles);
+        void reset();
+        int getMutationCicles() const;
+        int getAddCicles() const;
+        int getRemoveCicles() const;
+        void print() const;
+
+    private:
+        int m_nMutationCicles;
+        int m_nAddCicles;
+        int m_nRemoveCicles;
+};
+
 class BNA {
 	public:
 		BNA();
@@ -80,7 +97,7 @@ class BNA {
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);
 		nlohmann::json toJson();
-        void generateRandomMutations(int nRandomCicles);
+        void randomModify(const BNAModificationModel *pModel);
         void addRandomNodes(int nRandomCicles);
         void removeRandomNodes(int nRandomCicles);
         BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);

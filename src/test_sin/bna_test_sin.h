@@ -24,6 +24,17 @@ class BNATestSinItem {
 };
 
 
+class BNATestSinResults {
+    public:
+        BNATestSinResults(int nOutputSize);
+        std::vector<int> &getPrevCounters() const;
+        std::vector<int> &getCurrentCounters() const;
+
+    private:
+        std::vector<int> m_prevCounters;
+        std::vector<int> m_currentCounters;
+};
+
 class BNATestSin : public ICallbacksRenderBNA {
     public:
         BNATestSin();
@@ -63,6 +74,8 @@ class BNATestSin : public ICallbacksRenderBNA {
 
         std::vector<int> m_prevCounters;
         std::vector<int> m_currentCounters;
+
+        BNAModificationModel *m_pModificationModel;
 };
 
 #endif // SEA5KG_BNA_TEST_SIN_H

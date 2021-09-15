@@ -258,9 +258,52 @@ void BNANodeOutput::writeToFile(std::ofstream &file) {
 }
 
 // -----------------------------------------------------------------
+// BNAModificationModel
+
+BNAModificationModel::BNAModificationModel() {
+    this->reset();
+}
+
+BNAModificationModel::BNAModificationModel(int nMutationCicles, int nAddCicles, int nRemoveCicles) {
+    this->reset();
+    m_nMutationCicles = nMutationCicles;
+    m_nAddCicles = nAddCicles;
+    m_nRemoveCicles = nRemoveCicles;
+}
+
+void BNAModificationModel::update(int nMutationCicles, int nAddCicles, int nRemoveCicles) {
+    this->reset();
+    m_nMutationCicles = nMutationCicles;
+    m_nAddCicles = nAddCicles;
+    m_nRemoveCicles = nRemoveCicles;
+}
+
+void BNAModificationModel::reset() {
+    m_nMutationCicles = 0;
+    m_nAddCicles = 0;
+    m_nRemoveCicles = 0;
+}
+
+int BNAModificationModel::getMutationCicles() const {
+    return m_nMutationCicles;
+}
+
+int BNAModificationModel::getAddCicles() const {
+    return m_nAddCicles;
+}
+
+int BNAModificationModel::getRemoveCicles() const {
+    return m_nRemoveCicles;
+}
+
+void BNAModificationModel::print() const {
+    std::cout << m_nMutationCicles << ";" << m_nAddCicles << ";" << m_nRemoveCicles << ";" << std::endl;
+}
+
+// -----------------------------------------------------------------
 // BNA
 
-BNA::BNA(){
+BNA::BNA() {
     m_vNodesInput.push_back(new BNANodeInput(0));
     m_vNodesOutput.push_back(new BNANodeOutput(0, 0));
     registryOperationType(new BNAOperXor());
@@ -697,9 +740,15 @@ bool BNA::registryOperationType(IBNAOper *pOper) {
     return true;
 }
 
-void BNA::generateRandomMutations(int nRandomCicles){
-    for (int i = 0; i < nRandomCicles; i++) {
-        m_bCompiled = false;
+void BNA::randomModify(const BNAModificationModel *pModel) {
+    for (int i = 0; i < pModel->getRemoveCicles(); i++) {
+        int nIndex = rand() % m_vNodes.size();
+        BNANode *pItem = m_vNodes[nIndex];
+        m_vNodes.erase(m_vNodes.begin() + nIndex);
+        delete pItem;
+    }
+
+    for (int i = 0; i < pModel->getMutationCicles(); i++) {
         int nChoose = rand() % (m_vNodes.size() + m_vNodesOutput.size());
         if (nChoose < m_vNodes.size()) {
             int nItemIndex = rand() % m_vNodes.size();
@@ -712,14 +761,8 @@ void BNA::generateRandomMutations(int nRandomCicles){
             m_vNodesOutput[nItemIndex]->setInputNodeIndex(rand());
         }
     }
-    // if (!m_bCompiled) {
-    //     compile();
-    // }
-}
 
-void BNA::addRandomNodes(int nRandomCicles) {
-    for (int i = 0; i < nRandomCicles; i++) {
-        m_bCompiled = false;
+    for (int i = 0; i < pModel->getAddCicles(); i++) {
         BNANode *pItem = new BNANode();
         pItem->setX(rand());
         pItem->setY(rand());
@@ -727,22 +770,11 @@ void BNA::addRandomNodes(int nRandomCicles) {
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vNodes.push_back(pItem);
     }
-    // if (!m_bCompiled) {
-    //     compile();
-    // }
-}
 
-void BNA::removeRandomNodes(int nRandomCicles) {
-    for (int i = 0; i < nRandomCicles; i++) {
+    if (pModel->getMutationCicles() > 0 || pModel->getAddCicles() > 0 || pModel->getRemoveCicles() > 0) {
         m_bCompiled = false;
-        int nIndex = rand() % m_vNodes.size();
-        BNANode *pItem = m_vNodes[nIndex];
-        m_vNodes.erase(m_vNodes.begin() + nIndex);
-        delete pItem;
+        normalizeNodes();
     }
-    // if (!m_bCompiled) {
-    //     compile();
-    // }
 }
 
 // ----------------------------------------------------------------
