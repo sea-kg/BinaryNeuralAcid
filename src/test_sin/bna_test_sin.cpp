@@ -92,7 +92,7 @@ void BNATestSin::doMutation() {
     );
 
     m_pBNA->randomModify(m_pModificationModel);
-    m_pModificationModel->print();
+    // m_pModificationModel->print();
 }
 
 void BNATestSin::doTestAndRevert() {
@@ -105,7 +105,7 @@ void BNATestSin::doTestAndRevert() {
         m_pBNA->save(m_sBNAFilename);
         m_pResults->setPrevCounters(m_pResults->getCurrentCounters());
     } else {
-        std::cout << "Reset bna " << std::endl;
+        // std::cout << "Reset bna " << std::endl;
         m_pBNA->load(m_sBNAFilename);
     }
 }
@@ -205,4 +205,10 @@ void BNATestSin::calculateCurrentCounters() {
         }
     }
     m_pResults->calcPercents(m_vDataTests.size());
+    std::cout
+        << m_pModificationModel->getMutationCicles() << ";"
+        << m_pModificationModel->getAddCicles() << ";"
+        << m_pModificationModel->getRemoveCicles() << ";"
+        << m_pResults->getSummaryDiff() << ";"
+        << std::endl;
 }

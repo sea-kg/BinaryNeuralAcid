@@ -22,35 +22,6 @@ class RenderWindow  {
         std::vector<RenderObject *> m_vObjects;
 };
 
-class BNAStatCalcResults {
-    public:
-        BNAStatCalcResults(int nOutputSize);
-        const std::vector<int> &getPrevCounters() const;
-        const std::vector<int> &getPrevCountersPercents() const;
-        int getAllPrevCountersPercents() const;
-        void setPrevCounters(const std::vector<int> &vValues);
-        const std::vector<int> &getCurrentCounters() const;
-        const std::vector<int> &getCurrentCountersPercents() const;
-        int getAllCurrentCountersPercents() const;
-        void setCurrentCounters(const std::vector<int> &vValues);
-        void resetCurrentCounters();
-        void incrementCurrentCounter(int nIndex);
-        void calcPercents(int nDataTestsSize);
-        int getSummaryDiff();
-
-    private:
-        std::string TAG;
-        int m_nOutputSize;
-        int m_nDataTestsSize;
-        std::vector<int> m_vPrevCounters;
-        std::vector<int> m_vPrevCountersPercents;
-        int m_nAllPrevCountersPercents;
-        std::vector<int> m_vCurrentCounters;
-        std::vector<int> m_vCurrentCountersPercents;
-        int m_nAllCurrentCountersPercents;
-        int m_nSummaryDiff;
-};
-
 class ICallbacksRenderBNA {
     public:
         virtual bool onStart() = 0;

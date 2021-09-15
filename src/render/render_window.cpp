@@ -93,101 +93,6 @@ void RenderWindow::drawObjects() {
 }
 
 // -----------------------------------------------------------------
-// BNAStatCalcResults
-
-BNAStatCalcResults::BNAStatCalcResults(int nOutputSize) {
-    TAG = "BNAStatCalcResults";
-    m_nOutputSize = nOutputSize;
-    // init counters
-    m_vPrevCounters.resize(m_nOutputSize);
-    m_vPrevCountersPercents.resize(m_nOutputSize);
-    m_vCurrentCounters.resize(m_nOutputSize);
-    m_vCurrentCountersPercents.resize(m_nOutputSize);
-    for (int i = 0; i < m_nOutputSize; i++) {
-        m_vPrevCounters[i] = 0;
-        m_vCurrentCounters[i] = 0;
-        m_vCurrentCountersPercents[i] = 0;
-        m_vPrevCountersPercents[i] = 0;
-    }
-}
-
-const std::vector<int> &BNAStatCalcResults::getPrevCounters() const {
-    return m_vPrevCounters;
-}
-
-const std::vector<int> &BNAStatCalcResults::getPrevCountersPercents() const {
-    return m_vPrevCountersPercents;
-}
-
-int BNAStatCalcResults::getAllPrevCountersPercents() const {
-    return m_nAllPrevCountersPercents;
-}
-
-void BNAStatCalcResults::setPrevCounters(const std::vector<int> &vValues) {
-    if (m_nOutputSize != vValues.size()) {
-        WsjcppLog::throw_err(TAG, "Wrong size");
-    }
-    m_vPrevCounters = vValues;
-}
-
-const std::vector<int> &BNAStatCalcResults::getCurrentCounters() const {
-    return m_vCurrentCounters;
-}
-
-const std::vector<int> &BNAStatCalcResults::getCurrentCountersPercents() const {
-    return m_vCurrentCountersPercents;
-}
-
-int BNAStatCalcResults::getAllCurrentCountersPercents() const {
-    return m_nAllCurrentCountersPercents;
-}
-
-void BNAStatCalcResults::setCurrentCounters(const std::vector<int> &vValues) {
-    if (m_nOutputSize != vValues.size()) {
-        WsjcppLog::throw_err(TAG, "Wrong size");
-    }
-    m_vCurrentCounters = vValues;
-}
-
-void BNAStatCalcResults::resetCurrentCounters() {
-    for (int i = 0; i < m_nOutputSize; i++) {
-        m_vCurrentCounters[i] = 0;
-    }
-}
-
-void BNAStatCalcResults::incrementCurrentCounter(int nIndex) {
-    m_vCurrentCounters[nIndex] += 1;
-}
-
-void BNAStatCalcResults::calcPercents(int nDataTestsSize) {
-    m_nDataTestsSize = nDataTestsSize;
-    m_nSummaryDiff = 0;
-    int nAllPrev = 0;
-    int nAllCurrent = 0;
-    for (int i = 0; i < m_nOutputSize; i++) {
-        nAllPrev += m_vPrevCounters[i];
-        nAllCurrent += m_vCurrentCounters[i];
-        int nDiff = m_vCurrentCounters[i] - m_vPrevCounters[i];
-        m_nSummaryDiff += nDiff;
-        
-        m_vPrevCountersPercents[i] = (m_vPrevCounters[i]*100) / m_nDataTestsSize;
-        m_vCurrentCountersPercents[i] = (m_vCurrentCounters[i]*100) / m_nDataTestsSize;
-        
-        std::cout << "output bit" << i << ": " << m_vPrevCounters[i]  << " (" << m_vPrevCountersPercents[i] << ")% -> "
-            << m_vCurrentCounters[i] << " (" << m_vCurrentCountersPercents[i] <<  "%) " << " diff: " << nDiff << std::endl;
-    }
-    int nAllTests = m_nOutputSize * nDataTestsSize;
-    m_nAllPrevCountersPercents = (nAllPrev*100) / nAllTests;
-    m_nAllCurrentCountersPercents = (nAllCurrent*100) / nAllTests;
-
-    std::cout << "summary diff: " << m_nSummaryDiff << std::endl;
-}
-
-int BNAStatCalcResults::getSummaryDiff() {
-    return m_nSummaryDiff;
-}
-
-// -----------------------------------------------------------------
 // RenderBNA
 
 RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
@@ -275,7 +180,7 @@ bool RenderBNA::run() {
             double nFPS = nNumberOfFrames;
             nFPS /= nElapsed;
             nFPS *= 1000;
-            std::cout << "FPS: " << nFPS << std::endl;
+            // std::cout << "FPS: " << nFPS << std::endl;
             nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
             nNumberOfFrames = 0;
             pFpsText->updateText("FPS: " + std::to_string(int(nFPS)));
