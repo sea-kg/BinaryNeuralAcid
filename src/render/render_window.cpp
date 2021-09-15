@@ -92,6 +92,100 @@ void RenderWindow::drawObjects() {
     SDL_RenderPresent(renderer);
 }
 
+// -----------------------------------------------------------------
+// BNAStatCalcResults
+
+BNAStatCalcResults::BNAStatCalcResults(int nOutputSize) {
+    TAG = "BNAStatCalcResults";
+    m_nOutputSize = nOutputSize;
+    // init counters
+    m_vPrevCounters.resize(m_nOutputSize);
+    m_vPrevCountersPercents.resize(m_nOutputSize);
+    m_vCurrentCounters.resize(m_nOutputSize);
+    m_vCurrentCountersPercents.resize(m_nOutputSize);
+    for (int i = 0; i < m_nOutputSize; i++) {
+        m_vPrevCounters[i] = 0;
+        m_vCurrentCounters[i] = 0;
+        m_vCurrentCountersPercents[i] = 0;
+        m_vPrevCountersPercents[i] = 0;
+    }
+}
+
+const std::vector<int> &BNAStatCalcResults::getPrevCounters() const {
+    return m_vPrevCounters;
+}
+
+const std::vector<int> &BNAStatCalcResults::getPrevCountersPercents() const {
+    return m_vPrevCountersPercents;
+}
+
+int BNAStatCalcResults::getAllPrevCountersPercents() const {
+    return m_nAllPrevCountersPercents;
+}
+
+void BNAStatCalcResults::setPrevCounters(const std::vector<int> &vValues) {
+    if (m_nOutputSize != vValues.size()) {
+        WsjcppLog::throw_err(TAG, "Wrong size");
+    }
+    m_vPrevCounters = vValues;
+}
+
+const std::vector<int> &BNAStatCalcResults::getCurrentCounters() const {
+    return m_vCurrentCounters;
+}
+
+const std::vector<int> &BNAStatCalcResults::getCurrentCountersPercents() const {
+    return m_vCurrentCountersPercents;
+}
+
+int BNAStatCalcResults::getAllCurrentCountersPercents() const {
+    return m_nAllCurrentCountersPercents;
+}
+
+void BNAStatCalcResults::setCurrentCounters(const std::vector<int> &vValues) {
+    if (m_nOutputSize != vValues.size()) {
+        WsjcppLog::throw_err(TAG, "Wrong size");
+    }
+    m_vCurrentCounters = vValues;
+}
+
+void BNAStatCalcResults::resetCurrentCounters() {
+    for (int i = 0; i < m_nOutputSize; i++) {
+        m_vCurrentCounters[i] = 0;
+    }
+}
+
+void BNAStatCalcResults::incrementCurrentCounter(int nIndex) {
+    m_vCurrentCounters[nIndex] += 1;
+}
+
+void BNAStatCalcResults::calcPercents(int nDataTestsSize) {
+    m_nDataTestsSize = nDataTestsSize;
+    m_nSummaryDiff = 0;
+    int nAllPrev = 0;
+    int nAllCurrent = 0;
+    for (int i = 0; i < m_nOutputSize; i++) {
+        nAllPrev += m_vPrevCounters[i];
+        nAllCurrent += m_vCurrentCounters[i];
+        int nDiff = m_vCurrentCounters[i] - m_vPrevCounters[i];
+        m_nSummaryDiff += nDiff;
+        
+        m_vPrevCountersPercents[i] = (m_vPrevCounters[i]*100) / m_nDataTestsSize;
+        m_vCurrentCountersPercents[i] = (m_vCurrentCounters[i]*100) / m_nDataTestsSize;
+        
+        std::cout << "output bit" << i << ": " << m_vPrevCounters[i]  << " (" << m_vPrevCountersPercents[i] << ")% -> "
+            << m_vCurrentCounters[i] << " (" << m_vCurrentCountersPercents[i] <<  "%) " << " diff: " << nDiff << std::endl;
+    }
+    int nAllTests = m_nOutputSize * nDataTestsSize;
+    m_nAllPrevCountersPercents = (nAllPrev*100) / nAllTests;
+    m_nAllCurrentCountersPercents = (nAllCurrent*100) / nAllTests;
+
+    std::cout << "summary diff: " << m_nSummaryDiff << std::endl;
+}
+
+int BNAStatCalcResults::getSummaryDiff() {
+    return m_nSummaryDiff;
+}
 
 // -----------------------------------------------------------------
 // RenderBNA
@@ -108,7 +202,8 @@ RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
     m_pColorOperOr = new RenderColor(53,155,61,255); // green
     m_pColorOperXor = new RenderColor(213,25,25,255); // red
     m_pColorOperNxor = new RenderColor(77,79,216,255); // blue
-    m_vRenderOutputResult = nullptr;
+    m_vRenderPrevOutputResult = nullptr;
+    m_vRenderCurrentOutputResult = nullptr;
 }
 
 bool RenderBNA::run() {
@@ -256,23 +351,39 @@ void RenderBNA::prepareVectorsSize() {
     // OUTPUT TEXT
     int nOutputWidth = m_nWindowWidth - m_nPadding*2;
     nOutputWidth = nOutputWidth / (nOutputSize - 1);
-    for (int i = 0; i < nOutputSize; i++) {
-        if (m_vRenderOutputsResult.size() < i + 1) {
-            RenderAbsoluteTextBlock * pText = new RenderAbsoluteTextBlock(
-                CoordXY(
-                    m_nPadding + i * nOutputWidth,
-                    m_nWindowHeight - m_nPadding + 20
-                ), "."
-            );
-            m_vRenderOutputsResult.push_back(pText);
-            m_pWindow->addObject(pText);
-        }
-    }
-    if (m_vRenderOutputResult == nullptr) {
-        m_vRenderOutputResult = new RenderAbsoluteTextBlock(
-            CoordXY(m_nWindowWidth/2, m_nWindowHeight - m_nPadding + 40), "result"
+    while (m_vRenderCurrentOutputsResult.size() < nOutputSize) {
+        int i = m_vRenderCurrentOutputsResult.size();
+        RenderAbsoluteTextBlock * pText = new RenderAbsoluteTextBlock(
+            CoordXY(
+                m_nPadding + i * nOutputWidth,
+                m_nWindowHeight - m_nPadding + 20
+            ), "."
         );
-        m_pWindow->addObject(m_vRenderOutputResult);
+        m_vRenderCurrentOutputsResult.push_back(pText);
+        m_pWindow->addObject(pText);
+    }
+    if (m_vRenderCurrentOutputResult == nullptr) {
+        m_vRenderCurrentOutputResult = new RenderAbsoluteTextBlock(
+            CoordXY(m_nWindowWidth/2, m_nWindowHeight - m_nPadding + 35), "result"
+        );
+        m_pWindow->addObject(m_vRenderCurrentOutputResult);
+    }
+    while (m_vRenderPrevOutputsResult.size() < nOutputSize) {
+        int i = m_vRenderPrevOutputsResult.size();
+        RenderAbsoluteTextBlock * pText = new RenderAbsoluteTextBlock(
+            CoordXY(
+                m_nPadding + i * nOutputWidth,
+                m_nWindowHeight - m_nPadding + 60
+            ), "."
+        );
+        m_vRenderPrevOutputsResult.push_back(pText);
+        m_pWindow->addObject(pText);
+    }
+    if (m_vRenderPrevOutputResult == nullptr) {
+        m_vRenderPrevOutputResult = new RenderAbsoluteTextBlock(
+            CoordXY(m_nWindowWidth/2, m_nWindowHeight - m_nPadding + 75), "result"
+        );
+        m_pWindow->addObject(m_vRenderPrevOutputResult);
     }
 }
 
@@ -438,17 +549,23 @@ void RenderBNA::updateOutputNodesXY() {
     }
 
     // update current results
-    int nDataTestsSize = m_pCallbacksRenderBNA->getDataTestsSize();
-    std::vector<int> &vCounters = m_pCallbacksRenderBNA->getPrevCounters();
-    int nAll = 0;
-    for (int i = 0; i < vCounters.size(); i++) {
-        nAll += vCounters[i];
-        int nPercent = vCounters[i]*100/nDataTestsSize;
-        std::string sNewText = std::to_string(vCounters[i]*100/nDataTestsSize);
-        m_vRenderOutputsResult[i]->updateText(sNewText + "%");
+    const BNAStatCalcResults *pResults = m_pCallbacksRenderBNA->getResults();
+    const std::vector<int> &vPrevCountersPercents = pResults->getPrevCountersPercents();
+    const std::vector<int> &vCurrentCountersPercents = pResults->getCurrentCountersPercents();
+    
+    std::string sNewText = "";
+    for (int i = 0; i < vPrevCountersPercents.size(); i++) {
+        sNewText = std::to_string(vPrevCountersPercents[i]) + "%";
+        m_vRenderPrevOutputsResult[i]->updateText(sNewText);
     }
-    std::string sNewText = std::to_string(nAll*100/(nDataTestsSize*vCounters.size()));
-    m_vRenderOutputResult->updateText(sNewText + "%");
+    sNewText = std::to_string(pResults->getAllPrevCountersPercents()) + "%";
+    m_vRenderPrevOutputResult->updateText(sNewText);
+    for (int i = 0; i < vCurrentCountersPercents.size(); i++) {
+        sNewText = std::to_string(vCurrentCountersPercents[i]) + "%";
+        m_vRenderCurrentOutputsResult[i]->updateText(sNewText);
+    }
+    sNewText = std::to_string(pResults->getAllCurrentCountersPercents()) + "%";
+    m_vRenderCurrentOutputResult->updateText(sNewText);
 }
 
 void RenderBNA::updateNodesConnections() {

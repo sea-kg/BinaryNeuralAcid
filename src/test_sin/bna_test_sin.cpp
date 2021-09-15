@@ -52,14 +52,7 @@ BNATestSin::BNATestSin() {
     m_sDataTestsFilename = "testsin.bnadatatest";
     m_nDataTestsSize = 2000;
     m_pModificationModel = new BNAModificationModel();
-
-    // init counters
-    m_prevCounters.resize(32);
-    m_currentCounters.resize(32);
-    for (int i = 0; i < 32; i++) {
-        m_prevCounters[i] = 0;
-        m_currentCounters[i] = 0;
-    }
+    m_pResults = new BNAStatCalcResults(32);
 }
 
 bool BNATestSin::run() {
@@ -87,7 +80,7 @@ bool BNATestSin::onStart() {
 
     // init prev counters
     calculateCurrentCounters();
-    m_prevCounters = m_currentCounters;
+    m_pResults->setPrevCounters(m_pResults->getCurrentCounters());
     return true;
 }
 
@@ -104,11 +97,13 @@ void BNATestSin::doMutation() {
 
 void BNATestSin::doTestAndRevert() {
     calculateCurrentCounters();
-    int nDiff = printCounters();
-    if (nDiff > 0) {
+
+    // m_pModificationModel
+
+    if (m_pResults->getSummaryDiff() > 0) {
         // oo! nice current calculation better
         m_pBNA->save(m_sBNAFilename);
-        m_prevCounters = m_currentCounters;
+        m_pResults->setPrevCounters(m_pResults->getCurrentCounters());
     } else {
         std::cout << "Reset bna " << std::endl;
         m_pBNA->load(m_sBNAFilename);
@@ -119,12 +114,8 @@ BNA* BNATestSin::getBNA() {
     return m_pBNA;
 }
 
-std::vector<int> &BNATestSin::getPrevCounters() {
-    return m_prevCounters;
-}
-
-int BNATestSin::getDataTestsSize() {
-    return m_nDataTestsSize;
+const BNAStatCalcResults *BNATestSin::getResults() {
+    return m_pResults;
 }
 
 void BNATestSin::byteArrayToFloat(const unsigned char *pBytes, float &nResult) {
@@ -203,32 +194,15 @@ bool BNATestSin::saveDataTests() {
     return true;
 }
 
-int BNATestSin::printCounters() {
-    int nSummaryDiff = 0;
-    int nDiff;
-    for (int i = 0; i < 32; i++) {
-        nDiff = m_currentCounters[i] - m_prevCounters[i];
-        nSummaryDiff += nDiff;
-        int nPrevProcents = (m_prevCounters[i]*100) / m_nDataTestsSize;
-        int nCurrentProcents = (m_currentCounters[i]*100) / m_nDataTestsSize;
-        
-        std::cout << "output bit" << i << ": " << m_prevCounters[i]  << " (" << nPrevProcents << ")% -> "
-            << m_currentCounters[i] << " (" << nCurrentProcents <<  "%) " << " diff: " << nDiff << std::endl;
-    }
-    std::cout << "summary diff: " << nSummaryDiff << std::endl;
-    return nSummaryDiff;
-}
-
 void BNATestSin::calculateCurrentCounters() {
-    for (int i = 0; i < 32; i++) {
-        m_currentCounters[i] = 0;
-    }
+    m_pResults->resetCurrentCounters();
     for (int i = 0; i < m_vDataTests.size(); i++) {
         for (int x = 0; x < 32; x++) {
             BNABit bResult = m_pBNA->calc(m_vDataTests[i].getInOfBits(), x);
             if (m_vDataTests[i].getOutOfBits()[x] == bResult) {
-                m_currentCounters[x]++;
+                m_pResults->incrementCurrentCounter(x);
             }
         }
     }
+    m_pResults->calcPercents(m_vDataTests.size());
 }

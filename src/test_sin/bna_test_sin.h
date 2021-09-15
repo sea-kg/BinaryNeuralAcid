@@ -23,18 +23,6 @@ class BNATestSinItem {
         std::vector<BNABit> m_vOut;
 };
 
-
-class BNATestSinResults {
-    public:
-        BNATestSinResults(int nOutputSize);
-        std::vector<int> &getPrevCounters() const;
-        std::vector<int> &getCurrentCounters() const;
-
-    private:
-        std::vector<int> m_prevCounters;
-        std::vector<int> m_currentCounters;
-};
-
 class BNATestSin : public ICallbacksRenderBNA {
     public:
         BNATestSin();
@@ -46,9 +34,7 @@ class BNATestSin : public ICallbacksRenderBNA {
         virtual void doMutation() override;
         virtual void doTestAndRevert() override;
         virtual BNA* getBNA() override;
-        virtual std::vector<int> &getPrevCounters() override;
-        virtual int getDataTestsSize() override;
-        
+        virtual const BNAStatCalcResults *getResults() override;
 
     private:
         // void floatToByteArray(const float &f, unsigned char *pResult4);
@@ -60,7 +46,6 @@ class BNATestSin : public ICallbacksRenderBNA {
         void regenDataTests();
         bool loadDataTests();
         bool saveDataTests();
-        int printCounters();
         void calculateCurrentCounters();
         
         std::string TAG;
@@ -71,9 +56,8 @@ class BNATestSin : public ICallbacksRenderBNA {
         std::string m_sDataTestsFilename;
         int m_nDataTestsSize;
         std::vector<BNATestSinItem> m_vDataTests;
-
-        std::vector<int> m_prevCounters;
-        std::vector<int> m_currentCounters;
+        
+        BNAStatCalcResults *m_pResults;
 
         BNAModificationModel *m_pModificationModel;
 };
