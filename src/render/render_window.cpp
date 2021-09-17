@@ -467,8 +467,6 @@ void RenderBNA::updateNodesConnections() {
     const std::vector<BNANodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
 
     // connections
-    int nEndIndex = m_vRenderNodes.size() - 1;
-    int nIndexLine = 0;
     for (int i = 0; i < vNodes.size(); i++) {
         RenderRect *pCurrent = m_vRenderNodes[i + nInputSize];
         int nInX = vNodes[i]->getX();
@@ -476,13 +474,12 @@ void RenderBNA::updateNodesConnections() {
             WsjcppLog::throw_err(TAG, "nInX >= m_vRenderNodes.size()");
         }
         RenderRect *pLeft = m_vRenderNodes[nInX];
-        nIndexLine = updateLine(nIndexLine, pLeft, pCurrent);
-        int nInY = vNodes[i]->getY();
-        if (nInY >= m_vRenderNodes.size()) {
-            WsjcppLog::throw_err(TAG, "nInY >= m_vRenderNodes.size()");
+        updateLine(i*2, pLeft, pCurrent);
+        if (vNodes[i]->getY() >= m_vRenderNodes.size()) {
+            WsjcppLog::throw_err(TAG, "vNodes[i]->getY() >= m_vRenderNodes.size()");
         }
-        RenderRect *pRight = m_vRenderNodes[nInY];
-        nIndexLine = updateLine(nIndexLine, pRight, pCurrent);
+        RenderRect *pRight = m_vRenderNodes[vNodes[i]->getY()];
+        updateLine(i*2 + 1, pRight, pCurrent);
     }
 
     for (int i = 0; i < vNodesOutput.size(); i++) {
@@ -496,7 +493,7 @@ void RenderBNA::updateNodesConnections() {
         if (nIndexLine >= m_vRenderNodes.size()) {
             WsjcppLog::throw_err(TAG, "nIndexLine >= m_vRenderNodes.size()");
         }
-        updateLine(nIndexLine, pFrom, pCurrent);
+        updateLine(vNodes.size()*2 + i, pFrom, pCurrent);
     }
 }
 
@@ -512,7 +509,7 @@ void RenderBNA::prepareNodes() {
     updateNodesConnections();
 }
 
-int RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1) {
+void RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1) {
     CoordXY p1 = pRect0->getCoord() + CoordXY(m_nSizeNode/2, m_nSizeNode/2);
     CoordXY p2 = pRect1->getCoord() + CoordXY(m_nSizeNode/2, m_nSizeNode/2);
     if (nIndexLine >= m_vRenderConnections.size()) {
@@ -520,7 +517,7 @@ int RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1
     }
     m_vRenderConnections[nIndexLine]->updateCoords(p1, p2);
     m_vRenderConnections[nIndexLine]->updateColor(pRect1->getColor());
-    return nIndexLine + 1;
+    // return nIndexLine + 1;
 }
 
 void RenderBNA::updateColorNode(int nIndexNode, const std::string &sOperType) {

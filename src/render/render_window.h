@@ -52,7 +52,7 @@ class RenderBNA {
         void updateOutputNodesXY();
         void updateNodesConnections();
         void prepareNodes();
-        int updateLine(int nIndexLine, RenderRect *, RenderRect *);
+        void updateLine(int nIndexLine, RenderRect *, RenderRect *);
         void updateColorNode(int nIndexNode, const std::string &sOperType);
 
         std::string TAG;
