@@ -844,15 +844,14 @@ void BNA::randomModify(const BNAModificationModel *pModel) {
     }
 
     for (int i = 0; i < pModel->getMutationCicles(); i++) {
-        int nChoose = rand() % (m_vNodes.size() + m_vNodesOutput.size());
-        if (nChoose < m_vNodes.size()) {
-            int nItemIndex = rand() % m_vNodes.size();
+        int nItemIndex = rand() % (m_vNodes.size() + m_vNodesOutput.size());
+        if (nItemIndex < m_vNodes.size()) {
             m_vNodes[nItemIndex]->setX(rand());
             m_vNodes[nItemIndex]->setY(rand());
             int nOper = rand() % m_nOperSize;
             m_vNodes[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
         } else {
-            int nItemIndex = rand() % m_vNodesOutput.size();
+            nItemIndex = nItemIndex - m_vNodes.size();
             m_vNodesOutput[nItemIndex]->setInputNodeIndex(rand());
         }
     }

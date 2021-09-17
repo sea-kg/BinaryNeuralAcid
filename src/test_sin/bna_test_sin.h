@@ -58,8 +58,9 @@ class BNATestSin : public ICallbacksRenderBNA {
         std::vector<BNATestSinItem> m_vDataTests;
         
         BNAStatCalcResults *m_pResults;
-
-        BNAModificationModel *m_pModificationModel;
+        std::vector<BNAModificationModel *> m_vModificationModels;
+        int m_nCurrentModificationModel;
+        int m_nModificationModelCounter;
 };
 
 #endif // SEA5KG_BNA_TEST_SIN_H

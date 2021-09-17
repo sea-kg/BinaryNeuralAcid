@@ -51,8 +51,15 @@ BNATestSin::BNATestSin() {
     m_pBNA = new BNA(32,32);
     m_sDataTestsFilename = "testsin.bnadatatest";
     m_nDataTestsSize = 2000;
-    m_pModificationModel = new BNAModificationModel();
     m_pResults = new BNAStatCalcResults(32);
+
+    m_vModificationModels.push_back(new BNAModificationModel(rand() % 15, rand() % 15, rand() % 15));
+    m_vModificationModels.push_back(new BNAModificationModel(1,0,0));
+    m_vModificationModels.push_back(new BNAModificationModel(0,10,0));
+    m_vModificationModels.push_back(new BNAModificationModel(0,0,1));
+    m_nCurrentModificationModel = 0;
+    m_nModificationModelCounter = 0;
+
 }
 
 bool BNATestSin::run() {
@@ -85,14 +92,17 @@ bool BNATestSin::onStart() {
 }
 
 void BNATestSin::doMutation() {
-    m_pModificationModel->update(
-        0, // rand() % 15,
-        0, // rand() % 15,
-        0 // rand() % 15
-    );
-
-    m_pBNA->randomModify(m_pModificationModel);
-    // m_pModificationModel->print();
+    
+    m_nModificationModelCounter++;
+    if (m_nModificationModelCounter > 100) {
+        m_nModificationModelCounter = 0;
+        m_nCurrentModificationModel += 1;
+        m_nCurrentModificationModel = m_nCurrentModificationModel % m_vModificationModels.size();
+        if (m_nCurrentModificationModel == 0) {
+            m_vModificationModels[0]->update(rand() % 15, rand() % 15, rand() % 15);
+        }
+    }
+    m_pBNA->randomModify(m_vModificationModels[m_nCurrentModificationModel]);
 }
 
 void BNATestSin::doTestAndRevert() {
@@ -206,9 +216,9 @@ void BNATestSin::calculateCurrentCounters() {
     }
     m_pResults->calcPercents(m_vDataTests.size());
     std::cout
-        << m_pModificationModel->getMutationCicles() << ";"
-        << m_pModificationModel->getAddCicles() << ";"
-        << m_pModificationModel->getRemoveCicles() << ";"
+        << m_vModificationModels[m_nCurrentModificationModel]->getMutationCicles() << ";"
+        << m_vModificationModels[m_nCurrentModificationModel]->getAddCicles() << ";"
+        << m_vModificationModels[m_nCurrentModificationModel]->getRemoveCicles() << ";"
         << m_pResults->getSummaryDiff() << ";"
         << std::endl;
 }
