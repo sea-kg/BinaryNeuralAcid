@@ -86,9 +86,9 @@ bool BNATestSin::onStart() {
 
 void BNATestSin::doMutation() {
     m_pModificationModel->update(
-        rand() % 15,
-        rand() % 15,
-        rand() % 15
+        0, // rand() % 15,
+        0, // rand() % 15,
+        0 // rand() % 15
     );
 
     m_pBNA->randomModify(m_pModificationModel);

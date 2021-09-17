@@ -197,19 +197,7 @@ void RenderBNA::prepareVectorsSize() {
     int nOutputSize = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
     // CONNECTIONS
-    int nConnectionsCount = nNodesSize*2;
-    // for (int i = 0; i < nConnectionsCount; i++) {
-    //     if (m_vRenderConnections.size() < i + 1) {
-    //         RenderConnection *pLine = new RenderConnection(
-    //             CoordXY(100, 100),
-    //             CoordXY(200, 200),
-    //             RenderColor(255,255,255,255)
-    //         );
-    //         m_vRenderConnections.push_back(pLine);
-    //         m_pWindow->addObject(pLine);
-    //     }
-    // }
-    
+    int nConnectionsCount = nNodesSize*2 + nOutputSize;
     while (m_vRenderConnections.size() < nConnectionsCount) {
         // add new connections
         RenderConnection *pLine = new RenderConnection(
@@ -484,17 +472,30 @@ void RenderBNA::updateNodesConnections() {
     for (int i = 0; i < vNodes.size(); i++) {
         RenderRect *pCurrent = m_vRenderNodes[i + nInputSize];
         int nInX = vNodes[i]->getX();
+        if (nInX >= m_vRenderNodes.size()) {
+            WsjcppLog::throw_err(TAG, "nInX >= m_vRenderNodes.size()");
+        }
         RenderRect *pLeft = m_vRenderNodes[nInX];
         nIndexLine = updateLine(nIndexLine, pLeft, pCurrent);
         int nInY = vNodes[i]->getY();
+        if (nInY >= m_vRenderNodes.size()) {
+            WsjcppLog::throw_err(TAG, "nInY >= m_vRenderNodes.size()");
+        }
         RenderRect *pRight = m_vRenderNodes[nInY];
         nIndexLine = updateLine(nIndexLine, pRight, pCurrent);
     }
 
     for (int i = 0; i < vNodesOutput.size(); i++) {
-        RenderRect *pCurrent = m_vRenderNodes[m_vRenderNodes.size() - vNodesOutput.size() + i];
+        int nOutputRectIndex = m_vRenderNodes.size() - vNodesOutput.size() + i;
+        if (nOutputRectIndex >= m_vRenderNodes.size()) {
+            WsjcppLog::throw_err(TAG, "nOutputRectIndex >= m_vRenderNodes.size()");
+        }
+        RenderRect *pCurrent = m_vRenderNodes[nOutputRectIndex];
         int nIndexLine = vNodesOutput[i]->getInputNodeIndex();
         RenderRect *pFrom = m_vRenderNodes[nIndexLine];
+        if (nIndexLine >= m_vRenderNodes.size()) {
+            WsjcppLog::throw_err(TAG, "nIndexLine >= m_vRenderNodes.size()");
+        }
         updateLine(nIndexLine, pFrom, pCurrent);
     }
 }
@@ -514,6 +515,9 @@ void RenderBNA::prepareNodes() {
 int RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1) {
     CoordXY p1 = pRect0->getCoord() + CoordXY(m_nSizeNode/2, m_nSizeNode/2);
     CoordXY p2 = pRect1->getCoord() + CoordXY(m_nSizeNode/2, m_nSizeNode/2);
+    if (nIndexLine >= m_vRenderConnections.size()) {
+        WsjcppLog::throw_err(TAG, "nIndexLine >= m_vRenderConnections.size()");
+    }
     m_vRenderConnections[nIndexLine]->updateCoords(p1, p2);
     m_vRenderConnections[nIndexLine]->updateColor(pRect1->getColor());
     return nIndexLine + 1;

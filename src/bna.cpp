@@ -950,8 +950,48 @@ void BNA::normalizeNodes() {
                 nLinks++;
             }
         }
+        for (int i0 = 0; i0 < m_vNodesOutput.size(); i0++) {
+            if (m_vNodesOutput[i0]->getInputNodeIndex() == nNodeIndex) {
+                nLinks++;
+            }
+        }
         if (nLinks == 0) {
-            // std::cout << "TODO removing " << nNodeIndex << std::endl;
+            vToRemoving.push_back(nNodeIndex);
+        }
+    }
+    // std::cout << "TODO removing all size: " << vToRemoving.size() << std::endl;
+    for (int i = vToRemoving.size() - 1; i >= 0; i--) {
+        int nNodeIndex = vToRemoving[i];
+        int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
+        // std::cout << "Will be removed [" << nNodeIndex << "] in array = " << nArrayIndex << std::endl;
+        if (nNodeIndex > m_vNodes.size() + m_vNodesInput.size()) {
+            WsjcppLog::throw_err(TAG, "Node Index very big much");
+        }
+    }
+
+    for (int i = vToRemoving.size() - 1; i >= 0; i--) {
+        int nNodeIndex = vToRemoving[i];
+        int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
+        // std::cout << "TODO removing nNodeIndex = " << nNodeIndex << " in array = " << nArrayIndex << std::endl;
+        // std::cout << "TODO removing m_vNodes.size() = " << m_vNodes.size() << std::endl;
+        if (nArrayIndex < 0) {
+            continue;
+        }
+
+        m_vNodes.erase(m_vNodes.begin() + nArrayIndex);
+        for (int x = 0; x < m_vNodes.size(); x++) {
+            if (m_vNodes[x]->getX() >= nNodeIndex) {
+                m_vNodes[x]->setX(m_vNodes[x]->getX() - 1);
+            }
+            if (m_vNodes[x]->getY() >= nNodeIndex) {
+                m_vNodes[x]->setY(m_vNodes[x]->getY() - 1);
+            }
+        }
+        
+        for (int x = 0; x < m_vNodesOutput.size(); x++) {
+            if (m_vNodesOutput[x]->getInputNodeIndex() >= nNodeIndex) {
+                m_vNodesOutput[x]->setInputNodeIndex(m_vNodesOutput[x]->getInputNodeIndex() - 1);
+            }
         }
     }
 }
@@ -964,8 +1004,9 @@ BNAVar *BNA::getVarByIndex(int nIndex) {
     if (nIndex < m_vCalcVars.size()) {
         return m_vCalcVars[nIndex];
     }
-    // TODO thow error
-    WsjcppLog::throw_err(TAG, "Here 123456");
+    // std::cout << "nIndex = " << nIndex << std::endl;
+    // std::cout << "m_vCalcVars.size() = " << m_vCalcVars.size() << std::endl;
+    WsjcppLog::throw_err(TAG, "out of rande index of var");
     nIndex = nIndex - m_vCalcVars.size();
     return m_vCalcOutVars[nIndex];
 }
