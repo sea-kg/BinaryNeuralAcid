@@ -42,6 +42,7 @@ test/*
 *.rhmem
 *.bna
 *.bnadatatest
+.vscode/
 
 etc/reversehashd/conf.ini
 !var/www/html/reversehashd/

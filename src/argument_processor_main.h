@@ -28,4 +28,10 @@ class ArgumentProcessorTestSin : public WsjcppArgumentProcessor {
         virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
 };
 
+class ArgumentProcessorTestSin1 : public WsjcppArgumentProcessor {
+    public:
+        ArgumentProcessorTestSin1();
+        virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
+};
+
 #endif // ARGUMENT_PROCESSOR_MAIN_H

@@ -837,12 +837,14 @@ bool BNA::registryOperationType(IBNAOper *pOper) {
 
 void BNA::randomModify(const BNAModificationModel *pModel) {
     for (int i = 0; i < pModel->getRemoveCicles(); i++) {
+        if (m_vNodes.size() == 0) {
+            break;
+        }
         int nIndex = rand() % m_vNodes.size();
         BNANode *pItem = m_vNodes[nIndex];
         m_vNodes.erase(m_vNodes.begin() + nIndex);
         delete pItem;
     }
-
     for (int i = 0; i < pModel->getMutationCicles(); i++) {
         int nItemIndex = rand() % (m_vNodes.size() + m_vNodesOutput.size());
         if (nItemIndex < m_vNodes.size()) {
@@ -855,7 +857,6 @@ void BNA::randomModify(const BNAModificationModel *pModel) {
             m_vNodesOutput[nItemIndex]->setInputNodeIndex(rand());
         }
     }
-
     for (int i = 0; i < pModel->getAddCicles(); i++) {
         BNANode *pItem = new BNANode();
         pItem->setX(rand());
@@ -864,7 +865,6 @@ void BNA::randomModify(const BNAModificationModel *pModel) {
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vNodes.push_back(pItem);
     }
-
     if (pModel->getMutationCicles() > 0 || pModel->getAddCicles() > 0 || pModel->getRemoveCicles() > 0) {
         m_bCompiled = false;
         normalizeNodes();

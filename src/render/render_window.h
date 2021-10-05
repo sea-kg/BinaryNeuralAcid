@@ -39,13 +39,15 @@ struct BNAItemPosition {
 class RenderBNA {
     public:
         RenderBNA(ICallbacksRenderBNA *);
-        bool run();
+        bool run(const std::string &sWindowName);
 
     private:
         void prepareVectorsSize();
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter);
         void updateInputNodesXY();
         std::vector<RenderRect *> getChildAndParantNodes(int nIndex);
+        std::vector<RenderRect *> getChildNodes(int nIndex);
+        std::vector<RenderRect *> getParentNodes(int nIndex);
         int distance(const CoordXY &p0, const CoordXY &p1);
         int distanceN(int n0, int n1);
         void updateMiddleNodesXY2();

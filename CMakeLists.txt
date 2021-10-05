@@ -21,6 +21,7 @@ list (APPEND WSJCPP_SOURCES "src/bna_expression.cpp")
 list (APPEND WSJCPP_SOURCES "src/bna.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/test_sin/bna_test_sin.cpp")
+list (APPEND WSJCPP_SOURCES "src/test_sin/bna_test_sin1.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/render/app_state.cpp")
 list (APPEND WSJCPP_SOURCES "src/render/render.cpp")

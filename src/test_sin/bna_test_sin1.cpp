@@ -1,34 +1,34 @@
 
-#include "bna_test_sin.h"
+#include "bna_test_sin1.h"
 #include <wsjcpp_core.h>
 
 // -----------------------------------------------------------------
-// BNATestSinItem
+// BNATestSin1Item
 
-BNATestSinItem::BNATestSinItem(float nIn, float nOut) {
+BNATestSin1Item::BNATestSin1Item(float nIn, float nOut) {
     m_nIn = nIn;
     m_nOut = nOut;
     floatToBNABits(m_nIn, m_vIn);
     floatToBNABits(m_nOut, m_vOut);
 }
 
-float BNATestSinItem::getIn() {
+float BNATestSin1Item::getIn() {
     return m_nIn;
 }
 
-float BNATestSinItem::getOut() {
+float BNATestSin1Item::getOut() {
     return m_nOut;
 }
 
-const std::vector<BNABit> &BNATestSinItem::getInOfBits() {
+const std::vector<BNABit> &BNATestSin1Item::getInOfBits() {
     return m_vIn;
 }
 
-const std::vector<BNABit> &BNATestSinItem::getOutOfBits() {
+const std::vector<BNABit> &BNATestSin1Item::getOutOfBits() {
     return m_vOut;
 }
 
-void BNATestSinItem::floatToBNABits(const float &f, std::vector<BNABit> &vResult) {
+void BNATestSin1Item::floatToBNABits(const float &f, std::vector<BNABit> &vResult) {
     vResult.resize(32);
 
     unsigned char const * b = reinterpret_cast<unsigned char const *>(&f);
@@ -41,33 +41,33 @@ void BNATestSinItem::floatToBNABits(const float &f, std::vector<BNABit> &vResult
 }
 
 // -----------------------------------------------------------------
-// BNATestSin
+// BNATestSin1
 
-BNATestSin::BNATestSin() {
-    TAG = "BNATestSin";
-    // in 32 bits
-    // out 32 bits
-    m_sBNAFilename = "testsin";
-    m_pBNA = new BNA(32,32);
-    m_sDataTestsFilename = "testsin.bnadatatest";
+BNATestSin1::BNATestSin1() {
+    TAG = "BNATestSin1";
+
+    m_nSizeInput = 32; // input bits 
+    m_nSizeOutput = 1; // output bits
+    m_sBNAFilename = "testsin1";
+    m_pBNA = new BNA(m_nSizeInput, m_nSizeOutput);
+    m_sDataTestsFilename = "testsin1.bnadatatest";
     m_nDataTestsSize = 2000;
-    m_pResults = new BNAStatCalcResults(32);
+    m_pResults = new BNAStatCalcResults(1);
 
-    m_vModificationModels.push_back(new BNAModificationModel(rand() % 15, rand() % 15, rand() % 15));
+    m_vModificationModels.push_back(new BNAModificationModel(rand() % 1000, rand() % 1000, rand() % 1000));
     m_vModificationModels.push_back(new BNAModificationModel(1,0,0));
     m_vModificationModels.push_back(new BNAModificationModel(0,10,0));
     m_vModificationModels.push_back(new BNAModificationModel(0,0,1));
     m_nCurrentModificationModel = 0;
     m_nModificationModelCounter = 0;
-
 }
 
-bool BNATestSin::run() {
+bool BNATestSin1::run() {
     RenderBNA render(this);
-    return render.run("bna - test-sin");
+    return render.run("bna - test-sin1");
 }
 
-bool BNATestSin::onStart() {
+bool BNATestSin1::onStart() {
     // 1. load last bna (or generate randomly)
     if (WsjcppCore::fileExists(m_sBNAFilename + ".bna")) {
         if (!m_pBNA->load(m_sBNAFilename)) {
@@ -75,7 +75,7 @@ bool BNATestSin::onStart() {
             return false;
         }
     } else {
-        m_pBNA->randomGenerate(32,32, 128);
+        m_pBNA->randomGenerate(m_nSizeInput, m_nSizeOutput, 1000);
         m_pBNA->save(m_sBNAFilename);
     }
 
@@ -91,7 +91,7 @@ bool BNATestSin::onStart() {
     return true;
 }
 
-void BNATestSin::doMutation() {
+void BNATestSin1::doMutation() {
     
     m_nModificationModelCounter++;
     if (m_nModificationModelCounter > 100) {
@@ -99,13 +99,13 @@ void BNATestSin::doMutation() {
         m_nCurrentModificationModel += 1;
         m_nCurrentModificationModel = m_nCurrentModificationModel % m_vModificationModels.size();
         if (m_nCurrentModificationModel == 0) {
-            m_vModificationModels[0]->update(rand() % 15, rand() % 15, rand() % 15);
+            m_vModificationModels[0]->update(rand() % 1000, rand() % 1000, rand() % 1000);
         }
     }
     m_pBNA->randomModify(m_vModificationModels[m_nCurrentModificationModel]);
 }
 
-void BNATestSin::doTestAndRevert() {
+void BNATestSin1::doTestAndRevert() {
     calculateCurrentCounters();
 
     // m_pModificationModel
@@ -120,26 +120,26 @@ void BNATestSin::doTestAndRevert() {
     }
 }
 
-BNA* BNATestSin::getBNA() {
+BNA* BNATestSin1::getBNA() {
     return m_pBNA;
 }
 
-const BNAStatCalcResults *BNATestSin::getResults() {
+const BNAStatCalcResults *BNATestSin1::getResults() {
     return m_pResults;
 }
 
-void BNATestSin::byteArrayToFloat(const unsigned char *pBytes, float &nResult) {
+void BNATestSin1::byteArrayToFloat(const unsigned char *pBytes, float &nResult) {
     std::memcpy(&nResult, pBytes, sizeof(nResult));
 }
 
-void BNATestSin::print(unsigned char *pResult4) {
+void BNATestSin1::print(unsigned char *pResult4) {
     for (std::size_t i = 0; i != 4; ++i) {
         std::printf("The byte #%zu is 0x%02X\n", i, pResult4[i]);
     }
 }
 
-void BNATestSin::print(BNABit pResult[32]) {
-    for (int i = 0; i < 32; i++) {
+void BNATestSin1::print(BNABit pResult[1]) {
+    for (int i = 0; i < m_nSizeOutput; i++) {
         std::cout << (pResult[i] == BNABit::B_0 ? "0" : "1");
         if ( (i + 1) % 4 == 0) {
             std::cout << " ";
@@ -148,7 +148,7 @@ void BNATestSin::print(BNABit pResult[32]) {
     std::cout << std::endl;
 }
 
-void BNATestSin::regenDataTests() {
+void BNATestSin1::regenDataTests() {
     m_vDataTests.clear();
     
     float HI = 1.0f;
@@ -156,12 +156,13 @@ void BNATestSin::regenDataTests() {
     for (int i = 0; i < m_nDataTestsSize; i++) {
         float r3 = LO + static_cast <float> (rand()) / ( static_cast <float> (RAND_MAX/(HI - LO)));
         float sin_r3 = sin(r3);
-        m_vDataTests.push_back(BNATestSinItem(r3, sin_r3));
+        m_vDataTests.push_back(BNATestSin1Item(r3, sin_r3));
     }
 }
 
-bool BNATestSin::loadDataTests() {
-    std::string sFilename = "testsin.bnadatatest";
+bool BNATestSin1::loadDataTests() {
+
+    std::string sFilename = m_sDataTestsFilename;
     if (!WsjcppCore::fileExists(sFilename)) {
         return false;
     }
@@ -178,12 +179,12 @@ bool BNATestSin::loadDataTests() {
     for (int i = 0; i < m_nDataTestsSize; i++) {
         file >> nIn;
         file >> nOut;
-        m_vDataTests.push_back(BNATestSinItem(nIn, nOut));
+        m_vDataTests.push_back(BNATestSin1Item(nIn, nOut));
     }
     return true;
 }
 
-bool BNATestSin::saveDataTests() {
+bool BNATestSin1::saveDataTests() {
     if (WsjcppCore::fileExists(m_sDataTestsFilename)) {
         if (!WsjcppCore::removeFile(m_sDataTestsFilename)) {
             WsjcppLog::err(TAG, "save: could not remove file '" + m_sDataTestsFilename + "'");
@@ -204,15 +205,16 @@ bool BNATestSin::saveDataTests() {
     return true;
 }
 
-void BNATestSin::calculateCurrentCounters() {
+void BNATestSin1::calculateCurrentCounters() {
     m_pResults->resetCurrentCounters();
     for (int i = 0; i < m_vDataTests.size(); i++) {
-        for (int x = 0; x < 32; x++) {
+        int x = 0;
+        // for (int x = 0; x < m_nSizeOutput; x++) {
             BNABit bResult = m_pBNA->calc(m_vDataTests[i].getInOfBits(), x);
             if (m_vDataTests[i].getOutOfBits()[x] == bResult) {
                 m_pResults->incrementCurrentCounter(x);
             }
-        }
+        // }
     }
     m_pResults->calcPercents(m_vDataTests.size());
     std::cout
