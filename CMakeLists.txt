@@ -31,22 +31,25 @@ list (APPEND WSJCPP_SOURCES "./src/argument_processor_main.h")
 list (APPEND WSJCPP_SOURCES "./src/argument_processor_main.cpp")
 #### END_WSJCPP_APPEND
 
+
+list (APPEND WSJCPP_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+
 ############################
 # SDL2
 find_package(SDL2 REQUIRED)
 if ( SDL2_FOUND )
-    list (APPEND WSJCPP_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
-    list (APPEND WSJCPP_LIBRARIES ${SDL2_LIBRARIES})
+    list (APPEND WSJCPP_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
+    list (APPEND WSJCPP_LIBRARIES ${SDL2_LIBRARY})
 endif( SDL2_FOUND )
 ############################
 
 ############################
 # SDL2_ttf
 find_package(SDL2TTF REQUIRED)
-if ( SDL2TTF_FOUND )
-    list (APPEND WSJCPP_INCLUDE_DIRS ${SDL2TTF_INCLUDE_DIRS})
-    list (APPEND WSJCPP_LIBRARIES ${SDL2TTF_LIBRARY})
-endif( SDL2TTF_FOUND )
+if ( SDL2_TTF_FOUND )
+    list (APPEND WSJCPP_INCLUDE_DIRS ${SDL2_TTF_INCLUDE_DIRS})
+    list (APPEND WSJCPP_LIBRARIES ${SDL2_TTF_LIBRARIES})
+endif( SDL2_TTF_FOUND )
 ############################
 
 include_directories(${WSJCPP_INCLUDE_DIRS})
