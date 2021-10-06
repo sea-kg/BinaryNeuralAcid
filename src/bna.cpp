@@ -268,6 +268,7 @@ BNANode::BNANode(unsigned short x, unsigned short y, const std::string &sOperati
     TAG = "BNANode";
     m_nX = x;
     m_nY = y;
+    m_nId = 0;
     m_sOperationType = sOperationType;
 }
 
@@ -275,6 +276,7 @@ BNANode::BNANode() {
     TAG = "BNANode";
     m_nX = 0;
     m_nY = 0;
+    m_nId = 0;
     m_sOperationType = "";
 }
 
@@ -282,24 +284,32 @@ unsigned short BNANode::getX(){
     return m_nX;
 }
 
+void BNANode::setX(unsigned short nX){
+    m_nX = nX;
+}
+
 unsigned short BNANode::getY(){
     return m_nY;
+}
+
+void BNANode::setY(unsigned short nY){
+    m_nY = nY;
 }
 
 std::string BNANode::getOperationType(){
     return m_sOperationType;
 }
 
-void BNANode::setX(unsigned short x){
-    m_nX = x;
-}
-
-void BNANode::setY(unsigned short y){
-    m_nY = y;
-}
-
 void BNANode::setOperationType(const std::string &sOperationType){
     m_sOperationType = sOperationType;
+}
+
+unsigned short BNANode::getId(){
+    return m_nId;
+}
+
+void BNANode::setId(unsigned short nId){
+    m_nId = nId;
 }
 
 void BNANode::readFromFile(std::ifstream &file){
@@ -308,13 +318,26 @@ void BNANode::readFromFile(std::ifstream &file){
     if (sKeyword != "node") {
         WsjcppLog::throw_err(TAG, "BNANode::readFromFile, Expected keyword 'node'");
     }
+    file >> sKeyword;
+    if (sKeyword != "id") {
+        WsjcppLog::throw_err(TAG, "BNANode::readFromFile, Expected keyword 'id'");
+    }
+    file >> m_nId;
+    file >> sKeyword;
+    if (sKeyword != "input") {
+        WsjcppLog::throw_err(TAG, "BNANode::readFromFile, Expected keyword 'input'");
+    }
     file >> m_nX;
     file >> m_nY;
+    file >> sKeyword;
+    if (sKeyword != "function") {
+        WsjcppLog::throw_err(TAG, "BNANode::readFromFile, Expected keyword 'function'");
+    }
     file >> m_sOperationType;
 }
 
 void BNANode::writeToFile(std::ofstream &file){
-    file << "node " << m_nX << " " << m_nY << " " << m_sOperationType << "\n";
+    file << "node id " << m_nId << " input " << m_nX << " " << m_nY << " function " << m_sOperationType << "\n";
 }
 
 // -----------------------------------------------------------------
@@ -407,7 +430,8 @@ BNA::BNA() {
     registryOperationType(new BNAOperOr());
     m_nOperSize = m_vOperationList.size();
     TAG = "BNA";
-    m_nBnaVersion = 2;
+    m_nBnaVersion = 4;
+    m_nBnaRevision = 0;
 }
 
 BNA::BNA(int nInputSize, int nOutputSize) : BNA() {
@@ -476,6 +500,13 @@ bool BNA::save(const std::string &sFilename){
         WsjcppLog::err(TAG, "save: could not open file to write: " + sFilename0);
         return false;
     }
+    // update ids
+
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        int nIndex = i + m_vNodesInput.size();
+        m_vNodes[i]->setId(nIndex);
+    }
+    m_nBnaRevision++;
     bool bResult = writeToFileBna(file);
     file.close(); // TODO file will be automaticly closed on return of scope?
     return bResult;
@@ -485,6 +516,7 @@ bool BNA::save(const std::string &sFilename){
 
 void BNA::randomGenerate(int nInputSize, int nOutputSize, int nSize){
     clearResources();
+    m_nBnaRevision = 0;
     for (int i = 0; i < nInputSize; i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
     }
@@ -771,10 +803,10 @@ bool BNA::readFromFileBna(std::ifstream &file){
         WsjcppLog::err(TAG, "readFromFileBna, Version expected '" + std::to_string(m_nBnaVersion) + "', but got '" + std::to_string(nBnaVersion) + "'");
         return false;
     }
+    m_nBnaRevision = readParam(file, "revision");
     int nInputSize = readParam(file, "input");
     int nNodesSize = readParam(file, "nodes");
     int nOutputSize = readParam(file, "output");
-    
     
     for (int i = 0; i < nInputSize; i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
@@ -814,6 +846,7 @@ int BNA::readParam(std::ifstream &file, const std::string &sParamName) {
 bool BNA::writeToFileBna(std::ofstream &file){
     // basic information about file
     file << "BNA version " << m_nBnaVersion << "\n";
+    file << "revision " << m_nBnaRevision << "\n";
     file << "input " << m_vNodesInput.size() << "\n";
     file << "nodes " << m_vNodes.size() << "\n";
     file << "output " << m_vNodesOutput.size() << "\n";

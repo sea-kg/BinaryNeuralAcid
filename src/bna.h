@@ -50,18 +50,23 @@ class BNANode {
         BNANode(unsigned short x, unsigned short y, const std::string &sOperationType);
         BNANode();
         unsigned short getX();
-        unsigned short getY();
-        std::string getOperationType();
+        void setX(unsigned short nX);
 
-        void setX(unsigned short x);
-        void setY(unsigned short y);
+        unsigned short getY();
+        void setY(unsigned short nY);
+
+        std::string getOperationType();
         void setOperationType(const std::string &sOperationType);
+
+        unsigned short getId();
+        void setId(unsigned short nId);
 
         void readFromFile(std::ifstream &file);
         void writeToFile(std::ofstream &file);
 
     private:
         std::string TAG;
+        unsigned short m_nId;
         unsigned short m_nX;
         unsigned short m_nY;
         std::string m_sOperationType;
@@ -141,6 +146,7 @@ class BNA {
         std::string TAG;
         bool m_bCompiled;
         int m_nBnaVersion;
+        int m_nBnaRevision;
         bool readFromFileBna(std::ifstream &file);
         int readParam(std::ifstream &file, const std::string &sParamName);
         bool writeToFileBna(std::ofstream &file);

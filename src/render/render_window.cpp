@@ -166,7 +166,7 @@ bool RenderBNA::run(const std::string &sWindowName) {
         m_pWindow->drawObjects();
 
         // // draw mutations
-        // m_pCallbacksRenderBNA->doMutation();
+        m_pCallbacksRenderBNA->doMutation();
         prepareNodes();
         m_pWindow->clear();
         m_pWindow->modifyObjects(appState);
