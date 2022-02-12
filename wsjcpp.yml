@@ -20,11 +20,11 @@ dependencies:
     installation-dir: "./src.wsjcpp/wsjcpp_core"
     installation-datetime: "Thu, 10 Jun 2021 03:59:25 GMT"
   - name: "nlohmann/json"
-    version: "v3.9.1"
+    version: "v3.10.5"
     url: "https://github.com/nlohmann/json:develop"
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/nlohmann_json"
-    installation-datetime: "Thu, 10 Jun 2021 04:01:28 GMT"
+    installation-datetime: "Sat, 12 Feb 2022 16:02:13 GMT"
   - name: "wsjcpp-arguments"
     version: "v0.2.1"
     url: "https://github.com/wsjcpp/wsjcpp-arguments:master"
@@ -86,3 +86,4 @@ unit-tests:
       description: ""
     - name: "OperationNotXor"
       description: ""
+
