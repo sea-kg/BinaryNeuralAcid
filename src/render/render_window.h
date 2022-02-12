@@ -51,6 +51,29 @@ class RenderFpsCounter {
         int m_nFps;
 };
 
+class RenderBNANode : public RenderRect {
+    public:
+        RenderBNANode(int nSizeNode);
+        void setNodeInput(BNANodeInput *pNode);
+        void setNode(BNANode *pNode, BNA *pBna);
+        void setNodeOutput(BNANodeOutput *pNode, BNA *pBna);
+        int getLevelY();
+
+    private:
+        BNANodeInput *m_pNodeInput;
+        BNANode *m_pNode;
+        BNANodeOutput *m_pNodeOutput;
+        BNAItemPosition m_pos;
+        int m_nSizeNode;
+        int m_nLevelY;
+
+        RenderColor *m_pColorNodeOutput;
+        RenderColor *m_pColorOperAnd;
+        RenderColor *m_pColorOperOr;
+        RenderColor *m_pColorOperXor;
+        RenderColor *m_pColorOperNxor;
+};
+
 class RenderBNA {
     public:
         RenderBNA(ICallbacksRenderBNA *);
@@ -59,11 +82,12 @@ class RenderBNA {
     private:
         void createFpsText();
         void prepareVectorsSize();
+        void prepareRendorBNANodes();
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter);
         void updateInputNodesXY();
-        std::vector<RenderRect *> getChildAndParantNodes(int nIndex);
-        std::vector<RenderRect *> getChildNodes(int nIndex);
-        std::vector<RenderRect *> getParentNodes(int nIndex);
+        std::vector<RenderBNANode *> getChildAndParantNodes(int nIndex);
+        std::vector<RenderBNANode *> getChildNodes(int nIndex);
+        std::vector<RenderBNANode *> getParentNodes(int nIndex);
         int distance(const CoordXY &p0, const CoordXY &p1);
         int distanceN(int n0, int n1);
         void updateMiddleNodesXY2();
@@ -71,15 +95,14 @@ class RenderBNA {
         void updateNodesConnections();
         void prepareNodes();
         void updateLine(int nIndexLine, RenderRect *, RenderRect *);
-        void updateColorNode(int nIndexNode, const std::string &sOperType);
 
         std::string TAG;
 
         RenderWindow *m_pWindow;
         ICallbacksRenderBNA *m_pCallbacksRenderBNA;
-        std::vector<RenderRect *> m_vRenderNodes;
+        // std::vector<RenderRect *> m_vRenderNodes;
+        std::vector<RenderBNANode *> m_vRenderNodes;
         std::vector<RenderConnection *> m_vRenderConnections;
-        std::vector<BNAItemPosition> m_vNodesPositions;
         std::vector<RenderAbsoluteTextBlock *> m_vRenderCurrentOutputsResult;
         std::vector<RenderAbsoluteTextBlock *> m_vRenderPrevOutputsResult;
         RenderAbsoluteTextBlock * m_vRenderPrevOutputResult;
@@ -89,12 +112,6 @@ class RenderBNA {
         int m_nWindowHeight;
         int m_nSizeNode;
         int m_nPadding;
-
-        RenderColor *m_pColorNodeOutput;
-        RenderColor *m_pColorOperAnd;
-        RenderColor *m_pColorOperOr;
-        RenderColor *m_pColorOperXor;
-        RenderColor *m_pColorOperNxor;
 
         RenderAbsoluteTextBlock *m_pFpsText;
         RenderFpsCounter m_fps;

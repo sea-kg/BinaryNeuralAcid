@@ -790,6 +790,28 @@ const std::vector<BNANodeOutput *> &BNA::getNodesOutput() {
     return m_vNodesOutput;
 }
 
+int BNA::calculateDepth(int n) {
+    int nNodesInputSize = m_vNodesInput.size();
+    if (n < nNodesInputSize) {
+        return 1;
+    }
+    n = n - nNodesInputSize;
+    int nNodesSize = m_vNodes.size();
+    if (n < nNodesSize) {
+        BNANode *pNode = m_vNodes[n];
+        int nLeft = this->calculateDepth(pNode->getX());
+        int nRight = this->calculateDepth(pNode->getY());
+        return std::max(nLeft, nRight) + 1;
+    }
+    n = n - nNodesSize;
+    int nNodesOutputSize = m_vNodesOutput.size();
+    if (n < nNodesOutputSize) {
+        BNANodeOutput *pNode = m_vNodesOutput[n];
+        return this->calculateDepth(pNode->getInputNodeIndex()) + 1;
+    }
+    return -1000;
+}
+
 bool BNA::readFromFileBna(std::ifstream &file){
     clearResources();
     std::string sStr; 

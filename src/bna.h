@@ -128,6 +128,7 @@ class BNA {
         const std::vector<BNANodeInput *> &getNodesInput();
         const std::vector<BNANode *> &getNodes();
         const std::vector<BNANodeOutput *> &getNodesOutput();
+        int calculateDepth(int n);
 
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);

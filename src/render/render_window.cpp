@@ -1,6 +1,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
+
 #include <wsjcpp_core.h>
 
 #include "render_window.h"
@@ -64,7 +67,8 @@ void RenderWindow::clear() {
     // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     // background color
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 50);
+    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 50);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 125);
     // alpha
     SDL_Rect srcrect;
     srcrect.x = 0;
@@ -126,6 +130,76 @@ int RenderFpsCounter::getFps() {
 }
 
 // -----------------------------------------------------------------
+// RenderBNANode
+
+RenderBNANode::RenderBNANode(int nSizeNode)
+    : RenderRect(
+        CoordXY(100, 100),
+        nSizeNode, nSizeNode,
+        RenderColor(255,255,255,255),
+        10 // z
+    )
+{
+    m_nSizeNode = nSizeNode;
+    m_pNodeInput = nullptr;
+    m_pNode = nullptr;
+    m_pNodeOutput = nullptr;
+    m_nLevelY = -1;
+
+    m_pColorNodeOutput = new RenderColor(255,255,255,255); // white
+    m_pColorOperAnd = new RenderColor(179,244,8,255); // yellow
+    m_pColorOperOr = new RenderColor(53,155,61,255); // green
+    m_pColorOperXor = new RenderColor(213,25,25,255); // red
+    m_pColorOperNxor = new RenderColor(77,79,216,255); // blue
+};
+
+void RenderBNANode::setNodeInput(BNANodeInput *pNode) {
+    m_pNodeInput = pNode;
+    m_pNode = nullptr;
+    m_pNodeOutput = nullptr;
+    this->updateColor(*m_pColorNodeOutput);
+    m_nLevelY = 1;
+}
+
+void RenderBNANode::setNode(BNANode *pNode, BNA *pBna) {
+    m_pNodeInput = nullptr;
+    m_pNode = pNode;
+    m_pNodeOutput = nullptr;
+
+    const std::string &sOperType = m_pNode->getOperationType();
+
+    if (sOperType == "AND") {
+        this->updateColor(*m_pColorOperAnd);
+    } else if (sOperType == "OR") {
+        this->updateColor(*m_pColorOperOr);
+    } else if (sOperType == "XOR") {
+        this->updateColor(*m_pColorOperXor);
+    } else if (sOperType == "NXOR") {
+        this->updateColor(*m_pColorOperNxor);
+    } else {
+        exit(1);
+    }
+    m_nLevelY = std::max(
+        pBna->calculateDepth(m_pNode->getX()),
+        pBna->calculateDepth(m_pNode->getY())
+    );
+//    std::cout << "m_nLevelY=" << m_nLevelY << std::endl;
+}
+
+void RenderBNANode::setNodeOutput(BNANodeOutput *pNode, BNA *pBna) {
+    m_pNodeInput = nullptr;
+    m_pNode = nullptr;
+    m_pNodeOutput = pNode;
+    this->updateColor(*m_pColorNodeOutput);
+    short n = m_pNodeOutput->getInputNodeIndex();
+    m_nLevelY = pBna->calculateDepth(n);
+}
+
+int RenderBNANode::getLevelY() {
+    return m_nLevelY;
+}
+
+// -----------------------------------------------------------------
 // RenderBNA
 
 RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
@@ -135,11 +209,6 @@ RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
     m_nWindowHeight = 720;
     m_nSizeNode = 6;
     m_nPadding = 100;
-    m_pColorNodeOutput = new RenderColor(255,255,255,255); // white
-    m_pColorOperAnd = new RenderColor(179,244,8,255); // yellow
-    m_pColorOperOr = new RenderColor(53,155,61,255); // green
-    m_pColorOperXor = new RenderColor(213,25,25,255); // red
-    m_pColorOperNxor = new RenderColor(77,79,216,255); // blue
     m_vRenderPrevOutputResult = nullptr;
     m_vRenderCurrentOutputResult = nullptr;
 }
@@ -188,7 +257,7 @@ bool RenderBNA::run(const std::string &sWindowName) {
         // TODO RenderNodes and connections
 
         // // draw current 
-        prepareNodes();
+        this->prepareNodes();
         appState.updateElapsedTime();
         m_pWindow->clear();
         m_pWindow->modifyObjects(appState);
@@ -196,7 +265,7 @@ bool RenderBNA::run(const std::string &sWindowName) {
 
         // // draw mutations
         m_pCallbacksRenderBNA->doMutation();
-        prepareNodes();
+        this->prepareNodes();
         m_pWindow->clear();
         m_pWindow->modifyObjects(appState);
         m_pWindow->drawObjects();
@@ -207,7 +276,7 @@ bool RenderBNA::run(const std::string &sWindowName) {
         if (m_fps.addFrame()) {
             m_pFpsText->updateText("FPS: " + std::to_string(m_fps.getFps()));
         }
-        
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     m_pWindow->cleanUp();
     SDL_Quit();
@@ -221,9 +290,10 @@ void RenderBNA::createFpsText() {
 }
 
 void RenderBNA::prepareVectorsSize() {
-    int nInputSize = m_pCallbacksRenderBNA->getBNA()->getInputSize();
-    int nNodesSize = m_pCallbacksRenderBNA->getBNA()->getNodesSize();
-    int nOutputSize = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
+    BNA *pBna = m_pCallbacksRenderBNA->getBNA();
+    int nInputSize = pBna->getInputSize();
+    int nNodesSize = pBna->getNodesSize();
+    int nOutputSize = pBna->getOutputSize();
 
     // CONNECTIONS
     int nConnectionsCount = nNodesSize*2 + nOutputSize;
@@ -246,29 +316,7 @@ void RenderBNA::prepareVectorsSize() {
         delete pLine;
     }
 
-    // NODES
-    int nAllCountNodes = nNodesSize + nInputSize + nOutputSize;
-    while (m_vRenderNodes.size() < nAllCountNodes) {
-        // add missing nodes
-        RenderRect *pRect = new RenderRect(
-            CoordXY(100, 100),
-            m_nSizeNode, // width
-            m_nSizeNode, // hwight
-            RenderColor(255,255,255,255), 
-            10 // z
-        );
-        m_vRenderNodes.push_back(pRect);
-        m_pWindow->addObject(pRect);
-        m_vNodesPositions.push_back(BNAItemPosition());
-    }
-    while (m_vRenderNodes.size() > nAllCountNodes) {
-        // remove extra nodes
-        RenderRect *pRect = m_vRenderNodes.back();
-        m_vRenderNodes.pop_back();
-        m_vNodesPositions.pop_back();
-        m_pWindow->removeObject(pRect);
-        delete pRect;
-    }
+    prepareRendorBNANodes();
 
     // OUTPUT TEXT
     int nOutputWidth = m_nWindowWidth - m_nPadding*2;
@@ -289,6 +337,7 @@ void RenderBNA::prepareVectorsSize() {
         m_vRenderCurrentOutputsResult.push_back(pText);
         m_pWindow->addObject(pText);
     }
+
     if (m_vRenderCurrentOutputResult == nullptr) {
         m_vRenderCurrentOutputResult = new RenderAbsoluteTextBlock(
             CoordXY(m_nWindowWidth/2, m_nWindowHeight - m_nPadding + 35), "result"
@@ -314,8 +363,45 @@ void RenderBNA::prepareVectorsSize() {
     }
 }
 
-int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter) {
+void RenderBNA::prepareRendorBNANodes() {
+    BNA *pBna = m_pCallbacksRenderBNA->getBNA();
+    int nInputSize = pBna->getInputSize();
+    int nNodesSize = pBna->getNodesSize();
+    int nOutputSize = pBna->getOutputSize();
 
+    // NODES
+    int nAllCountNodes = nNodesSize + nInputSize + nOutputSize;
+    
+    // add missing nodes
+    while (m_vRenderNodes.size() < nAllCountNodes) {
+        RenderBNANode *pRect = new RenderBNANode(m_nSizeNode);
+        m_vRenderNodes.push_back(pRect);
+        m_pWindow->addObject(pRect);
+    }
+    // remove extra nodes
+    while (m_vRenderNodes.size() > nAllCountNodes) {
+        RenderBNANode *pRect = m_vRenderNodes.back();
+        m_vRenderNodes.pop_back();
+        m_pWindow->removeObject(pRect);
+        delete pRect;
+    }
+
+    // SET NODES
+    const std::vector<BNANodeInput *> &vInputNodes = pBna->getNodesInput();
+    for (int i = 0; i < vInputNodes.size(); i++) {
+        m_vRenderNodes[i]->setNodeInput(vInputNodes[i]);
+    }
+    const std::vector<BNANode *> &vNodes = pBna->getNodes();
+    for (int i = 0; i < vNodes.size(); i++) {
+        m_vRenderNodes[nInputSize + i]->setNode(vNodes[i], pBna);
+    }
+    const std::vector<BNANodeOutput *> &vNodesOutput = pBna->getNodesOutput();
+    for (int i = 0; i < vNodesOutput.size(); i++) {
+        m_vRenderNodes[nInputSize + nNodesSize + i]->setNodeOutput(vNodesOutput[i], pBna);
+    }
+}
+
+int RenderBNA::recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter) {
     if (pItem->getX() < nInputCount || pItem->getY() < nInputCount) {
         return nCounter + 1;
     }
@@ -347,8 +433,8 @@ void RenderBNA::updateInputNodesXY() {
     }
 }
 
-std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
-    std::vector<RenderRect *> vRet;
+std::vector<RenderBNANode *> RenderBNA::getChildAndParantNodes(int nIndex) {
+    std::vector<RenderBNANode *> vRet;
     const std::vector<BNANode *> &vNodes = m_pCallbacksRenderBNA->getBNA()->getNodes();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
     int nCurrentIndex = nIndex - nInputCount;
@@ -372,8 +458,8 @@ std::vector<RenderRect *> RenderBNA::getChildAndParantNodes(int nIndex) {
     return vRet;
 }
 
-std::vector<RenderRect *> RenderBNA::getParentNodes(int nIndex) {
-    std::vector<RenderRect *> vRet;
+std::vector<RenderBNANode *> RenderBNA::getParentNodes(int nIndex) {
+    std::vector<RenderBNANode *> vRet;
     const std::vector<BNANode *> &vNodes = m_pCallbacksRenderBNA->getBNA()->getNodes();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
     int nCurrentIndex = nIndex - nInputCount;
@@ -385,8 +471,8 @@ std::vector<RenderRect *> RenderBNA::getParentNodes(int nIndex) {
     return vRet;
 }
 
-std::vector<RenderRect *> RenderBNA::getChildNodes(int nIndex) {
-    std::vector<RenderRect *> vRet;
+std::vector<RenderBNANode *> RenderBNA::getChildNodes(int nIndex) {
+    std::vector<RenderBNANode *> vRet;
     const std::vector<BNANode *> &vNodes = m_pCallbacksRenderBNA->getBNA()->getNodes();
     int nInputCount = m_pCallbacksRenderBNA->getBNA()->getInputSize();
     int nCurrentIndex = nIndex - nInputCount;
@@ -424,14 +510,19 @@ void RenderBNA::updateMiddleNodesXY2() {
     int nOutputCount = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
     int nStartIndex = nInputCount;
     int nEndIndex = m_vRenderNodes.size() - nOutputCount - 1;
-    for (int i = nStartIndex; i <= nEndIndex; i++) {
-        updateColorNode(i, vItems[i - nInputCount]->getOperationType());
+
+    int nMaxLevel = 0;
+    for (int i = 0; i < m_vRenderNodes.size(); i++) {
+        nMaxLevel = std::max(nMaxLevel, m_vRenderNodes[i]->getLevelY());
     }
+    // std::cout << "nMaxLevel = " << nMaxLevel << std::endl;
+    
+    int nLevelHeight = (m_nWindowHeight - m_nPadding*3) / nMaxLevel;
 
     for (int i = nStartIndex; i <= nEndIndex; i++) {
-        std::vector<RenderRect *> vChildNodes = getChildNodes(i);
-        std::vector<RenderRect *> vParentNodes = getParentNodes(i);
-        std::vector<RenderRect *> vNodes = getChildAndParantNodes(i);
+        std::vector<RenderBNANode *> vChildNodes = getChildNodes(i);
+        std::vector<RenderBNANode *> vParentNodes = getParentNodes(i);
+        std::vector<RenderBNANode *> vNodes = getChildAndParantNodes(i);
 
         int nMinY = vChildNodes.size() > 0 ? vChildNodes[0]->getCoord().y() : 100;
         for (int n = 0; n < vChildNodes.size(); n++) {
@@ -463,7 +554,10 @@ void RenderBNA::updateMiddleNodesXY2() {
         if (nY < nMinY) {
             nY = nMinY;
         }
-        m_vRenderNodes[i]->updateXY(nX, nY);
+        m_vRenderNodes[i]->updateXY(
+            nX,
+            m_nPadding + m_nPadding/2 + nLevelHeight * m_vRenderNodes[i]->getLevelY() // nY
+        );
     }
 
     bool bDistance = true;
@@ -523,7 +617,6 @@ void RenderBNA::updateOutputNodesXY() {
             m_nPadding + i * nOutputWidth,
             m_nWindowHeight - m_nPadding
         );
-        m_vRenderNodes[nIndex]->updateColor(*m_pColorNodeOutput);
     }
 
     // update current results
@@ -584,15 +677,11 @@ void RenderBNA::updateNodesConnections() {
 
 void RenderBNA::prepareNodes() {
     
-    prepareVectorsSize();
-
-    updateInputNodesXY();
-
-    updateMiddleNodesXY2();
-
-    updateOutputNodesXY();
-
-    updateNodesConnections();
+    this->prepareVectorsSize();
+    this->updateInputNodesXY();
+    this->updateMiddleNodesXY2();
+    this->updateOutputNodesXY();
+    this->updateNodesConnections();
 }
 
 void RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect1) {
@@ -604,18 +693,4 @@ void RenderBNA::updateLine(int nIndexLine, RenderRect *pRect0, RenderRect *pRect
     m_vRenderConnections[nIndexLine]->updateCoords(p1, p2);
     m_vRenderConnections[nIndexLine]->updateColor(pRect1->getColor());
     // return nIndexLine + 1;
-}
-
-void RenderBNA::updateColorNode(int nIndexNode, const std::string &sOperType) {
-    if (sOperType == "AND") {
-        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperAnd);
-    } else if (sOperType == "OR") {
-        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperOr);
-    } else if (sOperType == "XOR") {
-        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperXor);
-    } else if (sOperType == "NXOR") {
-        m_vRenderNodes[nIndexNode]->updateColor(*m_pColorOperNxor);
-    } else {
-        exit(1);
-    }
 }
