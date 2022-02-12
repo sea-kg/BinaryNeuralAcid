@@ -276,7 +276,7 @@ bool RenderBNA::run(const std::string &sWindowName) {
         if (m_fps.addFrame()) {
             m_pFpsText->updateText("FPS: " + std::to_string(m_fps.getFps()));
         }
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     m_pWindow->cleanUp();
     SDL_Quit();

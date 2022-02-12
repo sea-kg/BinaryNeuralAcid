@@ -88,6 +88,8 @@ bool BNATestSin1::onStart() {
     // init prev counters
     calculateCurrentCounters();
     m_pResults->setPrevCounters(m_pResults->getCurrentCounters());
+    std::cout << "m_pResults->getAllCurrentCountersPercents() == " << m_pResults->getAllCurrentCountersPercents() << "%;" << std::endl;
+    // exit(1);
     return true;
 }
 
@@ -216,10 +218,12 @@ void BNATestSin1::calculateCurrentCounters() {
         // }
     }
     m_pResults->calcPercents(m_vDataTests.size());
-    std::cout
-        << m_vModificationModels[m_nCurrentModificationModel]->getMutationCicles() << ";"
-        << m_vModificationModels[m_nCurrentModificationModel]->getAddCicles() << ";"
-        << m_vModificationModels[m_nCurrentModificationModel]->getRemoveCicles() << ";"
-        << m_pResults->getSummaryDiff() << ";"
-        << std::endl;
+    // std::cout
+    //     << m_vModificationModels[m_nCurrentModificationModel]->getMutationCicles() << ";"
+    //     << m_vModificationModels[m_nCurrentModificationModel]->getAddCicles() << ";"
+    //     << m_vModificationModels[m_nCurrentModificationModel]->getRemoveCicles() << ";"
+    //     << std::endl << "m_pResults->getAllCurrentCountersPercents() == " << m_pResults->getAllCurrentCountersPercents() << "%;"
+    //     << std::endl << "m_pResults->getSummaryDiff() == " << m_pResults->getSummaryDiff() << ";"
+    //     << std::endl;
+    // exit(1);
 }
