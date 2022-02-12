@@ -92,7 +92,6 @@ bool BNATestSin1::onStart() {
 }
 
 void BNATestSin1::doMutation() {
-    
     m_nModificationModelCounter++;
     if (m_nModificationModelCounter > 100) {
         m_nModificationModelCounter = 0;

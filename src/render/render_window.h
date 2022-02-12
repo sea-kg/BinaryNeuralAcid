@@ -36,12 +36,28 @@ struct BNAItemPosition {
     int xlevel;
 };
 
+class RenderFpsCounter {
+    public:
+        RenderFpsCounter();
+        void reset();
+        bool addFrame();
+        int getFps();
+
+    private:
+        long m_nNumberOfFrames;
+        long m_nStartTime;
+        long m_nElapsed;
+        long m_nEvery;
+        int m_nFps;
+};
+
 class RenderBNA {
     public:
         RenderBNA(ICallbacksRenderBNA *);
         bool run(const std::string &sWindowName);
 
     private:
+        void createFpsText();
         void prepareVectorsSize();
         int recurciveCalculateYLevel(int nInputCount, const std::vector<BNANode *> &vItems, BNANode *pItem, int nCounter);
         void updateInputNodesXY();
@@ -79,4 +95,7 @@ class RenderBNA {
         RenderColor *m_pColorOperOr;
         RenderColor *m_pColorOperXor;
         RenderColor *m_pColorOperNxor;
+
+        RenderAbsoluteTextBlock *m_pFpsText;
+        RenderFpsCounter m_fps;
 };

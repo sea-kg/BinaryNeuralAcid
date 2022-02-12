@@ -115,9 +115,7 @@ int ArgumentProcessorTestSin::exec(const std::vector<std::string> &vRoutes, cons
 // ArgumentProcessorTestSin
 
 ArgumentProcessorTestSin1::ArgumentProcessorTestSin1() 
-: WsjcppArgumentProcessor({"test-sin1"}, 
-    "test-sin1",
-    "test-sin1") {
+: WsjcppArgumentProcessor({"test-sin1"}, "test-sin1", "test-sin1") {
     TAG = "ArgumentProcessorTestSin1";
     // registrySingleArgument("--single", "What exactly do this single param?");
     // registryParameterArgument("-param", "N", "What need this param?");

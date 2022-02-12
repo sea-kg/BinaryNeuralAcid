@@ -93,6 +93,39 @@ void RenderWindow::drawObjects() {
 }
 
 // -----------------------------------------------------------------
+
+RenderFpsCounter::RenderFpsCounter() {
+    m_nEvery = 3000;
+    this->reset();
+}
+
+void RenderFpsCounter::reset() {
+    m_nNumberOfFrames = 0;
+    m_nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
+    m_nElapsed = 0;
+    m_nFps = 0;
+}
+
+bool RenderFpsCounter::addFrame() {
+    m_nNumberOfFrames++;
+    m_nElapsed = WsjcppCore::getCurrentTimeInMilliseconds() - m_nStartTime;
+    if (m_nElapsed > m_nEvery) {
+        double nFPS = m_nNumberOfFrames;
+        nFPS /= m_nElapsed;
+        nFPS *= 1000;
+        m_nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
+        m_nNumberOfFrames = 0;
+        m_nFps = nFPS;
+        return true;
+    }
+    return false;
+}
+
+int RenderFpsCounter::getFps() {
+    return m_nFps;
+}
+
+// -----------------------------------------------------------------
 // RenderBNA
 
 RenderBNA::RenderBNA(ICallbacksRenderBNA *pCallbakcs) {
@@ -133,15 +166,11 @@ bool RenderBNA::run(const std::string &sWindowName) {
         appState.windowWidth(),
         appState.windowHeight()
     );
-    RenderAbsoluteTextBlock *pFpsText = new RenderAbsoluteTextBlock(CoordXY(50,20), "FPS: ----", 1000);
-    m_pWindow->addObject(pFpsText);
-    m_pWindow->sortObjectsByPositionZ();
+    this->createFpsText();
     bool appRunning = true;
 
     SDL_Event event;
-    long nNumberOfFrames = 0;
-    long nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
-    long nElapsed = 0;
+    m_fps.reset();
     appState.init();
 
     while (appRunning) {
@@ -175,21 +204,20 @@ bool RenderBNA::run(const std::string &sWindowName) {
         m_pCallbacksRenderBNA->doTestAndRevert();
 
         // FPS
-        nNumberOfFrames++;
-        nElapsed = WsjcppCore::getCurrentTimeInMilliseconds() - nStartTime;
-        if (nElapsed > 3000) {
-            double nFPS = nNumberOfFrames;
-            nFPS /= nElapsed;
-            nFPS *= 1000;
-            // std::cout << "FPS: " << nFPS << std::endl;
-            nStartTime = WsjcppCore::getCurrentTimeInMilliseconds();
-            nNumberOfFrames = 0;
-            pFpsText->updateText("FPS: " + std::to_string(int(nFPS)));
+        if (m_fps.addFrame()) {
+            m_pFpsText->updateText("FPS: " + std::to_string(m_fps.getFps()));
         }
+        
     }
     m_pWindow->cleanUp();
     SDL_Quit();
     return false;
+}
+
+void RenderBNA::createFpsText() {
+    m_pFpsText = new RenderAbsoluteTextBlock(CoordXY(50,20), "FPS: ----", 1000);
+    m_pWindow->addObject(m_pFpsText);
+    m_pWindow->sortObjectsByPositionZ();
 }
 
 void RenderBNA::prepareVectorsSize() {
