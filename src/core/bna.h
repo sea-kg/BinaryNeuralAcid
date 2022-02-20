@@ -1,5 +1,5 @@
-#ifndef SEA5KG_BNA_H
-#define SEA5KG_BNA_H
+#ifndef BNA_H
+#define BNA_H
 
 #include <map>
 #include <json.hpp>
@@ -8,6 +8,7 @@
 #include "bna_types.h"
 #include "bna_operations.h"
 #include "bna_expression.h"
+#include "bna_nodes.h"
 
 void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
 std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars);
@@ -43,55 +44,6 @@ class BNAStatCalcResults {
         std::vector<int> m_vCurrentCountersPercents;
         int m_nAllCurrentCountersPercents;
         int m_nSummaryDiff;
-};
-
-class BNANode {
-    public:
-        BNANode(unsigned short x, unsigned short y, const std::string &sOperationType);
-        BNANode();
-        unsigned short getX();
-        void setX(unsigned short nX);
-
-        unsigned short getY();
-        void setY(unsigned short nY);
-
-        std::string getOperationType();
-        void setOperationType(const std::string &sOperationType);
-
-        unsigned short getId();
-        void setId(unsigned short nId);
-
-        void readFromFile(std::ifstream &file);
-        void writeToFile(std::ofstream &file);
-
-    private:
-        std::string TAG;
-        unsigned short m_nId;
-        unsigned short m_nX;
-        unsigned short m_nY;
-        std::string m_sOperationType;
-};
-
-class BNANodeInput {
-    public:
-        BNANodeInput(unsigned short nIndex);
-        unsigned short getIndex();
-
-    private:
-        unsigned short m_nIndex;
-};
-
-class BNANodeOutput {
-    public:
-        BNANodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex);
-        unsigned short getOutputIndex();
-        unsigned short getInputNodeIndex();
-        void setInputNodeIndex(unsigned short nInputNodeIndex);
-        void writeToFile(std::ofstream &file);
-
-    private:
-        unsigned short m_nOutputIndex;
-        unsigned short m_nInputNodeIndex;
 };
 
 class BNAModificationModel {
@@ -241,4 +193,4 @@ class BNAProject {
 };
 
 
-#endif // SEA5KG_BNA_H
+#endif // BNA_H
