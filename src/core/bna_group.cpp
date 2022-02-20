@@ -163,9 +163,9 @@ bool BNAGroup::compile() {
 
     // prepare input nodes
     for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
-        BNAVar *pVar = new BNAVar();
-        pVar->val(B_0);
-        pVar->name("in" + std::to_string(i));
+        BNAVar<BNABit> *pVar = new BNAVar<BNABit>();
+        pVar->setValue(B_0);
+        pVar->setName("in" + std::to_string(i));
         m_vCalcInputVars.push_back(pVar);
     }
 
@@ -176,12 +176,12 @@ bool BNAGroup::compile() {
         int x = m_vNodes[i]->getX();
         int y = m_vNodes[i]->getY();
         std::string sOperationType = m_vNodes[i]->getOperationType();
-        BNAExpression *pExpr = new BNAExpression();
+        BNAExpression<BNABit> *pExpr = new BNAExpression<BNABit>();
         pExpr->setOperandLeft(getVarByIndex(x));
         pExpr->setOperandRight(getVarByIndex(y));
         pExpr->oper(m_vOperations[sOperationType]);
-        BNAVar *pVar = new BNAVar();
-        pVar->name("node" + std::to_string(i));
+        BNAVar<BNABit> *pVar = new BNAVar<BNABit>();
+        pVar->setName("node" + std::to_string(i));
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
@@ -233,13 +233,13 @@ void BNAGroup::compare(BNAGroup &bna){
 
     if(bna.m_vCalcExprs.size() == m_vCalcExprs.size()){
         for(int i = 0; i < m_vCalcExprs.size(); i++){
-            if(m_vCalcExprs[i]->getOperandLeft()->name() != bna.m_vCalcExprs[i]->getOperandLeft()->name()){
+            if(m_vCalcExprs[i]->getOperandLeft()->getName() != bna.m_vCalcExprs[i]->getOperandLeft()->getName()){
                 std::cout << "\t operand_left not equal in " << i << "\n";
             }
-            if(m_vCalcExprs[i]->op2()->name() != bna.m_vCalcExprs[i]->op2()->name()){
+            if(m_vCalcExprs[i]->op2()->getName() != bna.m_vCalcExprs[i]->op2()->getName()){
                 std::cout << "\t operand_right not equal in " << i << "\n";
             }
-            if(m_vCalcExprs[i]->out()->name() != bna.m_vCalcExprs[i]->out()->name()){
+            if(m_vCalcExprs[i]->out()->getName() != bna.m_vCalcExprs[i]->out()->getName()){
                 std::cout << "\t out not equal in " << i << "\n";
             }
             if(m_vCalcExprs[i]->oper()->type() != bna.m_vCalcExprs[i]->oper()->type()){
@@ -466,7 +466,7 @@ bool BNAGroup::writeToFileBna(std::ofstream &file){
     return true;
 }
 
-bool BNAGroup::registryOperationType(IBNAOper *pOper) {
+bool BNAGroup::registryOperationType(IBNAOper<BNABit> *pOper) {
     // TODO check aready registered
     m_vOperations[pOper->type()] = pOper;
     m_vOperationList.push_back(pOper);
@@ -526,14 +526,14 @@ BNABit BNAGroup::calc(const std::vector<BNABit> &vInputs, int nOutput){
     }
 
     for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
-        m_vCalcInputVars[i]->val(vInputs[i]);
+        m_vCalcInputVars[i]->setValue(vInputs[i]);
     }
 
     for (int i = 0; i < m_vCalcExprs.size(); i++) {
         m_vCalcExprs[i]->exec();
     }
 
-    return m_vCalcOutVars[nOutput]->val();
+    return m_vCalcOutVars[nOutput]->getValue();
 }
 
 void BNAGroup::clearCalcExprsVars() {
@@ -629,7 +629,7 @@ void BNAGroup::normalizeNodes() {
     }
 }
 
-BNAVar *BNAGroup::getVarByIndex(int nIndex) {
+BNAVar<BNABit> *BNAGroup::getVarByIndex(int nIndex) {
     if (nIndex < m_vCalcInputVars.size()) {
         return m_vCalcInputVars[nIndex];
     }

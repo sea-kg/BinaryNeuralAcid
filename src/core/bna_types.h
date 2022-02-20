@@ -19,15 +19,27 @@ class BNABit4 {
         BNABit b4;
 };
 
-class BNAVar {
+template<class ValueType> class BNAVar {
     public:
-        BNAVar();
-        std::string name();
-        void name(std::string name);
-        BNABit val();
-        void val(BNABit bVal);
+        BNAVar() {
+            // m_bVal = B_0;
+            m_sName = "";
+        }
+        const std::string &getName() {
+            return m_sName;
+        }
+        void setName(const std::string &sName) {
+            m_sName = sName;
+        }
+
+        ValueType getValue() {
+            return m_bVal;
+        }
+        void setValue(ValueType bVal) {
+            m_bVal = bVal;
+        }
     private:
-        BNABit m_bVal;
+        ValueType m_bVal;
         std::string m_sName;
 };
 

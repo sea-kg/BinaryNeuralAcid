@@ -51,9 +51,9 @@ class BNAGroup {
         int readParam(std::ifstream &file, const std::string &sParamName);
         bool writeToFileBna(std::ofstream &file);
 
-        bool registryOperationType(IBNAOper *pOper);
-        std::map<std::string, IBNAOper *> m_vOperations;
-        std::vector<IBNAOper *> m_vOperationList;
+        bool registryOperationType(IBNAOper<BNABit> *pOper);
+        std::map<std::string, IBNAOper<BNABit> *> m_vOperations;
+        std::vector<IBNAOper<BNABit> *> m_vOperationList;
         int m_nOperSize;
 
         void clearResources();
@@ -63,11 +63,11 @@ class BNAGroup {
 
         void clearCalcExprsVars();
         void normalizeNodes();
-        BNAVar *getVarByIndex(int nIndex);
-        std::vector<BNAExpression *> m_vCalcExprs;
-        std::vector<BNAVar *> m_vCalcInputVars;
-        std::vector<BNAVar *> m_vCalcVars;
-        std::vector<BNAVar *> m_vCalcOutVars;
+        BNAVar<BNABit> *getVarByIndex(int nIndex);
+        std::vector<BNAExpression<BNABit> *> m_vCalcExprs;
+        std::vector<BNAVar<BNABit> *> m_vCalcInputVars;
+        std::vector<BNAVar<BNABit> *> m_vCalcVars;
+        std::vector<BNAVar<BNABit> *> m_vCalcOutVars;
 };
 
 #endif // BNA_GROUP_H
