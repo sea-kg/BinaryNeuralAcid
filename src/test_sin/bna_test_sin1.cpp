@@ -49,7 +49,7 @@ BNATestSin1::BNATestSin1() {
     m_nSizeInput = 32; // input bits 
     m_nSizeOutput = 1; // output bits
     m_sBNAFilename = "testsin1";
-    m_pBNA = new BNA(m_nSizeInput, m_nSizeOutput);
+    m_pBNA = new BNAGroup<BNABit>(m_nSizeInput, m_nSizeOutput);
     m_sDataTestsFilename = "testsin1.bnadatatest";
     m_nDataTestsSize = 2000;
     m_pResults = new BNAStatCalcResults(1);
@@ -121,7 +121,7 @@ void BNATestSin1::doTestAndRevert() {
     }
 }
 
-BNA* BNATestSin1::getBNA() {
+BNAGroup<BNABit>* BNATestSin1::getBNA() {
     return m_pBNA;
 }
 

@@ -20,7 +20,6 @@ list (APPEND WSJCPP_SOURCES "src/core/bna_nodes.cpp")
 list (APPEND WSJCPP_SOURCES "src/core/bna_operations.cpp")
 list (APPEND WSJCPP_SOURCES "src/core/bna_expression.cpp")
 list (APPEND WSJCPP_SOURCES "src/core/bna.cpp")
-list (APPEND WSJCPP_SOURCES "src/core/bna_group.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
 

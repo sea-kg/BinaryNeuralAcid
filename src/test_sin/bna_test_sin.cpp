@@ -48,7 +48,7 @@ BNATestSin::BNATestSin() {
     // in 32 bits
     // out 32 bits
     m_sBNAFilename = "testsin";
-    m_pBNA = new BNA(32,32);
+    m_pBNA = new BNAGroup<BNABit>(32,32);
     m_sDataTestsFilename = "testsin.bnadatatest";
     m_nDataTestsSize = 2000;
     m_pResults = new BNAStatCalcResults(32);
@@ -63,7 +63,7 @@ BNATestSin::BNATestSin() {
 }
 
 bool BNATestSin::run() {
-    RenderBNA render(this);
+    RenderBNA<BNABit> render(this);
     return render.run("bna - test-sin");
 }
 
@@ -120,7 +120,7 @@ void BNATestSin::doTestAndRevert() {
     }
 }
 
-BNA* BNATestSin::getBNA() {
+BNAGroup<BNABit>* BNATestSin::getBNA() {
     return m_pBNA;
 }
 

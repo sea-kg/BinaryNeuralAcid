@@ -23,7 +23,7 @@ class BNATestSinItem {
         std::vector<BNABit> m_vOut;
 };
 
-class BNATestSin : public ICallbacksRenderBNA {
+class BNATestSin : public ICallbacksRenderBNA<BNABit> {
     public:
         BNATestSin();
 
@@ -33,7 +33,7 @@ class BNATestSin : public ICallbacksRenderBNA {
         virtual bool onStart() override;
         virtual void doMutation() override;
         virtual void doTestAndRevert() override;
-        virtual BNA* getBNA() override;
+        virtual BNAGroup<BNABit>* getBNA() override;
         virtual const BNAStatCalcResults *getResults() override;
 
     private:
@@ -51,7 +51,7 @@ class BNATestSin : public ICallbacksRenderBNA {
         std::string TAG;
 
         std::string m_sBNAFilename;
-        BNA *m_pBNA;
+        BNAGroup<BNABit> *m_pBNA;
 
         std::string m_sDataTestsFilename;
         int m_nDataTestsSize;

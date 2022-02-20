@@ -86,8 +86,6 @@ class BNA {
         // void importFromByteArray(QByteArray data);
 		nlohmann::json toJson();
         void randomModify(const BNAModificationModel *pModel);
-        void addRandomNodes(int nRandomCicles);
-        void removeRandomNodes(int nRandomCicles);
         BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
 
         unsigned int getInputSize();
@@ -113,7 +111,6 @@ class BNA {
         std::vector<BNANodeInput *> m_vNodesInput;
         std::vector<BNANode *> m_vNodes;
         std::vector<BNANodeOutput *> m_vNodesOutput;
-        
 
         void clearCalcExprsVars();
         void normalizeNodes();
