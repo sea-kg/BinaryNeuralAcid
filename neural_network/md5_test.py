@@ -40,13 +40,13 @@ class Generation:
                 self.__genom[y][x] = _genom[y][x]
                 x += 1
             y += 1
-        
+
     def get_genom(self):
         return self.__genom
 
     def set_diff(self, _diff):
         self.__diff = _diff
-    
+
     def get_diff(self):
         return self.__diff
 
@@ -173,7 +173,7 @@ def sort_generations(_gens):
             i += 1
     return _gens
 
-max_cicles = 10000
+max_cicles = 100000
 i = 0
 while i < max_cicles:
     i += 1

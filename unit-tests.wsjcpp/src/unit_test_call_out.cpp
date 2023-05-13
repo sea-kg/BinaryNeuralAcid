@@ -1,7 +1,7 @@
 #include "unit_test_call_out.h"
 #include <vector>
 #include <wsjcpp_core.h>
-#include <bna.h>
+#include <binary_neural_acid.h>
 
 REGISTRY_WSJCPP_UNIT_TEST(UnitTestCallOut)
 

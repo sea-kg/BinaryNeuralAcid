@@ -1,36 +1,23 @@
-#include "unit_test_bna_oper.h"
+#include "binary_neural_acid.h"
+
 #include <vector>
-#include <wsjcpp_core.h>
-#include <bna.h>
+#include <iostream>
 
-REGISTRY_WSJCPP_UNIT_TEST(UnitTestBnaOper)
 
-UnitTestBnaOper::UnitTestBnaOper()
-    : WsjcppUnitTestBase("UnitTestBnaOper") {
-}
-
-// ---------------------------------------------------------------------
-
-bool UnitTestBnaOper::doBeforeTest() {
-    return true;
-}
-
-// ---------------------------------------------------------------------
-
-void UnitTestBnaOper::executeTest() {
+int main() {
     BNAOperXor *pOperXor = new BNAOperXor();
     BNAOperNotXor *pOperNotXor = new BNAOperNotXor();
     BNAOperAnd *pOperAnd = new BNAOperAnd();
     BNAOperOr *pOperOr = new BNAOperOr();
 
     struct LocalDataTest {
-        LocalDataTest(IBNAOper *pOper, BNABit b1, BNABit b2, BNABit bExpected) {
+        LocalDataTest(IBNAOper<BNABit> *pOper, BNABit b1, BNABit b2, BNABit bExpected) {
             m_pOper = pOper;
             m_b1 = b1;
             m_b2 = b2;
             m_bExpected = bExpected;
         }
-        IBNAOper *m_pOper;
+        IBNAOper<BNABit> *m_pOper;
         BNABit m_b1;
         BNABit m_b2;
         BNABit m_bExpected;
@@ -69,12 +56,9 @@ void UnitTestBnaOper::executeTest() {
         LocalDataTest test = vTests[i];
         BNABit b = test.calc();
         std::string sTestTag = std::to_string(i) + " " + test.m_pOper->type();
-        compare(sTestTag, b, test.m_bExpected);
+        if (b != test.m_bExpected) {
+            return 1;
+        }
     }
-}
-
-// ---------------------------------------------------------------------
-
-bool UnitTestBnaOper::doAfterTest() {
-    return true;
+    return 0;
 }

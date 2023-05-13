@@ -1,7 +1,7 @@
 #ifndef SEA5KG_BNA_TEST_SIN_H
 #define SEA5KG_BNA_TEST_SIN_H
 
-#include "bna.h"
+#include "binary_neural_acid.h"
 #include "render_window.h"
 
 class BNATestSinItem {

@@ -1,8 +1,189 @@
-#include <bna.h>
-#include <iostream>
+#include "binary_neural_acid.h"
 #include <iostream>
 #include <cstring>
-#include <wsjcpp_core.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+// -----------------------------------------------------------------
+// BNABit4
+
+BNABit4::BNABit4(BNABit b1, BNABit b2, BNABit b3, BNABit b4) : b1(b1), b2(b2), b3(b3), b4(b4) {
+
+}
+
+void BNABit4::appendToVector(std::vector<BNABit> &vars){
+    vars.push_back(b1);
+    vars.push_back(b2);
+    vars.push_back(b3);
+    vars.push_back(b4);
+}
+
+
+// -----------------------------------------------------------------
+// BNAOperXor
+
+std::string BNAOperXor::type(){ return std::string("XOR"); }
+
+BNABit BNAOperXor::calc(BNABit b1, BNABit b2){
+    unsigned char c1 = b1;
+    unsigned char c2 = b2;
+    c1 = (c1 ^ c2) & 0x01;
+    return c1 == 0 ? B_0 : B_1;
+}
+
+// -----------------------------------------------------------------
+// BNAOperNotXor
+
+std::string BNAOperNotXor::type(){ return std::string("NXOR"); }
+
+BNABit BNAOperNotXor::calc(BNABit b1, BNABit b2){
+    unsigned char c1 = b1;
+    unsigned char c2 = b2;
+    c1 = (!(c1 ^ c2)) & 0x01;
+    return c1 == 0 ? B_0 : B_1;
+}
+
+// -----------------------------------------------------------------
+// BNAOperAnd
+
+std::string BNAOperAnd::type() {
+    return std::string("AND");
+}
+
+BNABit BNAOperAnd::calc(BNABit b1, BNABit b2) {
+    unsigned char c1 = b1;
+    unsigned char c2 = b2;
+    c1 = (c1 & c2) & 0x01;
+    return c1 == 0 ? B_0 : B_1;
+}
+
+// -----------------------------------------------------------------
+// BNAOperOr
+
+std::string BNAOperOr::type(){ return std::string("OR"); }
+
+BNABit BNAOperOr::calc(BNABit b1, BNABit b2){
+    unsigned char c1 = b1;
+    unsigned char c2 = b2;
+    c1 = (c1 | c2) & 0x01;
+    return c1 == 0 ? B_0 : B_1;
+}
+
+
+// -----------------------------------------------------------------
+// BNANode 
+
+BNANode::BNANode(unsigned short x, unsigned short y, const std::string &sOperationType){
+    TAG = "BNANode";
+    m_nX = x;
+    m_nY = y;
+    m_nId = 0;
+    m_sOperationType = sOperationType;
+}
+
+BNANode::BNANode() {
+    TAG = "BNANode";
+    m_nX = 0;
+    m_nY = 0;
+    m_nId = 0;
+    m_sOperationType = "";
+}
+
+unsigned short BNANode::getX(){
+    return m_nX;
+}
+
+void BNANode::setX(unsigned short nX){
+    m_nX = nX;
+}
+
+unsigned short BNANode::getY(){
+    return m_nY;
+}
+
+void BNANode::setY(unsigned short nY){
+    m_nY = nY;
+}
+
+std::string BNANode::getOperationType(){
+    return m_sOperationType;
+}
+
+void BNANode::setOperationType(const std::string &sOperationType){
+    m_sOperationType = sOperationType;
+}
+
+unsigned short BNANode::getId(){
+    return m_nId;
+}
+
+void BNANode::setId(unsigned short nId){
+    m_nId = nId;
+}
+
+void BNANode::readFromFile(std::ifstream &file){
+    std::string sKeyword = "";
+    file >> sKeyword;
+    if (sKeyword != "node") {
+        throw std::runtime_error("BNANode::readFromFile, Expected keyword 'node'");
+    }
+    file >> sKeyword;
+    if (sKeyword != "id") {
+        throw std::runtime_error("BNANode::readFromFile, Expected keyword 'id'");
+    }
+    file >> m_nId;
+    file >> sKeyword;
+    if (sKeyword != "input") {
+        throw std::runtime_error("BNANode::readFromFile, Expected keyword 'input'");
+    }
+    file >> m_nX;
+    file >> m_nY;
+    file >> sKeyword;
+    if (sKeyword != "function") {
+        throw std::runtime_error("BNANode::readFromFile, Expected keyword 'function'");
+    }
+    file >> m_sOperationType;
+}
+
+void BNANode::writeToFile(std::ofstream &file){
+    file << "node id " << m_nId << " input " << m_nX << " " << m_nY << " function " << m_sOperationType << "\n";
+}
+
+// -----------------------------------------------------------------
+// BNANodeInput
+
+BNANodeInput::BNANodeInput(unsigned short nIndex){
+    m_nIndex = nIndex;
+}
+
+unsigned short BNANodeInput::getIndex() {
+    return m_nIndex;
+}
+
+// -----------------------------------------------------------------
+// BNANodeOutput
+
+BNANodeOutput::BNANodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex){
+    m_nOutputIndex = nOutputIndex;
+    m_nInputNodeIndex = nInputNodeIndex;
+}
+
+unsigned short BNANodeOutput::getOutputIndex() {
+    return m_nOutputIndex;
+}
+
+unsigned short BNANodeOutput::getInputNodeIndex() {
+    return m_nInputNodeIndex;
+}
+
+void BNANodeOutput::setInputNodeIndex(unsigned short nInputNodeIndex) {
+    m_nInputNodeIndex = nInputNodeIndex;
+}
+
+void BNANodeOutput::writeToFile(std::ofstream &file) {
+    file << "output " << m_nInputNodeIndex << "\n";
+}
 
 // -----------------------------------------------------------------
 // function for convert hex string to array bna bit
@@ -199,7 +380,7 @@ int BNAStatCalcResults::getAllPrevCountersPercents() const {
 
 void BNAStatCalcResults::setPrevCounters(const std::vector<int> &vValues) {
     if (m_nOutputSize != vValues.size()) {
-        WsjcppLog::throw_err(TAG, "Wrong size");
+        throw std::runtime_error("Wrong size");
     }
     m_vPrevCounters = vValues;
 }
@@ -218,7 +399,7 @@ int BNAStatCalcResults::getAllCurrentCountersPercents() const {
 
 void BNAStatCalcResults::setCurrentCounters(const std::vector<int> &vValues) {
     if (m_nOutputSize != vValues.size()) {
-        WsjcppLog::throw_err(TAG, "Wrong size");
+        throw std::runtime_error("Wrong size");
     }
     m_vCurrentCounters = vValues;
 }
@@ -243,10 +424,10 @@ void BNAStatCalcResults::calcPercents(int nDataTestsSize) {
         nAllCurrent += m_vCurrentCounters[i];
         int nDiff = m_vCurrentCounters[i] - m_vPrevCounters[i];
         m_nSummaryDiff += nDiff;
-        
+
         m_vPrevCountersPercents[i] = (m_vPrevCounters[i]*100) / m_nDataTestsSize;
         m_vCurrentCountersPercents[i] = (m_vCurrentCounters[i]*100) / m_nDataTestsSize;
-        
+
         // std::cout << "output bit" << i << ": " << m_vPrevCounters[i]  << " (" << m_vPrevCountersPercents[i] << ")% -> "
         //     << m_vCurrentCounters[i] << " (" << m_vCurrentCountersPercents[i] <<  "%) " << " diff: " << nDiff << std::endl;
     }
@@ -355,14 +536,14 @@ bool BNA::load(const std::string &sFilename){
     clearResources();
 
     std::string sFilename0 = sFilename + ".bna";
-    if (!WsjcppCore::fileExists(sFilename0)) {
-        WsjcppLog::err(TAG, "load: file not exists '" + sFilename0 + "'");
+    if (!BNA::fileExists(sFilename0)) {
+        std::cerr << "load: file not exists '" << sFilename0 << "'" << std::endl;
         return false;
     }
     std::ifstream file;
     file.open(sFilename0, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
-        WsjcppLog::err(TAG, "load: could not open file to read '" + sFilename0 + "'");
+        std::cerr << "load: could not open file to read '" << sFilename0 << "'" << std::endl;
         return false;
     }
     bool bResult = readFromFileBna(file);
@@ -374,16 +555,16 @@ bool BNA::load(const std::string &sFilename){
 
 bool BNA::save(const std::string &sFilename){
     std::string sFilename0 = sFilename + ".bna";
-    if (WsjcppCore::fileExists(sFilename0)) {
-        if (!WsjcppCore::removeFile(sFilename0)) {
-            WsjcppLog::err(TAG, "save: could not remove file '" + sFilename0 + "'");
+    if (BNA::fileExists(sFilename0)) {
+        if (!BNA::removeFile(sFilename0)) {
+            std::cerr << "save: could not remove file: '" << sFilename0 << "'" << std::endl;
             return false;
         }
     }
     std::ofstream file;
     file.open(sFilename0, std::ios::out | std::ios::binary);
     if (!file.is_open()) {
-        WsjcppLog::err(TAG, "save: could not open file to write: " + sFilename0);
+        std::cerr << "save: could not open file to write: '" << sFilename0 << "'" << std::endl;
         return false;
     }
     // update ids
@@ -548,14 +729,32 @@ void BNA::compare(BNA &bna){
     } else {
         std::cout << "Exprs size not equals " << bna.m_vNodes.size() << " != " << m_vNodes.size() << " \n";
     }
-
-
 }
 
-// ----------------------------------------------------------------
+bool BNA::fileExists(const std::string &sFilename) {
+    struct stat st;
+    bool bExists = (stat(sFilename.c_str(), &st) == 0);
+    if (bExists) {
+        return (st.st_mode & S_IFDIR) == 0;
+    }
+    return false;
+}
+
+bool BNA::removeFile(const std::string &sFilename) {
+    return remove(sFilename.c_str()) == 0;
+}
+
+bool BNA::dirExists(const std::string &sDirname) {
+    struct stat st;
+    bool bExists = (stat(sDirname.c_str(), &st) == 0);
+    if (bExists) {
+        return (st.st_mode & S_IFDIR) != 0;
+    }
+    return false;
+}
 
 bool BNA::exportToDot(std::string filename, std::string graphname){
-    WsjcppLog::err(TAG, "TODO exportToCpp");
+    std::cerr << "TODO exportToCpp" << std::endl;
 
     /*QFile file(filename);
     if (file.exists()) {
@@ -587,41 +786,41 @@ bool BNA::exportToDot(std::string filename, std::string graphname){
 // ----------------------------------------------------------------
 
 bool BNA::exportToCpp(std::string filename, std::string funcname){
-    WsjcppLog::err(TAG, "TODO exportToCpp");
+    std::cerr << "TODO exportToCpp" << std::endl;
     /*QFile file(filename);
     QFileInfo fi(filename);
     if(fi.suffix() != "cpp"){
         std::cerr << "[ERROR]" << filename.toStdString() << " file must be have suffix 'cpp'\n";
         return false;
     }
-    
+
     std::string filename_h = filename.left(filename.length() - 3);
     filename_h += "h";
-    
+
     if (file.exists()) {
         file.remove();
     }
-    
+
     QFile file_h(filename_h);
     if (file_h.exists()) {
         file_h.remove();
     }
-    
+
     if ( !file.open(QIODevice::WriteOnly) ) {
         std::cerr << "Could not write file: " << filename.toStdString() << "\n";
         return false;
     }
-    
+
     if ( !file_h.open(QIODevice::WriteOnly) ) {
         std::cerr << "Could not write file: " << filename_h.toStdString() << "\n";
         return false;
     }
-    
+
     QTextStream stream_h( &file_h );
     stream_h << "#ifndef BNA_MD5_" << funcname.toUpper() << "_H\r\n";
     stream_h << "#define BNA_MD5_" << funcname.toUpper() << "_H\r\n\r\n";
     stream_h << "void " << funcname << "(";
-    
+
     QTextStream stream( &file );
     stream << "#include \"" << fi.baseName() << ".h\"\r\n";
     stream << "void " << funcname << "(";
@@ -629,7 +828,7 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
         stream << "\r\n\tbool in" << i << ", ";
         stream_h << "\r\n\tbool in" << i << ", ";
     }
-    
+
     for(unsigned  int i = 0; i < m_nOutput; i++){
         stream << "\r\n\tbool &out" << i;
         stream_h << "\r\n\tbool &out" << i;
@@ -641,8 +840,7 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     stream << "\r\n) {\r\n";
     stream_h << "\r\n);\r\n\r\n";
     stream_h << "#endif //BNA_MD5_" << funcname.toUpper() << "_H\r\n";
-    
-    
+
     int nodes = m_vNodesInput.size();
     for(int i = 0; i < m_vNodes.size(); i++){
         std::string sX = (m_vNodes[i]->getX() < m_vNodesInput.size() ? "in" : "node") + std::to_string(m_vNodes[i]->getX());
@@ -700,26 +898,26 @@ int BNA::calculateDepth(int n) {
 
 bool BNA::readFromFileBna(std::ifstream &file){
     clearResources();
-    std::string sStr; 
+    std::string sStr;
     file >> sStr;
     if (sStr != "BNA") {
-        WsjcppLog::err(TAG, "readFromFileBna, is not a BNA file");
+        std::cerr << "readFromFileBna, is not a BNA file" << std::endl;
         return false;
     }
     int nBnaVersion = readParam(file, "version");
     if (nBnaVersion != m_nBnaVersion) {
-        WsjcppLog::err(TAG, "readFromFileBna, Version expected '" + std::to_string(m_nBnaVersion) + "', but got '" + std::to_string(nBnaVersion) + "'");
+        std::cerr << "readFromFileBna, Version expected '" << m_nBnaVersion << "', but got '" << nBnaVersion << "'" << std::endl;
         return false;
     }
     m_nBnaRevision = readParam(file, "revision");
     int nInputSize = readParam(file, "input");
     int nNodesSize = readParam(file, "nodes");
     int nOutputSize = readParam(file, "output");
-    
+
     for (int i = 0; i < nInputSize; i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
     }
-    
+
     // read nodes
     for (int i = 0; i < nNodesSize; i++) {
         BNANode *pItem = new BNANode();
@@ -733,7 +931,7 @@ bool BNA::readFromFileBna(std::ifstream &file){
         int nInputNodeIndex = readParam(file, "output");
         m_vNodesOutput[i]->setInputNodeIndex(nInputNodeIndex);
     }
-    
+
     return compile(); // need for process expressions
 }
 
@@ -741,7 +939,7 @@ int BNA::readParam(std::ifstream &file, const std::string &sParamName) {
     std::string sKeyword = "";
     file >> sKeyword;
     if (sKeyword != sParamName) {
-        WsjcppLog::throw_err(TAG, "readParam, Expected keyword '" + sParamName + "'");
+        throw std::runtime_error("readParam, Expected keyword '" + sParamName + "'");
         return -1;
     }
     int nRet;
@@ -808,8 +1006,8 @@ void BNA::randomModify(const BNAModificationModel *pModel) {
     }
 }
 
-nlohmann::json BNA::toJson(){
-    WsjcppLog::err(TAG, "TODO toJson");
+nlohmann::json BNA::toJson() {
+    throw std::runtime_error("TODO toJson");
 }
 
 BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
@@ -836,7 +1034,7 @@ BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
 }
 
 void BNA::clearCalcExprsVars() {
-    
+
     // clear input vars
     for (int i = 0; i < m_vCalcInputVars.size(); i++) {
         delete m_vCalcInputVars[i];
@@ -897,7 +1095,7 @@ void BNA::normalizeNodes() {
         int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
         // std::cout << "Will be removed [" << nNodeIndex << "] in array = " << nArrayIndex << std::endl;
         if (nNodeIndex > m_vNodes.size() + m_vNodesInput.size()) {
-            WsjcppLog::throw_err(TAG, "Node Index very big much");
+            throw std::runtime_error("Node Index very big much");
         }
     }
 
@@ -919,7 +1117,7 @@ void BNA::normalizeNodes() {
                 m_vNodes[x]->setY(m_vNodes[x]->getY() - 1);
             }
         }
-        
+
         for (int x = 0; x < m_vNodesOutput.size(); x++) {
             if (m_vNodesOutput[x]->getInputNodeIndex() >= nNodeIndex) {
                 m_vNodesOutput[x]->setInputNodeIndex(m_vNodesOutput[x]->getInputNodeIndex() - 1);
@@ -938,7 +1136,7 @@ BNAVar<BNABit> *BNA::getVarByIndex(int nIndex) {
     }
     // std::cout << "nIndex = " << nIndex << std::endl;
     // std::cout << "m_vCalcVars.size() = " << m_vCalcVars.size() << std::endl;
-    WsjcppLog::throw_err(TAG, "out of rande index of var");
+    throw std::runtime_error("out of rande index of var");
     nIndex = nIndex - m_vCalcVars.size();
     return m_vCalcOutVars[nIndex];
 }
@@ -961,7 +1159,7 @@ BNAMemory::BNAMemory(int nInputBits, int nOutputBits){
 // ----------------------------------------------------------------
 
 void BNAMemory::load(std::string filename){
-    WsjcppLog::err(TAG, "TODO load");
+    std::cout << "TODO load" << std::endl;
    /* QFile file(filename);
     if (!file.exists()) {
         std::cerr << "BNAMEMORY:  File did not exists: " << filename.toStdString() << "\n";
@@ -1001,10 +1199,8 @@ void BNAMemory::load(std::string filename){
     */
 };
 
-// ----------------------------------------------------------------
-
 void BNAMemory::save(std::string filename) {
-    WsjcppLog::err(TAG, "TODO save");
+    std::cout << "TODO save" << std::endl;
     /*QFile file(filename);
     if (file.exists()) {
         file.remove();
@@ -1021,36 +1217,26 @@ void BNAMemory::save(std::string filename) {
     file.close();*/
 };
 
-// ----------------------------------------------------------------
-
 int BNAMemory::size(){
     return m_vItems.size();
 }
-
-// ----------------------------------------------------------------
 
 BNAMemoryItem* BNAMemory::at(int i){
     return m_vItems[i];
 }
 
-// ----------------------------------------------------------------
-
 BNAMemoryItem * BNAMemory::createItem(){
     return new BNAMemoryItem(m_nInputBits, m_nOutputBits);
 }
-
-// ----------------------------------------------------------------
 
 void BNAMemory::append(BNAMemoryItem *pBNAMemoryItem){
     m_vItems.push_back(pBNAMemoryItem);
 }
 
-// ----------------------------------------------------------------
-
 void BNAMemory::printData(){
     std::cerr <<  " --- BNA Memory --- \n";
     for (int i = 0; i < m_vItems.size(); i++) {
-        WsjcppLog::err(TAG, "TODO printData");
+        std::cerr << "TODO printData" << std::endl;
         // std::cerr << m_vItems[i]->input.toHex().toStdString() << " => " << m_vItems[i]->output.toHex().toStdString() << "\n";
     }
 }
@@ -1086,6 +1272,7 @@ void BNAMemory::printData(){
 // }
 
 // ----------------------------------------------------------------
+// BNAProject
 
 BNAProject::BNAProject(){
     m_nInputBits = 1;
@@ -1094,40 +1281,28 @@ BNAProject::BNAProject(){
     TAG = "BNAProject";
 }
 
-// ----------------------------------------------------------------
-
 void BNAProject::setInputBits(int nInputBits){
     m_nInputBits = nInputBits;
 }
-
-// ----------------------------------------------------------------
 
 int BNAProject::getInputBits(){
     return m_nInputBits;
 }
 
-// ----------------------------------------------------------------
-
 void BNAProject::setOutputBits(int nOutputBits){
     m_nOutputBits = nOutputBits;
 }
-
-// ----------------------------------------------------------------
 
 int BNAProject::getOutputBits(){
     return m_nOutputBits;
 }
 
-// ----------------------------------------------------------------
-
 void BNAProject::setDefaultCountNodes(int nDefaultCountNodes){
     m_nDefaultCountNodes = nDefaultCountNodes;
 }
 
-// ----------------------------------------------------------------
-
 bool BNAProject::open(std::string sDirPath){
-    if (!WsjcppCore::dirExists(sDirPath)) {
+    if (!BNA::dirExists(sDirPath)) {
         std::cerr << "[ERROR] BNA Project " << sDirPath << " does not exists in this folder.\n";
         return false;
     }
@@ -1148,8 +1323,6 @@ bool BNAProject::open(std::string sDirPath){
 
     return true;
 }
-
-// ----------------------------------------------------------------
 
 std::string BNAProject::prepareName(int nBitId) {
     std::string sName = std::to_string(nBitId);
@@ -1175,7 +1348,8 @@ std::string BNAProject::prepareSubdir(int nBitId){
 // ----------------------------------------------------------------
 
 bool BNAProject::create(std::string sDirPath){
-    WsjcppLog::err(TAG, "TODO create");
+    std::cerr << "TODO create" << std::endl;
+
     /*QDir dir(sDirPath);
     if(dir.exists()){
         std::cerr << "[ERROR] BNA Project " << sDirPath.toStdString() << " already exists.\n";
@@ -1212,7 +1386,8 @@ bool BNAProject::create(std::string sDirPath){
 // ----------------------------------------------------------------
 
 void BNAProject::saveProjFile(){
-    WsjcppLog::err(TAG, "TODO loadProjFile");
+    std::cerr << "TODO saveProjFile" << std::endl;
+
     /*QJsonObject proj;
     proj["input_bits"] = m_nInputBits;
     proj["output_bits"] = m_nOutputBits;
@@ -1239,7 +1414,7 @@ void BNAProject::saveProjFile(){
 // ----------------------------------------------------------------
 
 void BNAProject::loadProjFile(){
-    WsjcppLog::err(TAG, "TODO loadProjFile");
+    std::cerr << "TODO loadProjFile" << std::endl;
     /*std::string sFilename = m_sDirPath + "/bnaproject.json";
     QFile file(sFilename);
     if (!file.exists()) {
@@ -1300,7 +1475,7 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
         // }
 
         if (bEnableSleep && i > 0 && i % 1000 == 0) {
-            WsjcppLog::err(TAG, "TODO sleep here");
+            std::cerr << "TODO sleep here" << std::endl;
             // QThread::sleep(1);
         }
     }
@@ -1310,12 +1485,12 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
 // ----------------------------------------------------------------
 
 void BNAProject::saveResult(int bitid, int nResult){
-    WsjcppLog::err(TAG, "TODO");
+    std::cerr << "TODO" << std::endl;
 
     /*std::string m_sBitid = prepareName(bitid);
     std::string subdir = prepareSubdir(bitid);
     std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
-    
+
     QFile file(m_sFilename);
     if (file.exists()) {
         file.remove();
@@ -1336,7 +1511,7 @@ int BNAProject::loadResult(int bitid){
     /*std::string m_sBitid = prepareName(bitid);
     std::string subdir = prepareSubdir(bitid);
     std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
-    
+
     int nResult = 0;
     // load persent
     QFile file(m_sFilename);

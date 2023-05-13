@@ -1,7 +1,7 @@
 #ifndef SEA5KG_BNA_TEST_SIN1_H
 #define SEA5KG_BNA_TEST_SIN1_H
 
-#include "bna.h"
+#include "binary_neural_acid.h"
 #include "render_window.h"
 
 class BNATestSin1Item {
@@ -12,7 +12,7 @@ class BNATestSin1Item {
 
         const std::vector<BNABit> &getInOfBits();
         const std::vector<BNABit> &getOutOfBits();
-        
+
     private:
         void floatToBNABits(const float &f, std::vector<BNABit> &vResult);
 

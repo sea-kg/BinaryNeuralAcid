@@ -84,15 +84,15 @@ bool ArgumentProcessorStartServer::applyParameterArgument(
 int ArgumentProcessorStartServer::exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams) {
     WsjcppLog::err(TAG, "Not implemented");
     // "Server starting on 43735 port"
-    return -1; 
+    return -1;
 }
 
 
 // ---------------------------------------------------------------------
 // ArgumentProcessorTestSin
 
-ArgumentProcessorTestSin::ArgumentProcessorTestSin() 
-: WsjcppArgumentProcessor({"test-sin"}, 
+ArgumentProcessorTestSin::ArgumentProcessorTestSin()
+: WsjcppArgumentProcessor({"test-sin"},
     "test-sin",
     "test-sin") {
     TAG = "ArgumentProcessorTestSin";
@@ -107,14 +107,14 @@ int ArgumentProcessorTestSin::exec(const std::vector<std::string> &vRoutes, cons
     BNATestSin testsin;
     testsin.run();
 
-    return -1; 
+    return -1;
 }
 
 
 // ---------------------------------------------------------------------
 // ArgumentProcessorTestSin
 
-ArgumentProcessorTestSin1::ArgumentProcessorTestSin1() 
+ArgumentProcessorTestSin1::ArgumentProcessorTestSin1()
 : WsjcppArgumentProcessor({"test-sin1"}, "test-sin1", "test-sin1") {
     TAG = "ArgumentProcessorTestSin1";
     // registrySingleArgument("--single", "What exactly do this single param?");
@@ -128,5 +128,5 @@ int ArgumentProcessorTestSin1::exec(const std::vector<std::string> &vRoutes, con
     BNATestSin1 testsin1;
     testsin1.run();
 
-    return -1; 
+    return -1;
 }

@@ -15,11 +15,7 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/core")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/test_sin")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/render")
 
-list (APPEND WSJCPP_SOURCES "src/core/bna_types.cpp")
-list (APPEND WSJCPP_SOURCES "src/core/bna_nodes.cpp")
-list (APPEND WSJCPP_SOURCES "src/core/bna_operations.cpp")
-list (APPEND WSJCPP_SOURCES "src/core/bna_expression.cpp")
-list (APPEND WSJCPP_SOURCES "src/core/bna.cpp")
+list (APPEND WSJCPP_SOURCES "src/core/binary_neural_acid.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
 
@@ -57,6 +53,10 @@ endif( SDL2_TTF_FOUND )
 ############################
 
 include_directories(${WSJCPP_INCLUDE_DIRS})
+
+# enable testing functionality
+enable_testing()
+add_subdirectory(tests)
 
 add_executable (bna ${WSJCPP_SOURCES})
 

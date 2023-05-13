@@ -7,11 +7,7 @@
 #include <fstream>
 
 #include <wsjcpp_core.h>
-
-#include "bna_types.h"
-#include "bna_operations.h"
-#include "bna_expression.h"
-#include "bna.h"
+#include "binary_neural_acid.h"
 
 template<class ValueType> class BNAGroup {
     public:
@@ -48,7 +44,7 @@ template<class ValueType> class BNAGroup {
         bool load(const std::string &sFilename) {
             clearResources();
             std::string sFilename0 = sFilename + ".bna";
-            if (!WsjcppCore::fileExists(sFilename0)) {
+            if (!BNA::fileExists(sFilename0)) {
                 WsjcppLog::err(TAG, "load: file not exists '" + sFilename0 + "'");
                 return false;
             }
@@ -65,8 +61,8 @@ template<class ValueType> class BNAGroup {
 
         bool save(const std::string &sFilename) {
             std::string sFilename0 = sFilename + ".bna";
-            if (WsjcppCore::fileExists(sFilename0)) {
-                if (!WsjcppCore::removeFile(sFilename0)) {
+            if (BNA::fileExists(sFilename0)) {
+                if (!BNA::removeFile(sFilename0)) {
                     WsjcppLog::err(TAG, "save: could not remove file '" + sFilename0 + "'");
                     return false;
                 }
@@ -170,7 +166,7 @@ template<class ValueType> class BNAGroup {
             // std::cout << "Compiled!" << std::endl;
             return true;
         }
-        
+
         const std::vector<BNANodeInput *> &getNodesInput() {
             return m_vNodesInput;
         }
@@ -178,7 +174,7 @@ template<class ValueType> class BNAGroup {
         const std::vector<BNANode *> &getNodes() {
             return m_vNodes;
         }
-        
+
         const std::vector<BNANodeOutput *> &getNodesOutput() {
             return m_vNodesOutput;
         }
@@ -368,7 +364,7 @@ template<class ValueType> class BNAGroup {
                 int nInputNodeIndex = readParam(file, "output");
                 m_vNodesOutput[i]->setInputNodeIndex(nInputNodeIndex);
             }
-            
+
             return compile(); // need for process expressions
         }
 
@@ -376,7 +372,7 @@ template<class ValueType> class BNAGroup {
             std::string sKeyword = "";
             file >> sKeyword;
             if (sKeyword != sParamName) {
-                WsjcppLog::throw_err(TAG, "readParam, Expected keyword '" + sParamName + "'");
+                throw std::runtime_error("readParam, Expected keyword '" + sParamName + "'");
                 return -1;
             }
             int nRet;
@@ -489,7 +485,7 @@ template<class ValueType> class BNAGroup {
                 int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
                 // std::cout << "Will be removed [" << nNodeIndex << "] in array = " << nArrayIndex << std::endl;
                 if (nNodeIndex > m_vNodes.size() + m_vNodesInput.size()) {
-                    WsjcppLog::throw_err(TAG, "Node Index very big much");
+                    throw std::runtime_error( "Node Index very big much");
                 }
             }
 
@@ -511,7 +507,7 @@ template<class ValueType> class BNAGroup {
                         m_vNodes[x]->setY(m_vNodes[x]->getY() - 1);
                     }
                 }
-                
+
                 for (int x = 0; x < m_vNodesOutput.size(); x++) {
                     if (m_vNodesOutput[x]->getInputNodeIndex() >= nNodeIndex) {
                         m_vNodesOutput[x]->setInputNodeIndex(m_vNodesOutput[x]->getInputNodeIndex() - 1);
@@ -530,11 +526,11 @@ template<class ValueType> class BNAGroup {
             }
             // std::cout << "nIndex = " << nIndex << std::endl;
             // std::cout << "m_vCalcVars.size() = " << m_vCalcVars.size() << std::endl;
-            WsjcppLog::throw_err(TAG, "out of rande index of var");
+            throw std::runtime_error("out of rande index of var");
             nIndex = nIndex - m_vCalcVars.size();
             return m_vCalcOutVars[nIndex];
         }
-        
+
 };
 
 #endif // BNA_GROUP_H

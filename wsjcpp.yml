@@ -64,8 +64,6 @@ distribution:
     type: "source-code"
 unit-tests:
   cases:
-    - name: "BnaOper"
-      description: "Test operations"
     - name: "CallOut"
       description: "Test calculation"
     - name: "Brute"
