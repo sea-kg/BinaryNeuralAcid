@@ -30,7 +30,7 @@ class AppState {
         const CoordXY &getCoordLeftTop() const;
         void incrementCoordLeftTopX(int nX);
         void incrementCoordLeftTopY(int nY);
-        
+
         const int windowWidth() const;
         const int windowHeight() const;
 

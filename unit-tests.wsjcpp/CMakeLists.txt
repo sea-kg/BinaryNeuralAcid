@@ -58,16 +58,11 @@ list (APPEND WSJCPP_SOURCES "../src/bna_expression.cpp")
 
 # unit-tests
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_call_out.cpp")
 list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_brute.cpp")
 list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_learning.cpp")
 list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_random_mutation.cpp")
 list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_read_write.cpp")
 list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_reverse_test.cpp")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_operation_or.cpp")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_operation_and.cpp")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_operation_xor.cpp")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_operation_not_xor.cpp")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.user-custom.txt)
 

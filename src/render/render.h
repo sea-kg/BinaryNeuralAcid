@@ -33,7 +33,7 @@ class RenderLine : public RenderObject {
         RenderLine(const CoordXY &p1, const CoordXY &p2, const RenderColor &color, int nPositionZ = 0);
         virtual void modify(const AppState& state) override;
         virtual void draw(SDL_Renderer* renderer) override;
-        
+
         const CoordXY &getAbsoluteCoord1();
         const CoordXY &getAbsoluteCoord2();
         const CoordXY &getCoord1();

@@ -92,7 +92,7 @@ template<class ValueType> class BNAGroup {
                 m_vNodesInput.push_back(new BNANodeInput(i));
             }
             for (int i = 0; i < nSize; i++) {
-                BNANode *pItem = new BNANode();
+                BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
                 pItem->setX(rand());
                 pItem->setY(rand());
                 int nOper = rand() % m_nOperSize;
@@ -106,7 +106,7 @@ template<class ValueType> class BNAGroup {
         }
 
         int addNode(int nInX, int nInY, const std::string &sOperType) {
-            BNANode *pItem = new BNANode();
+            BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
             pItem->setX(nInX);
             pItem->setY(nInY);
             pItem->setOperationType(sOperType);
@@ -171,7 +171,7 @@ template<class ValueType> class BNAGroup {
             return m_vNodesInput;
         }
 
-        const std::vector<BNANode *> &getNodes() {
+        const std::vector<BinaryNeuralAcidGraphNode *> &getNodes() {
             return m_vNodes;
         }
 
@@ -187,7 +187,7 @@ template<class ValueType> class BNAGroup {
             n = n - nNodesInputSize;
             int nNodesSize = m_vNodes.size();
             if (n < nNodesSize) {
-                BNANode *pNode = m_vNodes[n];
+                BinaryNeuralAcidGraphNode *pNode = m_vNodes[n];
                 int nLeft = this->calculateDepth(pNode->getX());
                 int nRight = this->calculateDepth(pNode->getY());
                 return std::max(nLeft, nRight) + 1;
@@ -207,7 +207,7 @@ template<class ValueType> class BNAGroup {
                     break;
                 }
                 int nIndex = rand() % m_vNodes.size();
-                BNANode *pItem = m_vNodes[nIndex];
+                BinaryNeuralAcidGraphNode *pItem = m_vNodes[nIndex];
                 m_vNodes.erase(m_vNodes.begin() + nIndex);
                 delete pItem;
             }
@@ -224,7 +224,7 @@ template<class ValueType> class BNAGroup {
                 }
             }
             for (int i = 0; i < pModel->getAddCicles(); i++) {
-                BNANode *pItem = new BNANode();
+                BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
                 pItem->setX(rand());
                 pItem->setY(rand());
                 int nOper = rand() % m_nOperSize;
@@ -319,7 +319,7 @@ template<class ValueType> class BNAGroup {
         int m_nBnaVersion;
         int m_nBnaRevision;
         std::vector<BNANodeInput *> m_vNodesInput;
-        std::vector<BNANode *> m_vNodes;
+        std::vector<BinaryNeuralAcidGraphNode *> m_vNodes;
         std::vector<BNANodeOutput *> m_vNodesOutput;
         std::map<std::string, IBNAOper<ValueType> *> m_vOperations;
         std::vector<IBNAOper<ValueType> *> m_vOperationList;
@@ -353,7 +353,7 @@ template<class ValueType> class BNAGroup {
             
             // read nodes
             for (int i = 0; i < nNodesSize; i++) {
-                BNANode *pItem = new BNANode();
+                BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
                 pItem->readFromFile(file);
                 m_vNodes.push_back(pItem);
             }

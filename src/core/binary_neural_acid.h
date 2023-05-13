@@ -149,11 +149,12 @@ template<class ValueType> class BNAExpression {
         IBNAOper<ValueType> *m_pOper;
 };
 
+// TODO class BinaryNeuralAcidGraph {
 
-class BNANode {
+class BinaryNeuralAcidGraphNode {
     public:
-        BNANode(unsigned short x, unsigned short y, const std::string &sOperationType);
-        BNANode();
+        BinaryNeuralAcidGraphNode(unsigned short x, unsigned short y, const std::string &sOperationType);
+        BinaryNeuralAcidGraphNode();
         unsigned short getX();
         void setX(unsigned short nX);
 
@@ -198,7 +199,6 @@ class BNANodeOutput {
         unsigned short m_nOutputIndex;
         unsigned short m_nInputNodeIndex;
 };
-
 
 
 void BNAConvertHEXStringToVBool(std::string &in, std::vector<BinaryNeuralAcidBit> &vars, int size);
@@ -263,13 +263,14 @@ class BNA {
 		bool save(const std::string &sFilename);
 		void randomGenerate(int nInput, int nOutput, int nSize);
         int addNode(int nInX, int nInY, const std::string &sOperType);
+        int addNodeOutput(int nIn);
         bool compile();
 
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
 
         const std::vector<BNANodeInput *> &getNodesInput();
-        const std::vector<BNANode *> &getNodes();
+        const std::vector<BinaryNeuralAcidGraphNode *> &getNodes();
         const std::vector<BNANodeOutput *> &getNodesOutput();
         int calculateDepth(int n);
 
@@ -278,6 +279,7 @@ class BNA {
 		nlohmann::json toJson();
         void randomModify(const BNAModificationModel *pModel);
         BinaryNeuralAcidBit calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
+        BinaryNeuralAcidBit compute(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
 
         unsigned int getInputSize();
         unsigned int getNodesSize();
@@ -304,7 +306,7 @@ class BNA {
 
         void clearResources();
         std::vector<BNANodeInput *> m_vNodesInput;
-        std::vector<BNANode *> m_vNodes;
+        std::vector<BinaryNeuralAcidGraphNode *> m_vNodes;
         std::vector<BNANodeOutput *> m_vNodesOutput;
 
         void clearCalcExprsVars();

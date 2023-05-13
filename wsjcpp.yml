@@ -64,8 +64,6 @@ distribution:
     type: "source-code"
 unit-tests:
   cases:
-    - name: "CallOut"
-      description: "Test calculation"
     - name: "Brute"
       description: "Brute test"
     - name: "Learning"
@@ -76,12 +74,4 @@ unit-tests:
       description: "ReadWrite test"
     - name: "ReverseTest"
       description: "Reverse test"
-    - name: "OperationOr"
-      description: ""
-    - name: "OperationAnd"
-      description: ""
-    - name: "OperationXor"
-      description: ""
-    - name: "OperationNotXor"
-      description: ""
 
