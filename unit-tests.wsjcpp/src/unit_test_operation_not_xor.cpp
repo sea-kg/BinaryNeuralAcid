@@ -32,10 +32,10 @@ bool UnitTestOperationNotXor::doBeforeTest() {
 void UnitTestOperationNotXor::executeTest() {
     IBNAOper *pOper = new BNAOperNotXor();
     compare("oper_notxor_name", pOper->type(), "NXOR");
-    compare("oper_notxor_0_0", pOper->calc(BNABit::B_0, BNABit::B_0), BNABit::B_1);
-    compare("oper_notxor_0_1", pOper->calc(BNABit::B_0, BNABit::B_1), BNABit::B_0);
-    compare("oper_notxor_1_0", pOper->calc(BNABit::B_1, BNABit::B_0), BNABit::B_0);
-    compare("oper_notxor_1_1", pOper->calc(BNABit::B_1, BNABit::B_1), BNABit::B_1);
+    compare("oper_notxor_0_0", pOper->calc(BinaryNeuralAcidBit::B_0, BinaryNeuralAcidBit::B_0), BinaryNeuralAcidBit::B_1);
+    compare("oper_notxor_0_1", pOper->calc(BinaryNeuralAcidBit::B_0, BinaryNeuralAcidBit::B_1), BinaryNeuralAcidBit::B_0);
+    compare("oper_notxor_1_0", pOper->calc(BinaryNeuralAcidBit::B_1, BinaryNeuralAcidBit::B_0), BinaryNeuralAcidBit::B_0);
+    compare("oper_notxor_1_1", pOper->calc(BinaryNeuralAcidBit::B_1, BinaryNeuralAcidBit::B_1), BinaryNeuralAcidBit::B_1);
 }
 
 // ---------------------------------------------------------------------

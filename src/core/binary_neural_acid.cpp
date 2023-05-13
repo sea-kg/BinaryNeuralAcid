@@ -8,11 +8,11 @@
 // -----------------------------------------------------------------
 // BNABit4
 
-BNABit4::BNABit4(BNABit b1, BNABit b2, BNABit b3, BNABit b4) : b1(b1), b2(b2), b3(b3), b4(b4) {
+BNABit4::BNABit4(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3, BinaryNeuralAcidBit b4) : b1(b1), b2(b2), b3(b3), b4(b4) {
 
 }
 
-void BNABit4::appendToVector(std::vector<BNABit> &vars){
+void BNABit4::appendToVector(std::vector<BinaryNeuralAcidBit> &vars){
     vars.push_back(b1);
     vars.push_back(b2);
     vars.push_back(b3);
@@ -25,7 +25,7 @@ void BNABit4::appendToVector(std::vector<BNABit> &vars){
 
 std::string BNAOperXor::type(){ return std::string("XOR"); }
 
-BNABit BNAOperXor::calc(BNABit b1, BNABit b2){
+BinaryNeuralAcidBit BNAOperXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 ^ c2) & 0x01;
@@ -37,7 +37,7 @@ BNABit BNAOperXor::calc(BNABit b1, BNABit b2){
 
 std::string BNAOperNotXor::type(){ return std::string("NXOR"); }
 
-BNABit BNAOperNotXor::calc(BNABit b1, BNABit b2){
+BinaryNeuralAcidBit BNAOperNotXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (!(c1 ^ c2)) & 0x01;
@@ -51,7 +51,7 @@ std::string BNAOperAnd::type() {
     return std::string("AND");
 }
 
-BNABit BNAOperAnd::calc(BNABit b1, BNABit b2) {
+BinaryNeuralAcidBit BNAOperAnd::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2) {
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 & c2) & 0x01;
@@ -63,7 +63,7 @@ BNABit BNAOperAnd::calc(BNABit b1, BNABit b2) {
 
 std::string BNAOperOr::type(){ return std::string("OR"); }
 
-BNABit BNAOperOr::calc(BNABit b1, BNABit b2){
+BinaryNeuralAcidBit BNAOperOr::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 | c2) & 0x01;
@@ -217,7 +217,7 @@ void initMapHEX(){
     }
 }
 
-void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size){
+void BNAConvertHEXStringToVBool(std::string &in, std::vector<BinaryNeuralAcidBit> &vars, int size){
     if (size % 8 != 0) {
         std::cerr << "[ERROR] Size must be % 8 == 0";
     }
@@ -333,7 +333,7 @@ std::string BNAConvertBinToHex(std::string sBin) {
 
 // ----------------------------------------------------------------
 
-std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars) {
+std::string BNAConvertVBoolHEXString(std::vector<BinaryNeuralAcidBit> &vars) {
     std::string result = "";
     unsigned char c = 0;
     for(int i = 0; i < vars.size(); i++){
@@ -643,7 +643,7 @@ bool BNA::compile() {
 
     // prepare input nodes
     for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
-        BNAVar<BNABit> *pVar = new BNAVar<BNABit>();
+        BNAVar<BinaryNeuralAcidBit> *pVar = new BNAVar<BinaryNeuralAcidBit>();
         pVar->setValue(B_0);
         pVar->setName("in" + std::to_string(i));
         m_vCalcInputVars.push_back(pVar);
@@ -656,11 +656,11 @@ bool BNA::compile() {
         int x = m_vNodes[i]->getX();
         int y = m_vNodes[i]->getY();
         std::string sOperationType = m_vNodes[i]->getOperationType();
-        BNAExpression<BNABit> *pExpr = new BNAExpression<BNABit>();
+        BNAExpression<BinaryNeuralAcidBit> *pExpr = new BNAExpression<BinaryNeuralAcidBit>();
         pExpr->setOperandLeft(getVarByIndex(x));
         pExpr->setOperandRight(getVarByIndex(y));
         pExpr->oper(m_vOperations[sOperationType]);
-        BNAVar<BNABit> *pVar = new BNAVar<BNABit>();
+        BNAVar<BinaryNeuralAcidBit> *pVar = new BNAVar<BinaryNeuralAcidBit>();
         pVar->setName("node" + std::to_string(i));
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
@@ -963,7 +963,7 @@ bool BNA::writeToFileBna(std::ofstream &file){
     return true;
 }
 
-bool BNA::registryOperationType(IBNAOper<BNABit> *pOper) {
+bool BNA::registryOperationType(IBNAOper<BinaryNeuralAcidBit> *pOper) {
     // TODO check aready registered
     m_vOperations[pOper->type()] = pOper;
     m_vOperationList.push_back(pOper);
@@ -1010,7 +1010,7 @@ nlohmann::json BNA::toJson() {
     throw std::runtime_error("TODO toJson");
 }
 
-BNABit BNA::calc(const std::vector<BNABit> &vInputs, int nOutput){
+BinaryNeuralAcidBit BNA::calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput){
     // prepare calculate exprs
     if (!m_bCompiled) {
         // std::cout << "Not compiled" << std::endl;
@@ -1126,7 +1126,7 @@ void BNA::normalizeNodes() {
     }
 }
 
-BNAVar<BNABit> *BNA::getVarByIndex(int nIndex) {
+BNAVar<BinaryNeuralAcidBit> *BNA::getVarByIndex(int nIndex) {
     if (nIndex < m_vCalcInputVars.size()) {
         return m_vCalcInputVars[nIndex];
     }
@@ -1469,7 +1469,7 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
     int nMemorySize = m_pBNAMemory->size();
     for(int i = 0; i < nMemorySize; i++){
         BNAMemoryItem *pBNAMemoryItem = m_pBNAMemory->at(i);
-        BNABit bResult; // = pBNA->calc(pBNAMemoryItem->inputToVectorBool(), 0);
+        BinaryNeuralAcidBit bResult; // = pBNA->calc(pBNAMemoryItem->inputToVectorBool(), 0);
         // if (pBNAMemoryItem->outputToVectorBool()[nBitId] == bResult) {
         //     nResult++;
         // }

@@ -10,20 +10,20 @@ class BNATestSin1Item {
         float getIn();
         float getOut();
 
-        const std::vector<BNABit> &getInOfBits();
-        const std::vector<BNABit> &getOutOfBits();
+        const std::vector<BinaryNeuralAcidBit> &getInOfBits();
+        const std::vector<BinaryNeuralAcidBit> &getOutOfBits();
 
     private:
-        void floatToBNABits(const float &f, std::vector<BNABit> &vResult);
+        void floatToBNABits(const float &f, std::vector<BinaryNeuralAcidBit> &vResult);
 
         float m_nIn;
         float m_nOut;
 
-        std::vector<BNABit> m_vIn;
-        std::vector<BNABit> m_vOut;
+        std::vector<BinaryNeuralAcidBit> m_vIn;
+        std::vector<BinaryNeuralAcidBit> m_vOut;
 };
 
-class BNATestSin1 : public ICallbacksRenderBNA<BNABit> {
+class BNATestSin1 : public ICallbacksRenderBNA<BinaryNeuralAcidBit> {
     public:
         BNATestSin1();
 
@@ -33,14 +33,14 @@ class BNATestSin1 : public ICallbacksRenderBNA<BNABit> {
         virtual bool onStart() override;
         virtual void doMutation() override;
         virtual void doTestAndRevert() override;
-        virtual BNAGroup<BNABit>* getBNA() override;
+        virtual BNAGroup<BinaryNeuralAcidBit>* getBNA() override;
         virtual const BNAStatCalcResults *getResults() override;
 
     private:
         // void floatToByteArray(const float &f, unsigned char *pResult4);
         void byteArrayToFloat(const unsigned char *pBytes, float &nResult);
         void print(unsigned char *pResult4);
-        void print(BNABit pResult[1]);
+        void print(BinaryNeuralAcidBit pResult[1]);
         void regenDataTests();
         bool loadDataTests();
         bool saveDataTests();
@@ -49,7 +49,7 @@ class BNATestSin1 : public ICallbacksRenderBNA<BNABit> {
         std::string TAG;
 
         std::string m_sBNAFilename;
-        BNAGroup<BNABit> *m_pBNA;
+        BNAGroup<BinaryNeuralAcidBit> *m_pBNA;
 
         std::string m_sDataTestsFilename;
         int m_nDataTestsSize;

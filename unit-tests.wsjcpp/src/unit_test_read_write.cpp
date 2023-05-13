@@ -24,11 +24,11 @@ void UnitTestReadWrite::executeTest() {
     bna.randomGenerate(128,1,256);
 
     // fill the input vector
-    std::vector<BNABit> vInputs;
+    std::vector<BinaryNeuralAcidBit> vInputs;
     for (int i = 0; i < 128; i++) {
         vInputs.push_back(B_1);
     }
-    BNABit bResult = bna.calc(vInputs, 0);
+    BinaryNeuralAcidBit bResult = bna.calc(vInputs, 0);
 
     bool bSave0 = bna.save("./temporary-unit-tests-data/read-write-test0");
     compare("save0", bSave0, true);

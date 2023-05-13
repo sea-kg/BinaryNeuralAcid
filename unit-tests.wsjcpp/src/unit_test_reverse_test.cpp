@@ -50,16 +50,16 @@ void UnitTestReverseTest::executeTest() {
     for(int n = 0; n < tests.size(); n++){
         QString key = tests[n].md5;
         QString text = tests[n].text;
-        QVector<BNABit> vInput;
+        QVector<BinaryNeuralAcidBit> vInput;
         BNAConvertHEXStringToVBool(key, vInput, 128);
 		
-        QVector<BNABit> vOutputExpected;
+        QVector<BinaryNeuralAcidBit> vOutputExpected;
         QByteArray originalString = text.toUtf8();
 
-        QVector<BNABit> vOutput;
+        QVector<BinaryNeuralAcidBit> vOutput;
         for (int bitid = 0; bitid < bnaProject.getOutputBits(); bitid++) {
             BNA *pBNA = bnaProject.getBNA(bitid);
-            BNABit bResult = pBNA->calc(vInput, 0);
+            BinaryNeuralAcidBit bResult = pBNA->calc(vInput, 0);
             vOutput.push_back(bResult);
 		}
 

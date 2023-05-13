@@ -6,21 +6,19 @@
 #include <iostream>
 #include <fstream>
 
-
-
-enum BNABit : char {
+enum BinaryNeuralAcidBit : char {
     B_0 = 0x00,
     B_1 = 0x01
 };
 
 class BNABit4 {
     public:
-        BNABit4(BNABit b1, BNABit b2, BNABit b3, BNABit b4);
-        void appendToVector(std::vector<BNABit> &vars);
-        BNABit b1;
-        BNABit b2;
-        BNABit b3;
-        BNABit b4;
+        BNABit4(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3, BinaryNeuralAcidBit b4);
+        void appendToVector(std::vector<BinaryNeuralAcidBit> &vars);
+        BinaryNeuralAcidBit b1;
+        BinaryNeuralAcidBit b2;
+        BinaryNeuralAcidBit b3;
+        BinaryNeuralAcidBit b4;
 };
 
 template<class ValueType> class IBNAOper {
@@ -29,28 +27,28 @@ template<class ValueType> class IBNAOper {
         virtual ValueType calc(ValueType b1, ValueType b2) = 0;
 };
 
-class BNAOperXor : public IBNAOper<BNABit>{
+class BNAOperXor : public IBNAOper<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
+        virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperNotXor : public IBNAOper<BNABit>{
+class BNAOperNotXor : public IBNAOper<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
+        virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperAnd : public IBNAOper<BNABit> {
+class BNAOperAnd : public IBNAOper<BinaryNeuralAcidBit> {
     public:
         virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
+        virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperOr : public IBNAOper<BNABit> {
+class BNAOperOr : public IBNAOper<BinaryNeuralAcidBit> {
     public:
         virtual std::string type();
-        virtual BNABit calc(BNABit b1, BNABit b2);
+        virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
 
@@ -203,8 +201,8 @@ class BNANodeOutput {
 
 
 
-void BNAConvertHEXStringToVBool(std::string &in, std::vector<BNABit> &vars, int size);
-std::string BNAConvertVBoolHEXString(std::vector<BNABit> &vars);
+void BNAConvertHEXStringToVBool(std::string &in, std::vector<BinaryNeuralAcidBit> &vars, int size);
+std::string BNAConvertVBoolHEXString(std::vector<BinaryNeuralAcidBit> &vars);
 std::string BNAConvertCharToHexCode(unsigned char c);
 std::string BNAConvertHexToBin(std::string sHex);
 std::string BNAConvertBinToHex(std::string sBin);
@@ -279,7 +277,7 @@ class BNA {
         // void importFromByteArray(QByteArray data);
 		nlohmann::json toJson();
         void randomModify(const BNAModificationModel *pModel);
-        BNABit calc(const std::vector<BNABit> &vInputs, int nOutput);
+        BinaryNeuralAcidBit calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
 
         unsigned int getInputSize();
         unsigned int getNodesSize();
@@ -299,9 +297,9 @@ class BNA {
         int readParam(std::ifstream &file, const std::string &sParamName);
         bool writeToFileBna(std::ofstream &file);
 
-        bool registryOperationType(IBNAOper<BNABit> *pOper);
-        std::map<std::string, IBNAOper<BNABit> *> m_vOperations;
-        std::vector<IBNAOper<BNABit> *> m_vOperationList;
+        bool registryOperationType(IBNAOper<BinaryNeuralAcidBit> *pOper);
+        std::map<std::string, IBNAOper<BinaryNeuralAcidBit> *> m_vOperations;
+        std::vector<IBNAOper<BinaryNeuralAcidBit> *> m_vOperationList;
         int m_nOperSize;
 
         void clearResources();
@@ -311,11 +309,11 @@ class BNA {
 
         void clearCalcExprsVars();
         void normalizeNodes();
-        BNAVar<BNABit> *getVarByIndex(int nIndex);
-        std::vector<BNAExpression<BNABit> *> m_vCalcExprs;
-        std::vector<BNAVar<BNABit> *> m_vCalcInputVars;
-        std::vector<BNAVar<BNABit> *> m_vCalcVars;
-        std::vector<BNAVar<BNABit> *> m_vCalcOutVars;
+        BNAVar<BinaryNeuralAcidBit> *getVarByIndex(int nIndex);
+        std::vector<BNAExpression<BinaryNeuralAcidBit> *> m_vCalcExprs;
+        std::vector<BNAVar<BinaryNeuralAcidBit> *> m_vCalcInputVars;
+        std::vector<BNAVar<BinaryNeuralAcidBit> *> m_vCalcVars;
+        std::vector<BNAVar<BinaryNeuralAcidBit> *> m_vCalcOutVars;
 };
 
 class BNAMemoryItem {
@@ -328,8 +326,8 @@ class BNAMemoryItem {
         std::string TAG;
         int m_nInputBits;
         int m_nOutputBits;
-        std::vector<BNABit> m_vInput;
-        std::vector<BNABit> m_vOutput;
+        std::vector<BinaryNeuralAcidBit> m_vInput;
+        std::vector<BinaryNeuralAcidBit> m_vOutput;
 };
 
 class BNAMemory {

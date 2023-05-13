@@ -21,8 +21,8 @@ bool UnitTestRandomMutation::doBeforeTest() {
 // 	std::cout << "\r\t Calculates " << i << " (cicles: " << cicles << " / " << max << ") ";
 // }
 
-// QVector<BNABit> createInputs(BNABit b1, BNABit b2, BNABit b3){
-//     QVector<BNABit> vInputs;
+// QVector<BinaryNeuralAcidBit> createInputs(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3){
+//     QVector<BinaryNeuralAcidBit> vInputs;
 //     vInputs.push_back(b1);
 //     vInputs.push_back(b2);
 //     vInputs.push_back(b3);
@@ -30,8 +30,8 @@ bool UnitTestRandomMutation::doBeforeTest() {
 // }
 
 // struct DictonaryTest {
-//     DictonaryTest(QVector<BNABit> vInputs, bool expectedOutput) :  vInputs(vInputs), expectedVal(expectedOutput) {}
-//     QVector<BNABit> vInputs;
+//     DictonaryTest(QVector<BinaryNeuralAcidBit> vInputs, bool expectedOutput) :  vInputs(vInputs), expectedVal(expectedOutput) {}
+//     QVector<BinaryNeuralAcidBit> vInputs;
 //     bool expectedVal;
 // };
 

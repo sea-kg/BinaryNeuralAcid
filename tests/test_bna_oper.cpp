@@ -11,17 +11,17 @@ int main() {
     BNAOperOr *pOperOr = new BNAOperOr();
 
     struct LocalDataTest {
-        LocalDataTest(IBNAOper<BNABit> *pOper, BNABit b1, BNABit b2, BNABit bExpected) {
+        LocalDataTest(IBNAOper<BinaryNeuralAcidBit> *pOper, BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit bExpected) {
             m_pOper = pOper;
             m_b1 = b1;
             m_b2 = b2;
             m_bExpected = bExpected;
         }
-        IBNAOper<BNABit> *m_pOper;
-        BNABit m_b1;
-        BNABit m_b2;
-        BNABit m_bExpected;
-        BNABit calc() {
+        IBNAOper<BinaryNeuralAcidBit> *m_pOper;
+        BinaryNeuralAcidBit m_b1;
+        BinaryNeuralAcidBit m_b2;
+        BinaryNeuralAcidBit m_bExpected;
+        BinaryNeuralAcidBit calc() {
             return m_pOper->calc(m_b1, m_b2);
         }
     };
@@ -54,7 +54,7 @@ int main() {
 
     for (int i = 0; i < vTests.size(); i++) {
         LocalDataTest test = vTests[i];
-        BNABit b = test.calc();
+        BinaryNeuralAcidBit b = test.calc();
         std::string sTestTag = std::to_string(i) + " " + test.m_pOper->type();
         if (b != test.m_bExpected) {
             return 1;

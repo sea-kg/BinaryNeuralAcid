@@ -160,7 +160,7 @@ void RenderBNANode::setNodeInput(BNANodeInput *pNode) {
     m_nLevelY = 1;
 }
 
-void RenderBNANode::setNode(BNANode *pNode, BNAGroup<BNABit> *pBna) {
+void RenderBNANode::setNode(BNANode *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna) {
     m_pNodeInput = nullptr;
     m_pNode = pNode;
     m_pNodeOutput = nullptr;
@@ -185,7 +185,7 @@ void RenderBNANode::setNode(BNANode *pNode, BNAGroup<BNABit> *pBna) {
 //    std::cout << "m_nLevelY=" << m_nLevelY << std::endl;
 }
 
-void RenderBNANode::setNodeOutput(BNANodeOutput *pNode, BNAGroup<BNABit> *pBna) {
+void RenderBNANode::setNodeOutput(BNANodeOutput *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna) {
     m_pNodeInput = nullptr;
     m_pNode = nullptr;
     m_pNodeOutput = pNode;

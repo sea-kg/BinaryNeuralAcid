@@ -32,10 +32,10 @@ bool UnitTestOperationAnd::doBeforeTest() {
 void UnitTestOperationAnd::executeTest() {
     IBNAOper *pOper = new BNAOperAnd();
     compare("oper_and_name", pOper->type(), "AND");
-    compare("oper_and_0_0", pOper->calc(BNABit::B_0, BNABit::B_0), BNABit::B_0);
-    compare("oper_and_0_1", pOper->calc(BNABit::B_0, BNABit::B_1), BNABit::B_0);
-    compare("oper_and_1_0", pOper->calc(BNABit::B_1, BNABit::B_0), BNABit::B_0);
-    compare("oper_and_1_1", pOper->calc(BNABit::B_1, BNABit::B_1), BNABit::B_1);
+    compare("oper_and_0_0", pOper->calc(BinaryNeuralAcidBit::B_0, BinaryNeuralAcidBit::B_0), BinaryNeuralAcidBit::B_0);
+    compare("oper_and_0_1", pOper->calc(BinaryNeuralAcidBit::B_0, BinaryNeuralAcidBit::B_1), BinaryNeuralAcidBit::B_0);
+    compare("oper_and_1_0", pOper->calc(BinaryNeuralAcidBit::B_1, BinaryNeuralAcidBit::B_0), BinaryNeuralAcidBit::B_0);
+    compare("oper_and_1_1", pOper->calc(BinaryNeuralAcidBit::B_1, BinaryNeuralAcidBit::B_1), BinaryNeuralAcidBit::B_1);
 }
 
 // ---------------------------------------------------------------------

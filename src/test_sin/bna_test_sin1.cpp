@@ -20,22 +20,22 @@ float BNATestSin1Item::getOut() {
     return m_nOut;
 }
 
-const std::vector<BNABit> &BNATestSin1Item::getInOfBits() {
+const std::vector<BinaryNeuralAcidBit> &BNATestSin1Item::getInOfBits() {
     return m_vIn;
 }
 
-const std::vector<BNABit> &BNATestSin1Item::getOutOfBits() {
+const std::vector<BinaryNeuralAcidBit> &BNATestSin1Item::getOutOfBits() {
     return m_vOut;
 }
 
-void BNATestSin1Item::floatToBNABits(const float &f, std::vector<BNABit> &vResult) {
+void BNATestSin1Item::floatToBNABits(const float &f, std::vector<BinaryNeuralAcidBit> &vResult) {
     vResult.resize(32);
 
     unsigned char const * b = reinterpret_cast<unsigned char const *>(&f);
     for (std::size_t i = 0; i != sizeof(float); ++i) {
         unsigned char c = b[i];
         for (int x = 0; x < 8; x++) {
-            vResult[(7 - x) + i*8] = (BNABit)(c >> x & 0x01);
+            vResult[(7 - x) + i*8] = (BinaryNeuralAcidBit)(c >> x & 0x01);
         }
     }
 }
@@ -49,7 +49,7 @@ BNATestSin1::BNATestSin1() {
     m_nSizeInput = 32; // input bits 
     m_nSizeOutput = 1; // output bits
     m_sBNAFilename = "testsin1";
-    m_pBNA = new BNAGroup<BNABit>(m_nSizeInput, m_nSizeOutput);
+    m_pBNA = new BNAGroup<BinaryNeuralAcidBit>(m_nSizeInput, m_nSizeOutput);
     m_sDataTestsFilename = "testsin1.bnadatatest";
     m_nDataTestsSize = 2000;
     m_pResults = new BNAStatCalcResults(1);
@@ -121,7 +121,7 @@ void BNATestSin1::doTestAndRevert() {
     }
 }
 
-BNAGroup<BNABit>* BNATestSin1::getBNA() {
+BNAGroup<BinaryNeuralAcidBit>* BNATestSin1::getBNA() {
     return m_pBNA;
 }
 
@@ -139,9 +139,9 @@ void BNATestSin1::print(unsigned char *pResult4) {
     }
 }
 
-void BNATestSin1::print(BNABit pResult[1]) {
+void BNATestSin1::print(BinaryNeuralAcidBit pResult[1]) {
     for (int i = 0; i < m_nSizeOutput; i++) {
-        std::cout << (pResult[i] == BNABit::B_0 ? "0" : "1");
+        std::cout << (pResult[i] == BinaryNeuralAcidBit::B_0 ? "0" : "1");
         if ( (i + 1) % 4 == 0) {
             std::cout << " ";
         }
@@ -211,7 +211,7 @@ void BNATestSin1::calculateCurrentCounters() {
     for (int i = 0; i < m_vDataTests.size(); i++) {
         int x = 0;
         // for (int x = 0; x < m_nSizeOutput; x++) {
-            BNABit bResult = m_pBNA->calc(m_vDataTests[i].getInOfBits(), x);
+            BinaryNeuralAcidBit bResult = m_pBNA->calc(m_vDataTests[i].getInOfBits(), x);
             if (m_vDataTests[i].getOutOfBits()[x] == bResult) {
                 m_pResults->incrementCurrentCounter(x);
             }

@@ -60,8 +60,8 @@ class RenderBNANode : public RenderRect {
     public:
         RenderBNANode(int nSizeNode);
         void setNodeInput(BNANodeInput *pNode);
-        void setNode(BNANode *pNode, BNAGroup<BNABit> *pBna);
-        void setNodeOutput(BNANodeOutput *pNode, BNAGroup<BNABit> *pBna);
+        void setNode(BNANode *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna);
+        void setNodeOutput(BNANodeOutput *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna);
         int getLevelY();
 
     private:
@@ -170,7 +170,7 @@ class RenderBNA {
         }
 
         void prepareVectorsSize() {
-            BNAGroup<BNABit> *pBna = m_pCallbacksRenderBNA->getBNA();
+            BNAGroup<BinaryNeuralAcidBit> *pBna = m_pCallbacksRenderBNA->getBNA();
             int nInputSize = pBna->getInputSize();
             int nNodesSize = pBna->getNodesSize();
             int nOutputSize = pBna->getOutputSize();
@@ -244,7 +244,7 @@ class RenderBNA {
         }
 
         void prepareRendorBNANodes() {
-            BNAGroup<BNABit> *pBna = m_pCallbacksRenderBNA->getBNA();
+            BNAGroup<BinaryNeuralAcidBit> *pBna = m_pCallbacksRenderBNA->getBNA();
             int nInputSize = pBna->getInputSize();
             int nNodesSize = pBna->getNodesSize();
             int nOutputSize = pBna->getOutputSize();
