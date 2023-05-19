@@ -5,7 +5,7 @@
 
 
 int main() {
-    IBNAOper<BinaryNeuralAcidBit> *pOper = new BNAOperAnd();
+    IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper = new BNAOperAnd();
 
     if (pOper->type() != "AND") {
         return 1;

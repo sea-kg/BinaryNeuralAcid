@@ -21,11 +21,11 @@ void BNABit4::appendToVector(std::vector<BinaryNeuralAcidBit> &vars){
 
 
 // -----------------------------------------------------------------
-// BNAOperXor
+// BinaryNeuralAcidOperXor
 
-std::string BNAOperXor::type(){ return std::string("XOR"); }
+std::string BinaryNeuralAcidOperXor::type(){ return std::string("XOR"); }
 
-BinaryNeuralAcidBit BNAOperXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
+BinaryNeuralAcidBit BinaryNeuralAcidOperXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 ^ c2) & 0x01;
@@ -59,11 +59,11 @@ BinaryNeuralAcidBit BNAOperAnd::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit
 }
 
 // -----------------------------------------------------------------
-// BNAOperOr
+// BinaryNeuralAcidOperOr
 
-std::string BNAOperOr::type(){ return std::string("OR"); }
+std::string BinaryNeuralAcidOperOr::type(){ return std::string("OR"); }
 
-BinaryNeuralAcidBit BNAOperOr::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
+BinaryNeuralAcidBit BinaryNeuralAcidOperOr::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 | c2) & 0x01;
@@ -491,10 +491,10 @@ void BNAModificationModel::print() const {
 BNA::BNA() {
     m_vNodesInput.push_back(new BNANodeInput(0));
     m_vNodesOutput.push_back(new BNANodeOutput(0, 0));
-    registryOperationType(new BNAOperXor());
+    registryOperationType(new BinaryNeuralAcidOperXor());
     registryOperationType(new BNAOperNotXor());
     registryOperationType(new BNAOperAnd());
-    registryOperationType(new BNAOperOr());
+    registryOperationType(new BinaryNeuralAcidOperOr());
     m_nOperSize = m_vOperationList.size();
     TAG = "BNA";
     m_nBnaVersion = 4;
@@ -645,7 +645,7 @@ bool BNA::compile() {
 
     // prepare input nodes
     for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
-        BNAVar<BinaryNeuralAcidBit> *pVar = new BNAVar<BinaryNeuralAcidBit>();
+        BinaryNeuralAcidVar<BinaryNeuralAcidBit> *pVar = new BinaryNeuralAcidVar<BinaryNeuralAcidBit>();
         pVar->setValue(B_0);
         pVar->setName("in" + std::to_string(i));
         m_vCalcInputVars.push_back(pVar);
@@ -659,7 +659,7 @@ bool BNA::compile() {
         pExpr->setOperandLeft(getVarByIndex(m_vNodes[i]->getX()));
         pExpr->setOperandRight(getVarByIndex(m_vNodes[i]->getY()));
         pExpr->oper(m_vOperations[m_vNodes[i]->getOperationType()]);
-        BNAVar<BinaryNeuralAcidBit> *pVar = new BNAVar<BinaryNeuralAcidBit>();
+        BinaryNeuralAcidVar<BinaryNeuralAcidBit> *pVar = new BinaryNeuralAcidVar<BinaryNeuralAcidBit>();
         pVar->setName("node" + std::to_string(i));
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
@@ -962,7 +962,7 @@ bool BNA::writeToFileBna(std::ofstream &file){
     return true;
 }
 
-bool BNA::registryOperationType(IBNAOper<BinaryNeuralAcidBit> *pOper) {
+bool BNA::registryOperationType(IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper) {
     // TODO check aready registered
     m_vOperations[pOper->type()] = pOper;
     m_vOperationList.push_back(pOper);
@@ -1131,7 +1131,7 @@ void BNA::normalizeNodes() {
     }
 }
 
-BNAVar<BinaryNeuralAcidBit> *BNA::getVarByIndex(int nIndex) {
+BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BNA::getVarByIndex(int nIndex) {
     if (nIndex < m_vCalcInputVars.size()) {
         return m_vCalcInputVars[nIndex];
     }

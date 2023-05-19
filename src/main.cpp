@@ -15,7 +15,7 @@ int main(int argc, const char* argv[]) {
     }
     WsjcppLog::setPrefixLogFile("bna");
     WsjcppLog::setLogDirectory(".logs");
-    
+
     ArgumentProcessorMain *pMain = new ArgumentProcessorMain();
     WsjcppArguments prog(argc, argv, pMain);
     return prog.exec();

@@ -14,10 +14,10 @@ template<class ValueType> class BNAGroup {
         BNAGroup() {
             m_vNodesInput.push_back(new BNANodeInput(0));
             m_vNodesOutput.push_back(new BNANodeOutput(0, 0));
-            registryOperationType(new BNAOperXor());
+            registryOperationType(new BinaryNeuralAcidOperXor());
             registryOperationType(new BNAOperNotXor());
             registryOperationType(new BNAOperAnd());
-            registryOperationType(new BNAOperOr());
+            registryOperationType(new BinaryNeuralAcidOperOr());
             m_nOperSize = m_vOperationList.size();
             TAG = "BNA";
             m_nBnaVersion = 4;
@@ -119,14 +119,14 @@ template<class ValueType> class BNAGroup {
             if (m_bCompiled) {
                 return true; // already compiled
             }
-            
+
             // std::cout << "Compiling..." << std::endl;
 
             clearCalcExprsVars();
 
             // prepare input nodes
             for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
-                BNAVar<ValueType> *pVar = new BNAVar<ValueType>();
+                BinaryNeuralAcidVar<ValueType> *pVar = new BinaryNeuralAcidVar<ValueType>();
                 pVar->setValue(B_0);
                 pVar->setName("in" + std::to_string(i));
                 m_vCalcInputVars.push_back(pVar);
@@ -143,7 +143,7 @@ template<class ValueType> class BNAGroup {
                 pExpr->setOperandLeft(getVarByIndex(x));
                 pExpr->setOperandRight(getVarByIndex(y));
                 pExpr->oper(m_vOperations[sOperationType]);
-                BNAVar<ValueType> *pVar = new BNAVar<ValueType>();
+                BinaryNeuralAcidVar<ValueType> *pVar = new BinaryNeuralAcidVar<ValueType>();
                 pVar->setName("node" + std::to_string(i));
                 m_vCalcVars.push_back(pVar);
                 pExpr->out(pVar);
@@ -321,13 +321,13 @@ template<class ValueType> class BNAGroup {
         std::vector<BNANodeInput *> m_vNodesInput;
         std::vector<BinaryNeuralAcidGraphNode *> m_vNodes;
         std::vector<BNANodeOutput *> m_vNodesOutput;
-        std::map<std::string, IBNAOper<ValueType> *> m_vOperations;
-        std::vector<IBNAOper<ValueType> *> m_vOperationList;
+        std::map<std::string, IBinaryNeuralAcidOperation<ValueType> *> m_vOperations;
+        std::vector<IBinaryNeuralAcidOperation<ValueType> *> m_vOperationList;
         int m_nOperSize;
         std::vector<BNAExpression<ValueType> *> m_vCalcExprs;
-        std::vector<BNAVar<ValueType> *> m_vCalcInputVars;
-        std::vector<BNAVar<ValueType> *> m_vCalcVars;
-        std::vector<BNAVar<ValueType> *> m_vCalcOutVars;
+        std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcInputVars;
+        std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcVars;
+        std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcOutVars;
 
         bool readFromFileBna(std::ifstream &file) {
             clearResources();
@@ -396,7 +396,7 @@ template<class ValueType> class BNAGroup {
             return true;
         }
 
-        bool registryOperationType(IBNAOper<ValueType> *pOper) {
+        bool registryOperationType(IBinaryNeuralAcidOperation<ValueType> *pOper) {
             // TODO check aready registered
             m_vOperations[pOper->type()] = pOper;
             m_vOperationList.push_back(pOper);
@@ -516,7 +516,7 @@ template<class ValueType> class BNAGroup {
             }
         }
 
-        BNAVar<ValueType> *getVarByIndex(int nIndex) {
+        BinaryNeuralAcidVar<ValueType> *getVarByIndex(int nIndex) {
             if (nIndex < m_vCalcInputVars.size()) {
                 return m_vCalcInputVars[nIndex];
             }

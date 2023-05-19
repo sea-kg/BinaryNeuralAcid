@@ -6,9 +6,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY tests)
 
 foreach(_TEST ${ALL_TESTS})
     get_filename_component(TESTNAME ${_TEST} NAME_WE)
-    add_executable(${TESTNAME} ${_TEST} "../src/core/binary_neural_acid.cpp")
+    add_executable(${TESTNAME} ${_TEST} "../src/binary_neural_acid.cpp")
     # target_include_directories(${TESTNAME} PUBLIC
-    #   "../src/core/"
+    #   "../src/"
     # )
     add_test(
       NAME ${TESTNAME}

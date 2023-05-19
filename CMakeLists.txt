@@ -15,7 +15,7 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/core")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/test_sin")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/render")
 
-list (APPEND WSJCPP_SOURCES "src/core/binary_neural_acid.cpp")
+list (APPEND WSJCPP_SOURCES "src/binary_neural_acid.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
 

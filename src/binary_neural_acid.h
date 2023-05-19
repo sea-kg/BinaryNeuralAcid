@@ -21,40 +21,40 @@ class BNABit4 {
         BinaryNeuralAcidBit b4;
 };
 
-template<class ValueType> class IBNAOper {
+template<class ValueType> class IBinaryNeuralAcidOperation {
     public:
         virtual std::string type() = 0;
         virtual ValueType calc(ValueType b1, ValueType b2) = 0;
 };
 
-class BNAOperXor : public IBNAOper<BinaryNeuralAcidBit>{
+class BinaryNeuralAcidOperXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperNotXor : public IBNAOper<BinaryNeuralAcidBit>{
+class BNAOperNotXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperAnd : public IBNAOper<BinaryNeuralAcidBit> {
+class BNAOperAnd : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> {
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperOr : public IBNAOper<BinaryNeuralAcidBit> {
+class BinaryNeuralAcidOperOr : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> {
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
 
-template<class ValueType> class BNAVar {
+template<class ValueType> class BinaryNeuralAcidVar {
     public:
-        BNAVar() {
+        BinaryNeuralAcidVar() {
             // m_bVal = B_0;
             m_sName = "";
         }
@@ -85,35 +85,35 @@ template<class ValueType> class BNAExpression {
             m_pOper = nullptr;
         }
 
-        void setOperandLeft(BNAVar<ValueType> *pVar1) {
+        void setOperandLeft(BinaryNeuralAcidVar<ValueType> *pVar1) {
             m_pVar1 = pVar1;
         }
 
-        BNAVar<ValueType> *getOperandLeft() {
+        BinaryNeuralAcidVar<ValueType> *getOperandLeft() {
             return m_pVar1;
         }
 
-        void setOperandRight(BNAVar<ValueType> *pVar2) {
+        void setOperandRight(BinaryNeuralAcidVar<ValueType> *pVar2) {
             m_pVar2 = pVar2;
         }
 
-        BNAVar<ValueType> *op2() {
+        BinaryNeuralAcidVar<ValueType> *op2() {
             return m_pVar2;
         }
 
-        void oper(IBNAOper<ValueType> *pOper) {
+        void oper(IBinaryNeuralAcidOperation<ValueType> *pOper) {
             m_pOper = pOper;
         }
 
-        IBNAOper<ValueType> *oper() {
+        IBinaryNeuralAcidOperation<ValueType> *oper() {
             return m_pOper;
         }
 
-        void out(BNAVar<ValueType> *pVarOut) {
+        void out(BinaryNeuralAcidVar<ValueType> *pVarOut) {
             m_pVarOut = pVarOut;
         }
 
-        BNAVar<ValueType> *out() {
+        BinaryNeuralAcidVar<ValueType> *out() {
             return  m_pVarOut;
         }
 
@@ -143,10 +143,10 @@ template<class ValueType> class BNAExpression {
         }
 
     private:
-        BNAVar<ValueType> *m_pVar1;
-        BNAVar<ValueType> *m_pVar2;
-        BNAVar<ValueType> *m_pVarOut;
-        IBNAOper<ValueType> *m_pOper;
+        BinaryNeuralAcidVar<ValueType> *m_pVar1;
+        BinaryNeuralAcidVar<ValueType> *m_pVar2;
+        BinaryNeuralAcidVar<ValueType> *m_pVarOut;
+        IBinaryNeuralAcidOperation<ValueType> *m_pOper;
 };
 
 // TODO class BinaryNeuralAcidGraph {
@@ -299,9 +299,9 @@ class BNA {
         int readParam(std::ifstream &file, const std::string &sParamName);
         bool writeToFileBna(std::ofstream &file);
 
-        bool registryOperationType(IBNAOper<BinaryNeuralAcidBit> *pOper);
-        std::map<std::string, IBNAOper<BinaryNeuralAcidBit> *> m_vOperations;
-        std::vector<IBNAOper<BinaryNeuralAcidBit> *> m_vOperationList;
+        bool registryOperationType(IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper);
+        std::map<std::string, IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *> m_vOperations;
+        std::vector<IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *> m_vOperationList;
         int m_nOperSize;
 
         void clearResources();
@@ -311,11 +311,11 @@ class BNA {
 
         void clearCalcExprsVars();
         void normalizeNodes();
-        BNAVar<BinaryNeuralAcidBit> *getVarByIndex(int nIndex);
+        BinaryNeuralAcidVar<BinaryNeuralAcidBit> *getVarByIndex(int nIndex);
         std::vector<BNAExpression<BinaryNeuralAcidBit> *> m_vCalcExprs;
-        std::vector<BNAVar<BinaryNeuralAcidBit> *> m_vCalcInputVars;
-        std::vector<BNAVar<BinaryNeuralAcidBit> *> m_vCalcVars;
-        std::vector<BNAVar<BinaryNeuralAcidBit> *> m_vCalcOutVars;
+        std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcInputVars;
+        std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcVars;
+        std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcOutVars;
 };
 
 class BNAMemoryItem {
