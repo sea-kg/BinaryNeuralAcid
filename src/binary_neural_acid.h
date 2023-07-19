@@ -257,14 +257,16 @@ class BinaryNeuralAcidModificationModel {
 class BinaryNeuralAcidConfig {
     public:
         BinaryNeuralAcidConfig();
-        BinaryNeuralAcidConfig &setInput(int nInput);
-        BinaryNeuralAcidConfig &setOutput(int nOutput);
-        BinaryNeuralAcidConfig &setSize(int nSize);
-
+        BinaryNeuralAcidConfig &setInputSize(int nInputSize);
+        BinaryNeuralAcidConfig &setNodesSize(int nNodesSize);
+        BinaryNeuralAcidConfig &setOutputSize(int nOutputSize);
+        int getInputSize() const;
+        int getNodesSize() const;
+        int getOutputSize() const;
     private:
-        int m_nInput;
-        int m_nOutput;
-        int m_nSize;
+        int m_nInputSize;
+        int m_nNodesSize;
+        int m_nOutputSize;
 };
 
 class BNA {
@@ -274,7 +276,7 @@ class BNA {
         ~BNA();
 		bool load(const std::string &sFilename);
 		bool save(const std::string &sFilename);
-		void randomGenerate(int nInput, int nOutput, int nSize);
+		void randomGenerate(const BinaryNeuralAcidConfig &config);
         int addNode(int nInX, int nInY, const std::string &sOperType);
         int addNodeOutput(int nIn);
         bool compile();

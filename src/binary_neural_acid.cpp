@@ -490,25 +490,38 @@ void BinaryNeuralAcidModificationModel::print() const {
 
 BinaryNeuralAcidConfig::BinaryNeuralAcidConfig() {
     // default
-    m_nInput = 1;
-    m_nOutput = 1;
-    m_nSize = 10;
+    m_nInputSize = 1;
+    m_nOutputSize = 1;
+    m_nNodesSize = 10;
 }
 
-BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setInput(int nInput) {
-    m_nInput = nInput;
+BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setInputSize(int nInputSize) {
+    m_nInputSize = nInputSize;
     return *this;
 }
 
-BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setOutput(int nOutput) {
-    m_nOutput = nOutput;
+BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setNodesSize(int nNodesSize) {
+    m_nNodesSize = nNodesSize;
     return *this;
 }
 
-BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setSize(int nSize) {
-    m_nSize = nSize;
+BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setOutputSize(int nOutputSize) {
+    m_nOutputSize = nOutputSize;
     return *this;
 }
+
+int BinaryNeuralAcidConfig::getInputSize() const {
+    return m_nInputSize;
+}
+
+int BinaryNeuralAcidConfig::getNodesSize() const {
+    return m_nNodesSize;
+}
+
+int BinaryNeuralAcidConfig::getOutputSize() const {
+    return m_nOutputSize;
+}
+
 
 // -----------------------------------------------------------------
 // BNA
@@ -601,13 +614,13 @@ bool BNA::save(const std::string &sFilename){
     return bResult;
 }
 
-void BNA::randomGenerate(int nInputSize, int nOutputSize, int nSize){
+void BNA::randomGenerate(const BinaryNeuralAcidConfig &config){
     clearResources();
     m_nBnaRevision = 0;
-    for (int i = 0; i < nInputSize; i++) {
+    for (int i = 0; i < config.getInputSize(); i++) {
         m_vNodesInput.push_back(new BNANodeInput(i));
     }
-    for (int i = 0; i < nSize; i++) {
+    for (int i = 0; i < config.getNodesSize(); i++) {
         BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
         pItem->setX(rand());
         pItem->setY(rand());
@@ -615,7 +628,7 @@ void BNA::randomGenerate(int nInputSize, int nOutputSize, int nSize){
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vNodes.push_back(pItem);
     }
-    for (int i = 0; i < nOutputSize; i++) {
+    for (int i = 0; i < config.getOutputSize(); i++) {
         m_vNodesOutput.push_back(new BNANodeOutput(i, rand()));
     }
     compile();

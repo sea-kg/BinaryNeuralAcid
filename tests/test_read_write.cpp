@@ -6,12 +6,19 @@
 int main() {
     WsjcppCore::makeDir("./temporary-unit-tests-data");
 
+    BinaryNeuralAcidConfig config;
+    config
+        .setInputSize(128)
+        .setNodesSize(256)
+        .setOutputSize(1)
+    ;
+
     BNA bna;
-    bna.randomGenerate(128, 1, 256);
+    bna.randomGenerate(config);
 
     // fill the input vector
     std::vector<BinaryNeuralAcidBit> vInputs;
-    for (int i = 0; i < 128; i++) {
+    for (int i = 0; i < config.getInputSize(); i++) {
         vInputs.push_back(B_1);
     }
     BinaryNeuralAcidBit bResult = bna.calc(vInputs, 0);
