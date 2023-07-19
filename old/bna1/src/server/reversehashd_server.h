@@ -28,7 +28,7 @@ class ReverseHashDServer : public QObject, public IReverseHashDServer {
 		virtual void sendMessage(QWebSocket *pClient, QJsonObject obj);
 		virtual void sendMessageError(QWebSocket *pClient, QString cmd, int id, Error obj);
 		virtual void sendToAll(QJsonObject obj);
-        virtual BNAProject * getBNAProject();
+        virtual BinaryNeuralAcidProject * getBNAProject();
 
 	Q_SIGNALS:
 		void closed();
@@ -50,7 +50,7 @@ class ReverseHashDServer : public QObject, public IReverseHashDServer {
 		QMap<QString, ICmdHandler *> m_mapCmdHandlers;
         TrainingThread *m_pTrainingThread;
 
-        BNAProject *m_pBnaProject;
+        BinaryNeuralAcidProject *m_pBnaProject;
 };
 
 #endif //REVERSEHASHD_SERVER_H

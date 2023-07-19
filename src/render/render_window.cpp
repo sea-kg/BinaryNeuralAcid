@@ -152,7 +152,7 @@ RenderBNANode::RenderBNANode(int nSizeNode)
     m_pColorOperNxor = new RenderColor(77,79,216,255); // blue
 };
 
-void RenderBNANode::setNodeInput(BNANodeInput *pNode) {
+void RenderBNANode::setNodeInput(BinaryNeuralAcidGraphNodeInput *pNode) {
     m_pNodeInput = pNode;
     m_pNode = nullptr;
     m_pNodeOutput = nullptr;
@@ -185,7 +185,7 @@ void RenderBNANode::setNode(BinaryNeuralAcidGraphNode *pNode, BNAGroup<BinaryNeu
 //    std::cout << "m_nLevelY=" << m_nLevelY << std::endl;
 }
 
-void RenderBNANode::setNodeOutput(BNANodeOutput *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna) {
+void RenderBNANode::setNodeOutput(BinaryNeuralAcidGraphNodeOutput *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna) {
     m_pNodeInput = nullptr;
     m_pNode = nullptr;
     m_pNodeOutput = pNode;

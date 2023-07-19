@@ -5,7 +5,7 @@
 
 
 int main() {
-    IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper = new BinaryNeuralAcidOperOr();
+    IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper = new BinaryNeuralAcidOperationBitOr();
 
     if (pOper->type() != "OR") {
         return 1;

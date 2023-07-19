@@ -17,9 +17,9 @@ class TrainingThread : public QThread{
         void sendMessage(TrainingThreadMessage *pMsg);
 	private:
         TrainingThreadMessage *m_pLastMessage;
-        BNAProject *m_pBNAProject;
+        BinaryNeuralAcidProject *m_pBNAProject;
 	public:
-        TrainingThread(IReverseHashDServer *pReverseHashDServer, BNAProject *pBNAProject);
+        TrainingThread(IReverseHashDServer *pReverseHashDServer, BinaryNeuralAcidProject *pBNAProject);
 	protected:
 		void run();
 };

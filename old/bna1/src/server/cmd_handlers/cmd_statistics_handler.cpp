@@ -19,7 +19,7 @@ void CmdStatisticsHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRev
 	jsonData["cmd"] = QJsonValue(cmd());
 	jsonData["rid"] = rid;
 
-    BNAProject *pBNAProject = pReverseHashDServer->getBNAProject();
+    BinaryNeuralAcidProject *pBNAProject = pReverseHashDServer->getBNAProject();
     QMap<int, int> mapResults = pBNAProject->getResults();
 	QJsonArray statistics;
     int nCount = pBNAProject->getOutputBits();

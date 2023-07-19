@@ -35,7 +35,7 @@ bool UnitTestRandomMutation::doBeforeTest() {
 //     bool expectedVal;
 // };
 
-// int checkTest(BNA &bna, QVector< DictonaryTest *> &dict){
+// int checkTest(BinaryNeuralAcid &bna, QVector< DictonaryTest *> &dict){
 //     int nCounterSuccess = 0;
 //     for(int i = 0; i < dict.size(); i++){
 //         bool bResult = bna.calc(dict[i]->vInputs, 0);
@@ -70,7 +70,7 @@ void UnitTestRandomMutation::executeTest() {
     dict.push_back(new DictonaryTest(createInputs(B_0, B_0, B_1), false));
     dict.push_back(new DictonaryTest(createInputs(B_0, B_0, B_0), false));
 
-    BNA bna;
+    BinaryNeuralAcid bna;
     bna.randomGenerate(3,1,4);
     // bna.load("mutation_test.bna");
     // bna.appendRandomData(1);

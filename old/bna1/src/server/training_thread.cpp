@@ -4,7 +4,7 @@
 #include <QFile>
 #include <iostream>
 
-TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer, BNAProject *pBNAProject){
+TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer, BinaryNeuralAcidProject *pBNAProject){
 	m_pReverseHashDServer = pReverseHashDServer;
 	m_nSleep = 5;
     m_pBNAProject = pBNAProject;
@@ -14,7 +14,7 @@ TrainingThread::TrainingThread(IReverseHashDServer *pReverseHashDServer, BNAProj
 void TrainingThread::run(){
     std::cout << "Start Training Thread\n";
 
-    // BNAMemory *pMemory = new BNAMemory(128, 440);
+    // BinaryNeuralAcidMemory *pMemory = new BinaryNeuralAcidMemory(128, 440);
     // pMemory->load("tests_bna_md5/memory_md5_10000.bnamemory");
 	
 
@@ -44,7 +44,7 @@ void TrainingThread::run(){
                 this->sendMessage(pMsg);
             }
 
-            BNA *pBNA = m_pBNAProject->getBNA(bitid);
+            BinaryNeuralAcid *pBNA = m_pBNAProject->getBNA(bitid);
 
             QByteArray prevBna = pBNA->exportToByteArray();
 			int nExperiments = 0;

@@ -5,10 +5,10 @@
 
 
 int main() {
-    BinaryNeuralAcidOperXor *pOperXor = new BinaryNeuralAcidOperXor();
-    BNAOperNotXor *pOperNotXor = new BNAOperNotXor();
-    BNAOperAnd *pOperAnd = new BNAOperAnd();
-    BinaryNeuralAcidOperOr *pOperOr = new BinaryNeuralAcidOperOr();
+    BinaryNeuralAcidOperationBitXor *pOperXor = new BinaryNeuralAcidOperationBitXor();
+    BinaryNeuralAcidOperationBitNotXor *pOperNotXor = new BinaryNeuralAcidOperationBitNotXor();
+    BinaryNeuralAcidOperationBitAnd *pOperAnd = new BinaryNeuralAcidOperationBitAnd();
+    BinaryNeuralAcidOperationBitOr *pOperOr = new BinaryNeuralAcidOperationBitOr();
 
     struct LocalDataTest {
         LocalDataTest(IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper, BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit bExpected) {

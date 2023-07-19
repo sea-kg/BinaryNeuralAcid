@@ -44,7 +44,7 @@ void CmdGraphHandler::handle(QWebSocket *pClient, IReverseHashDServer *pReverseH
 	QString filename_statistics = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".statistics";
 	QString filename_bna = "/usr/share/reversehashd/md5/" + subdir + "/" + name + ".bna";
 
-	BNA bna;
+	BinaryNeuralAcid bna;
 	if(!bna.load(filename_bna)){
 		pReverseHashDServer->sendMessageError(pClient, cmd(), rid, Error(500,  "File '" + filename_bna + "'does not exists"));	
 	}

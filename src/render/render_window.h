@@ -59,15 +59,15 @@ class RenderFpsCounter {
 class RenderBNANode : public RenderRect {
     public:
         RenderBNANode(int nSizeNode);
-        void setNodeInput(BNANodeInput *pNode);
+        void setNodeInput(BinaryNeuralAcidGraphNodeInput *pNode);
         void setNode(BinaryNeuralAcidGraphNode *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna);
-        void setNodeOutput(BNANodeOutput *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna);
+        void setNodeOutput(BinaryNeuralAcidGraphNodeOutput *pNode, BNAGroup<BinaryNeuralAcidBit> *pBna);
         int getLevelY();
 
     private:
-        BNANodeInput *m_pNodeInput;
+        BinaryNeuralAcidGraphNodeInput *m_pNodeInput;
         BinaryNeuralAcidGraphNode *m_pNode;
-        BNANodeOutput *m_pNodeOutput;
+        BinaryNeuralAcidGraphNodeOutput *m_pNodeOutput;
         BNAItemPosition m_pos;
         int m_nSizeNode;
         int m_nLevelY;
@@ -267,7 +267,7 @@ class RenderBNA {
             }
 
             // SET NODES
-            const std::vector<BNANodeInput *> &vInputNodes = pBna->getNodesInput();
+            const std::vector<BinaryNeuralAcidGraphNodeInput *> &vInputNodes = pBna->getNodesInput();
             for (int i = 0; i < vInputNodes.size(); i++) {
                 m_vRenderNodes[i]->setNodeInput(vInputNodes[i]);
             }
@@ -275,7 +275,7 @@ class RenderBNA {
             for (int i = 0; i < vNodes.size(); i++) {
                 m_vRenderNodes[nInputSize + i]->setNode(vNodes[i], pBna);
             }
-            const std::vector<BNANodeOutput *> &vNodesOutput = pBna->getNodesOutput();
+            const std::vector<BinaryNeuralAcidGraphNodeOutput *> &vNodesOutput = pBna->getNodesOutput();
             for (int i = 0; i < vNodesOutput.size(); i++) {
                 m_vRenderNodes[nInputSize + nNodesSize + i]->setNodeOutput(vNodesOutput[i], pBna);
             }
@@ -329,7 +329,7 @@ class RenderBNA {
                 }
             }
 
-            const std::vector<BNANodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
+            const std::vector<BinaryNeuralAcidGraphNodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
             for (int i = 0; i < vNodesOutput.size(); i++) {
                 if (vNodesOutput[i]->getInputNodeIndex() == nIndex) {
                     vRet.push_back(m_vRenderNodes[m_vRenderNodes.size() - vNodesOutput.size() + i]);
@@ -350,7 +350,7 @@ class RenderBNA {
                 }
             }
 
-            const std::vector<BNANodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
+            const std::vector<BinaryNeuralAcidGraphNodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
             for (int i = 0; i < vNodesOutput.size(); i++) {
                 if (vNodesOutput[i]->getInputNodeIndex() == nIndex) {
                     vRet.push_back(m_vRenderNodes[m_vRenderNodes.size() - vNodesOutput.size() + i]);
@@ -480,7 +480,7 @@ class RenderBNA {
         }
 
         void updateOutputNodesXY() {
-            const std::vector<BNANodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
+            const std::vector<BinaryNeuralAcidGraphNodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
             // int nOutputSize = m_pCallbacksRenderBNA->getBNA()->getOutputSize();
 
             // output nodes
@@ -522,7 +522,7 @@ class RenderBNA {
         void updateNodesConnections() {
             int nInputSize = m_pCallbacksRenderBNA->getBNA()->getInputSize();
             const std::vector<BinaryNeuralAcidGraphNode *> &vNodes = m_pCallbacksRenderBNA->getBNA()->getNodes();
-            const std::vector<BNANodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
+            const std::vector<BinaryNeuralAcidGraphNodeOutput *> &vNodesOutput = m_pCallbacksRenderBNA->getBNA()->getNodesOutput();
 
             // connections
             for (int i = 0; i < vNodes.size(); i++) {

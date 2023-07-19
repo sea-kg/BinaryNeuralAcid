@@ -41,7 +41,7 @@ void UnitTestReverseTest::executeTest() {
     tests.push_back(Reverse_Test_Struct("13334eaceaf87197c9cd2906b2f467fe", "jkdhsafkjdhf"));
     tests.push_back(Reverse_Test_Struct("09a6e6b94a8095ccaf18060fe8229f62", "VeryHard"));
 
-    BNAProject bnaProject;
+    BinaryNeuralAcidProject bnaProject;
     if(!bnaProject.open(sFolder)){
         std::cerr << "Could not open project";
         return false;
@@ -58,7 +58,7 @@ void UnitTestReverseTest::executeTest() {
 
         QVector<BinaryNeuralAcidBit> vOutput;
         for (int bitid = 0; bitid < bnaProject.getOutputBits(); bitid++) {
-            BNA *pBNA = bnaProject.getBNA(bitid);
+            BinaryNeuralAcid *pBNA = bnaProject.getBNA(bitid);
             BinaryNeuralAcidBit bResult = pBNA->calc(vInput, 0);
             vOutput.push_back(bResult);
 		}

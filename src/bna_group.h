@@ -12,24 +12,24 @@
 template<class ValueType> class BNAGroup {
     public:
         BNAGroup() {
-            m_vNodesInput.push_back(new BNANodeInput(0));
-            m_vNodesOutput.push_back(new BNANodeOutput(0, 0));
-            registryOperationType(new BinaryNeuralAcidOperXor());
-            registryOperationType(new BNAOperNotXor());
-            registryOperationType(new BNAOperAnd());
-            registryOperationType(new BinaryNeuralAcidOperOr());
+            m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(0));
+            m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(0, 0));
+            registryOperationType(new BinaryNeuralAcidOperationBitXor());
+            registryOperationType(new BinaryNeuralAcidOperationBitNotXor());
+            registryOperationType(new BinaryNeuralAcidOperationBitAnd());
+            registryOperationType(new BinaryNeuralAcidOperationBitOr());
             m_nOperSize = m_vOperationList.size();
-            TAG = "BNA";
+            TAG = "BinaryNeuralAcid";
             m_nBnaVersion = 4;
             m_nBnaRevision = 0;
         }
 
         BNAGroup(int nInputSize, int nOutputSize) : BNAGroup() {
             for (int i = 0; i < nInputSize; i++) {
-                m_vNodesInput.push_back(new BNANodeInput(i));
+                m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(i));
             }
             for (int i = 0; i < nOutputSize; i++) {
-                m_vNodesOutput.push_back(new BNANodeOutput(i, i));
+                m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, i));
             }
             m_bCompiled = false;
         }
@@ -44,7 +44,7 @@ template<class ValueType> class BNAGroup {
         bool load(const std::string &sFilename) {
             clearResources();
             std::string sFilename0 = sFilename + ".bna";
-            if (!BNA::fileExists(sFilename0)) {
+            if (!BinaryNeuralAcid::fileExists(sFilename0)) {
                 WsjcppLog::err(TAG, "load: file not exists '" + sFilename0 + "'");
                 return false;
             }
@@ -61,8 +61,8 @@ template<class ValueType> class BNAGroup {
 
         bool save(const std::string &sFilename) {
             std::string sFilename0 = sFilename + ".bna";
-            if (BNA::fileExists(sFilename0)) {
-                if (!BNA::removeFile(sFilename0)) {
+            if (BinaryNeuralAcid::fileExists(sFilename0)) {
+                if (!BinaryNeuralAcid::removeFile(sFilename0)) {
                     WsjcppLog::err(TAG, "save: could not remove file '" + sFilename0 + "'");
                     return false;
                 }
@@ -89,7 +89,7 @@ template<class ValueType> class BNAGroup {
             clearResources();
             m_nBnaRevision = 0;
             for (int i = 0; i < nInputSize; i++) {
-                m_vNodesInput.push_back(new BNANodeInput(i));
+                m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(i));
             }
             for (int i = 0; i < nSize; i++) {
                 BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
@@ -100,7 +100,7 @@ template<class ValueType> class BNAGroup {
                 m_vNodes.push_back(pItem);
             }
             for (int i = 0; i < nOutputSize; i++) {
-                m_vNodesOutput.push_back(new BNANodeOutput(i, rand()));
+                m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, rand()));
             }
             compile();
         }
@@ -139,7 +139,7 @@ template<class ValueType> class BNAGroup {
                 int x = m_vNodes[i]->getX();
                 int y = m_vNodes[i]->getY();
                 std::string sOperationType = m_vNodes[i]->getOperationType();
-                BNAExpression<ValueType> *pExpr = new BNAExpression<ValueType>();
+                BinaryNeuralAcidExpression<ValueType> *pExpr = new BinaryNeuralAcidExpression<ValueType>();
                 pExpr->setOperandLeft(getVarByIndex(x));
                 pExpr->setOperandRight(getVarByIndex(y));
                 pExpr->oper(m_vOperations[sOperationType]);
@@ -167,7 +167,7 @@ template<class ValueType> class BNAGroup {
             return true;
         }
 
-        const std::vector<BNANodeInput *> &getNodesInput() {
+        const std::vector<BinaryNeuralAcidGraphNodeInput *> &getNodesInput() {
             return m_vNodesInput;
         }
 
@@ -175,7 +175,7 @@ template<class ValueType> class BNAGroup {
             return m_vNodes;
         }
 
-        const std::vector<BNANodeOutput *> &getNodesOutput() {
+        const std::vector<BinaryNeuralAcidGraphNodeOutput *> &getNodesOutput() {
             return m_vNodesOutput;
         }
 
@@ -195,7 +195,7 @@ template<class ValueType> class BNAGroup {
             n = n - nNodesSize;
             int nNodesOutputSize = m_vNodesOutput.size();
             if (n < nNodesOutputSize) {
-                BNANodeOutput *pNode = m_vNodesOutput[n];
+                BinaryNeuralAcidGraphNodeOutput *pNode = m_vNodesOutput[n];
                 return this->calculateDepth(pNode->getInputNodeIndex()) + 1;
             }
             return -1000;
@@ -318,13 +318,13 @@ template<class ValueType> class BNAGroup {
         bool m_bCompiled;
         int m_nBnaVersion;
         int m_nBnaRevision;
-        std::vector<BNANodeInput *> m_vNodesInput;
+        std::vector<BinaryNeuralAcidGraphNodeInput *> m_vNodesInput;
         std::vector<BinaryNeuralAcidGraphNode *> m_vNodes;
-        std::vector<BNANodeOutput *> m_vNodesOutput;
+        std::vector<BinaryNeuralAcidGraphNodeOutput *> m_vNodesOutput;
         std::map<std::string, IBinaryNeuralAcidOperation<ValueType> *> m_vOperations;
         std::vector<IBinaryNeuralAcidOperation<ValueType> *> m_vOperationList;
         int m_nOperSize;
-        std::vector<BNAExpression<ValueType> *> m_vCalcExprs;
+        std::vector<BinaryNeuralAcidExpression<ValueType> *> m_vCalcExprs;
         std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcInputVars;
         std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcVars;
         std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcOutVars;
@@ -333,8 +333,8 @@ template<class ValueType> class BNAGroup {
             clearResources();
             std::string sStr; 
             file >> sStr;
-            if (sStr != "BNA") {
-                WsjcppLog::err(TAG, "readFromFileBna, is not a BNA file");
+            if (sStr != "BinaryNeuralAcid") {
+                WsjcppLog::err(TAG, "readFromFileBna, is not a BinaryNeuralAcid file");
                 return false;
             }
             int nBnaVersion = readParam(file, "version");
@@ -348,7 +348,7 @@ template<class ValueType> class BNAGroup {
             int nOutputSize = readParam(file, "output");
             
             for (int i = 0; i < nInputSize; i++) {
-                m_vNodesInput.push_back(new BNANodeInput(i));
+                m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(i));
             }
             
             // read nodes
@@ -360,7 +360,7 @@ template<class ValueType> class BNAGroup {
 
             // read outputs
             for (int i = 0; i < nOutputSize; i++) {
-                m_vNodesOutput.push_back(new BNANodeOutput(i, i));
+                m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, i));
                 int nInputNodeIndex = readParam(file, "output");
                 m_vNodesOutput[i]->setInputNodeIndex(nInputNodeIndex);
             }
@@ -382,7 +382,7 @@ template<class ValueType> class BNAGroup {
 
         bool writeToFileBna(std::ofstream &file) {
             // basic information about file
-            file << "BNA version " << m_nBnaVersion << "\n";
+            file << "BinaryNeuralAcid version " << m_nBnaVersion << "\n";
             file << "revision " << m_nBnaRevision << "\n";
             file << "input " << m_vNodesInput.size() << "\n";
             file << "nodes " << m_vNodes.size() << "\n";

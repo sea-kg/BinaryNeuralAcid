@@ -27,11 +27,11 @@ void CmdReverseHandler::handle(QWebSocket *pClient, IReverseHashDServer *pRevers
     QVector<BNABit> vInputs;
     QString answer_bin = "";
     BNAConvertHEXStringToVBool(hash, vInputs, 128);
-    BNAProject *pBNAProject = pReverseHashDServer->getBNAProject();
+    BinaryNeuralAcidProject *pBNAProject = pReverseHashDServer->getBNAProject();
     int nCount = pBNAProject->getOutputBits();
     for (int bitid = 0; bitid < nCount; bitid++) {
         BNABit bResult = B_0;
-        BNA *pBNA = pBNAProject->getBNA(bitid);
+        BinaryNeuralAcid *pBNA = pBNAProject->getBNA(bitid);
         bResult = pBNA->calc(vInputs, 0);
         vOutput.push_back(bResult);
         answer_bin += (bResult == B_1 ? "1" : "0");

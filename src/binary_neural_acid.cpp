@@ -21,11 +21,11 @@ void BNABit4::appendToVector(std::vector<BinaryNeuralAcidBit> &vars){
 
 
 // -----------------------------------------------------------------
-// BinaryNeuralAcidOperXor
+// BinaryNeuralAcidOperationBitXor
 
-std::string BinaryNeuralAcidOperXor::type(){ return std::string("XOR"); }
+std::string BinaryNeuralAcidOperationBitXor::type(){ return std::string("XOR"); }
 
-BinaryNeuralAcidBit BinaryNeuralAcidOperXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
+BinaryNeuralAcidBit BinaryNeuralAcidOperationBitXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 ^ c2) & 0x01;
@@ -33,11 +33,11 @@ BinaryNeuralAcidBit BinaryNeuralAcidOperXor::calc(BinaryNeuralAcidBit b1, Binary
 }
 
 // -----------------------------------------------------------------
-// BNAOperNotXor
+// BinaryNeuralAcidOperationBitNotXor
 
-std::string BNAOperNotXor::type(){ return std::string("NXOR"); }
+std::string BinaryNeuralAcidOperationBitNotXor::type(){ return std::string("NXOR"); }
 
-BinaryNeuralAcidBit BNAOperNotXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
+BinaryNeuralAcidBit BinaryNeuralAcidOperationBitNotXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (!(c1 ^ c2)) & 0x01;
@@ -45,13 +45,13 @@ BinaryNeuralAcidBit BNAOperNotXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcid
 }
 
 // -----------------------------------------------------------------
-// BNAOperAnd
+// BinaryNeuralAcidOperationBitAnd
 
-std::string BNAOperAnd::type() {
+std::string BinaryNeuralAcidOperationBitAnd::type() {
     return std::string("AND");
 }
 
-BinaryNeuralAcidBit BNAOperAnd::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2) {
+BinaryNeuralAcidBit BinaryNeuralAcidOperationBitAnd::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2) {
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 & c2) & 0x01;
@@ -59,11 +59,11 @@ BinaryNeuralAcidBit BNAOperAnd::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit
 }
 
 // -----------------------------------------------------------------
-// BinaryNeuralAcidOperOr
+// BinaryNeuralAcidOperationBitOr
 
-std::string BinaryNeuralAcidOperOr::type(){ return std::string("OR"); }
+std::string BinaryNeuralAcidOperationBitOr::type(){ return std::string("OR"); }
 
-BinaryNeuralAcidBit BinaryNeuralAcidOperOr::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
+BinaryNeuralAcidBit BinaryNeuralAcidOperationBitOr::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
     unsigned char c2 = b2;
     c1 = (c1 | c2) & 0x01;
@@ -151,37 +151,37 @@ void BinaryNeuralAcidGraphNode::writeToFile(std::ofstream &file){
 }
 
 // -----------------------------------------------------------------
-// BNANodeInput
+// BinaryNeuralAcidGraphNodeInput
 
-BNANodeInput::BNANodeInput(unsigned short nIndex){
+BinaryNeuralAcidGraphNodeInput::BinaryNeuralAcidGraphNodeInput(unsigned short nIndex){
     m_nIndex = nIndex;
 }
 
-unsigned short BNANodeInput::getIndex() {
+unsigned short BinaryNeuralAcidGraphNodeInput::getIndex() {
     return m_nIndex;
 }
 
 // -----------------------------------------------------------------
-// BNANodeOutput
+// BinaryNeuralAcidGraphNodeOutput
 
-BNANodeOutput::BNANodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex){
+BinaryNeuralAcidGraphNodeOutput::BinaryNeuralAcidGraphNodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex){
     m_nOutputIndex = nOutputIndex;
     m_nInputNodeIndex = nInputNodeIndex;
 }
 
-unsigned short BNANodeOutput::getOutputIndex() {
+unsigned short BinaryNeuralAcidGraphNodeOutput::getOutputIndex() {
     return m_nOutputIndex;
 }
 
-unsigned short BNANodeOutput::getInputNodeIndex() {
+unsigned short BinaryNeuralAcidGraphNodeOutput::getInputNodeIndex() {
     return m_nInputNodeIndex;
 }
 
-void BNANodeOutput::setInputNodeIndex(unsigned short nInputNodeIndex) {
+void BinaryNeuralAcidGraphNodeOutput::setInputNodeIndex(unsigned short nInputNodeIndex) {
     m_nInputNodeIndex = nInputNodeIndex;
 }
 
-void BNANodeOutput::writeToFile(std::ofstream &file) {
+void BinaryNeuralAcidGraphNodeOutput::writeToFile(std::ofstream &file) {
     file << "output " << m_nInputNodeIndex << "\n";
 }
 
@@ -524,56 +524,56 @@ int BinaryNeuralAcidConfig::getOutputSize() const {
 
 
 // -----------------------------------------------------------------
-// BNA
+// BinaryNeuralAcid
 
-BNA::BNA() {
-    m_vNodesInput.push_back(new BNANodeInput(0));
-    m_vNodesOutput.push_back(new BNANodeOutput(0, 0));
-    registryOperationType(new BinaryNeuralAcidOperXor());
-    registryOperationType(new BNAOperNotXor());
-    registryOperationType(new BNAOperAnd());
-    registryOperationType(new BinaryNeuralAcidOperOr());
+BinaryNeuralAcid::BinaryNeuralAcid() {
+    m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(0));
+    m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(0, 0));
+    registryOperationType(new BinaryNeuralAcidOperationBitXor());
+    registryOperationType(new BinaryNeuralAcidOperationBitNotXor());
+    registryOperationType(new BinaryNeuralAcidOperationBitAnd());
+    registryOperationType(new BinaryNeuralAcidOperationBitOr());
     m_nOperSize = m_vOperationList.size();
-    TAG = "BNA";
+    TAG = "BinaryNeuralAcid";
     m_nBnaVersion = 4;
     m_nBnaRevision = 0;
 }
 
-BNA::BNA(int nInputSize, int nOutputSize) : BNA() {
+BinaryNeuralAcid::BinaryNeuralAcid(int nInputSize, int nOutputSize) : BinaryNeuralAcid() {
     clearResources();
     for (int i = 0; i < nInputSize; i++) {
-        m_vNodesInput.push_back(new BNANodeInput(i));
+        m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(i));
     }
     // for (int i = 0; i < nOutputSize; i++) {
-    //     m_vNodesOutput.push_back(new BNANodeOutput(i, i));
+    //     m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, i));
     // }
     m_bCompiled = false;
 }
 
-unsigned int BNA::getInputSize() {
+unsigned int BinaryNeuralAcid::getInputSize() {
     return m_vNodesInput.size();
 }
 
-unsigned int BNA::getNodesSize() {
+unsigned int BinaryNeuralAcid::getNodesSize() {
     return m_vNodes.size();
 }
 
-unsigned int BNA::getOutputSize() {
+unsigned int BinaryNeuralAcid::getOutputSize() {
     return m_vNodesOutput.size();
 }
 
-BNA::~BNA() {
+BinaryNeuralAcid::~BinaryNeuralAcid() {
     m_vOperations.clear();
     m_vOperationList.clear();
     m_vNodes.clear();
     clearResources();
 }
 
-bool BNA::load(const std::string &sFilename){
+bool BinaryNeuralAcid::load(const std::string &sFilename){
     clearResources();
 
     std::string sFilename0 = sFilename + ".bna";
-    if (!BNA::fileExists(sFilename0)) {
+    if (!BinaryNeuralAcid::fileExists(sFilename0)) {
         std::cerr << "load: file not exists '" << sFilename0 << "'" << std::endl;
         return false;
     }
@@ -588,10 +588,10 @@ bool BNA::load(const std::string &sFilename){
     return bResult;
 }
 
-bool BNA::save(const std::string &sFilename){
+bool BinaryNeuralAcid::save(const std::string &sFilename){
     std::string sFilename0 = sFilename + ".bna";
-    if (BNA::fileExists(sFilename0)) {
-        if (!BNA::removeFile(sFilename0)) {
+    if (BinaryNeuralAcid::fileExists(sFilename0)) {
+        if (!BinaryNeuralAcid::removeFile(sFilename0)) {
             std::cerr << "save: could not remove file: '" << sFilename0 << "'" << std::endl;
             return false;
         }
@@ -614,11 +614,11 @@ bool BNA::save(const std::string &sFilename){
     return bResult;
 }
 
-void BNA::randomGenerate(const BinaryNeuralAcidConfig &config){
+void BinaryNeuralAcid::randomGenerate(const BinaryNeuralAcidConfig &config){
     clearResources();
     m_nBnaRevision = 0;
     for (int i = 0; i < config.getInputSize(); i++) {
-        m_vNodesInput.push_back(new BNANodeInput(i));
+        m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(i));
     }
     for (int i = 0; i < config.getNodesSize(); i++) {
         BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
@@ -629,12 +629,12 @@ void BNA::randomGenerate(const BinaryNeuralAcidConfig &config){
         m_vNodes.push_back(pItem);
     }
     for (int i = 0; i < config.getOutputSize(); i++) {
-        m_vNodesOutput.push_back(new BNANodeOutput(i, rand()));
+        m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, rand()));
     }
     compile();
 }
 
-int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
+int BinaryNeuralAcid::addNode(int nInX, int nInY, const std::string &sOperType) {
     BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
     pItem->setX(nInX);
     pItem->setY(nInY);
@@ -644,14 +644,14 @@ int BNA::addNode(int nInX, int nInY, const std::string &sOperType) {
     return m_vNodes.size() - 1 + m_vNodesInput.size();
 }
 
-int BNA::addNodeOutput(int nNodeId) {
+int BinaryNeuralAcid::addNodeOutput(int nNodeId) {
     int nIndex = m_vNodesOutput.size();
-    m_vNodesOutput.push_back(new BNANodeOutput(nIndex, nNodeId));
+    m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(nIndex, nNodeId));
     m_bCompiled = false;
     return nIndex;
 }
 
-void BNA::clearResources() {
+void BinaryNeuralAcid::clearResources() {
     clearCalcExprsVars();
     // clear input nodes
     for (int i = 0; i < m_vNodesInput.size(); i++) {
@@ -672,7 +672,7 @@ void BNA::clearResources() {
     m_vNodesOutput.clear();
 }
 
-bool BNA::compile() {
+bool BinaryNeuralAcid::compile() {
     if (m_bCompiled) {
         return true; // already compiled
     }
@@ -693,7 +693,7 @@ bool BNA::compile() {
 
     int nItemsSize = m_vNodes.size();
     for (int i = 0; i < m_vNodes.size(); i++) {
-        BNAExpression<BinaryNeuralAcidBit> *pExpr = new BNAExpression<BinaryNeuralAcidBit>();
+        BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *pExpr = new BinaryNeuralAcidExpression<BinaryNeuralAcidBit>();
         pExpr->setOperandLeft(getVarByIndex(m_vNodes[i]->getX()));
         pExpr->setOperandRight(getVarByIndex(m_vNodes[i]->getY()));
         pExpr->oper(m_vOperations[m_vNodes[i]->getOperationType()]);
@@ -721,7 +721,7 @@ bool BNA::compile() {
     return true;
 }
 
-void BNA::compare(BNA &bna){
+void BinaryNeuralAcid::compare(BinaryNeuralAcid &bna){
     if(bna.getInputSize() != m_vNodesInput.size()){
         std::cout << "inputs not equals\n";
     }
@@ -766,7 +766,7 @@ void BNA::compare(BNA &bna){
     }
 }
 
-bool BNA::fileExists(const std::string &sFilename) {
+bool BinaryNeuralAcid::fileExists(const std::string &sFilename) {
     struct stat st;
     bool bExists = (stat(sFilename.c_str(), &st) == 0);
     if (bExists) {
@@ -775,11 +775,11 @@ bool BNA::fileExists(const std::string &sFilename) {
     return false;
 }
 
-bool BNA::removeFile(const std::string &sFilename) {
+bool BinaryNeuralAcid::removeFile(const std::string &sFilename) {
     return remove(sFilename.c_str()) == 0;
 }
 
-bool BNA::dirExists(const std::string &sDirname) {
+bool BinaryNeuralAcid::dirExists(const std::string &sDirname) {
     struct stat st;
     bool bExists = (stat(sDirname.c_str(), &st) == 0);
     if (bExists) {
@@ -788,7 +788,7 @@ bool BNA::dirExists(const std::string &sDirname) {
     return false;
 }
 
-bool BNA::exportToDot(std::string filename, std::string graphname){
+bool BinaryNeuralAcid::exportToDot(std::string filename, std::string graphname){
     std::cerr << "TODO exportToCpp" << std::endl;
 
     /*QFile file(filename);
@@ -820,7 +820,7 @@ bool BNA::exportToDot(std::string filename, std::string graphname){
 
 // ----------------------------------------------------------------
 
-bool BNA::exportToCpp(std::string filename, std::string funcname){
+bool BinaryNeuralAcid::exportToCpp(std::string filename, std::string funcname){
     std::cerr << "TODO exportToCpp" << std::endl;
     /*QFile file(filename);
     QFileInfo fi(filename);
@@ -897,19 +897,19 @@ bool BNA::exportToCpp(std::string filename, std::string funcname){
     return true;
 }
 
-const std::vector<BNANodeInput *> &BNA::getNodesInput() {
+const std::vector<BinaryNeuralAcidGraphNodeInput *> &BinaryNeuralAcid::getNodesInput() {
     return m_vNodesInput;
 }
 
-const std::vector<BinaryNeuralAcidGraphNode *> &BNA::getNodes() {
+const std::vector<BinaryNeuralAcidGraphNode *> &BinaryNeuralAcid::getNodes() {
     return m_vNodes;
 }
 
-const std::vector<BNANodeOutput *> &BNA::getNodesOutput() {
+const std::vector<BinaryNeuralAcidGraphNodeOutput *> &BinaryNeuralAcid::getNodesOutput() {
     return m_vNodesOutput;
 }
 
-int BNA::calculateDepth(int n) {
+int BinaryNeuralAcid::calculateDepth(int n) {
     int nNodesInputSize = m_vNodesInput.size();
     if (n < nNodesInputSize) {
         return 1;
@@ -925,18 +925,18 @@ int BNA::calculateDepth(int n) {
     n = n - nNodesSize;
     int nNodesOutputSize = m_vNodesOutput.size();
     if (n < nNodesOutputSize) {
-        BNANodeOutput *pNode = m_vNodesOutput[n];
+        BinaryNeuralAcidGraphNodeOutput *pNode = m_vNodesOutput[n];
         return this->calculateDepth(pNode->getInputNodeIndex()) + 1;
     }
     return -1000;
 }
 
-bool BNA::readFromFileBna(std::ifstream &file){
+bool BinaryNeuralAcid::readFromFileBna(std::ifstream &file){
     clearResources();
     std::string sStr;
     file >> sStr;
-    if (sStr != "BNA") {
-        std::cerr << "readFromFileBna, is not a BNA file" << std::endl;
+    if (sStr != "BinaryNeuralAcid") {
+        std::cerr << "readFromFileBna, is not a BinaryNeuralAcid file" << std::endl;
         return false;
     }
     int nBnaVersion = readParam(file, "version");
@@ -950,7 +950,7 @@ bool BNA::readFromFileBna(std::ifstream &file){
     int nOutputSize = readParam(file, "output");
 
     for (int i = 0; i < nInputSize; i++) {
-        m_vNodesInput.push_back(new BNANodeInput(i));
+        m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(i));
     }
 
     // read nodes
@@ -962,7 +962,7 @@ bool BNA::readFromFileBna(std::ifstream &file){
 
     // read outputs
     for (int i = 0; i < nOutputSize; i++) {
-        m_vNodesOutput.push_back(new BNANodeOutput(i, i));
+        m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, i));
         int nInputNodeIndex = readParam(file, "output");
         m_vNodesOutput[i]->setInputNodeIndex(nInputNodeIndex);
     }
@@ -970,7 +970,7 @@ bool BNA::readFromFileBna(std::ifstream &file){
     return compile(); // need for process expressions
 }
 
-int BNA::readParam(std::ifstream &file, const std::string &sParamName) {
+int BinaryNeuralAcid::readParam(std::ifstream &file, const std::string &sParamName) {
     std::string sKeyword = "";
     file >> sKeyword;
     if (sKeyword != sParamName) {
@@ -982,9 +982,9 @@ int BNA::readParam(std::ifstream &file, const std::string &sParamName) {
     return nRet;
 }
 
-bool BNA::writeToFileBna(std::ofstream &file){
+bool BinaryNeuralAcid::writeToFileBna(std::ofstream &file){
     // basic information about file
-    file << "BNA version " << m_nBnaVersion << "\n";
+    file << "BinaryNeuralAcid version " << m_nBnaVersion << "\n";
     file << "revision " << m_nBnaRevision << "\n";
     file << "input " << m_vNodesInput.size() << "\n";
     file << "nodes " << m_vNodes.size() << "\n";
@@ -998,14 +998,14 @@ bool BNA::writeToFileBna(std::ofstream &file){
     return true;
 }
 
-bool BNA::registryOperationType(IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper) {
+bool BinaryNeuralAcid::registryOperationType(IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *pOper) {
     // TODO check aready registered
     m_vOperations[pOper->type()] = pOper;
     m_vOperationList.push_back(pOper);
     return true;
 }
 
-void BNA::randomModify(const BinaryNeuralAcidModificationModel *pModel) {
+void BinaryNeuralAcid::randomModify(const BinaryNeuralAcidModificationModel *pModel) {
     for (int i = 0; i < pModel->getRemoveCicles(); i++) {
         if (m_vNodes.size() == 0) {
             break;
@@ -1041,16 +1041,16 @@ void BNA::randomModify(const BinaryNeuralAcidModificationModel *pModel) {
     }
 }
 
-nlohmann::json BNA::toJson() {
+nlohmann::json BinaryNeuralAcid::toJson() {
     throw std::runtime_error("TODO toJson");
 }
 
 // deprected
-BinaryNeuralAcidBit BNA::calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput){
+BinaryNeuralAcidBit BinaryNeuralAcid::calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput){
     return this->compute(vInputs, nOutput);
 }
 
-BinaryNeuralAcidBit BNA::compute(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput) {
+BinaryNeuralAcidBit BinaryNeuralAcid::compute(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput) {
     // prepare calculate exprs
     if (!m_bCompiled) {
         // std::cout << "Not compiled" << std::endl;
@@ -1073,7 +1073,7 @@ BinaryNeuralAcidBit BNA::compute(const std::vector<BinaryNeuralAcidBit> &vInputs
     return m_vCalcOutVars[nOutput]->getValue();
 }
 
-void BNA::clearCalcExprsVars() {
+void BinaryNeuralAcid::clearCalcExprsVars() {
 
     // clear input vars
     for (int i = 0; i < m_vCalcInputVars.size(); i++) {
@@ -1098,7 +1098,7 @@ void BNA::clearCalcExprsVars() {
     m_bCompiled = false;
 }
 
-void BNA::normalizeNodes() {
+void BinaryNeuralAcid::normalizeNodes() {
     int nNodesSize = m_vNodesInput.size();
     // normalize nodes
     for (int i = 0; i < m_vNodes.size(); i++) {
@@ -1167,7 +1167,7 @@ void BNA::normalizeNodes() {
     }
 }
 
-BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BNA::getVarByIndex(int nIndex) {
+BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BinaryNeuralAcid::getVarByIndex(int nIndex) {
     if (nIndex < m_vCalcInputVars.size()) {
         return m_vCalcInputVars[nIndex];
     }
@@ -1183,23 +1183,23 @@ BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BNA::getVarByIndex(int nIndex) {
 }
 
 // ----------------------------------------------------------------
-// BNAMemoryItem
+// BinaryNeuralAcidMemoryItem
 
-BNAMemoryItem::BNAMemoryItem(int nInputBits, int nOutputBits) {
+BinaryNeuralAcidMemoryItem::BinaryNeuralAcidMemoryItem(int nInputBits, int nOutputBits) {
     m_nInputBits = nInputBits;
     m_nOutputBits = nOutputBits;
-    TAG = "BNAMemoryItem";
+    TAG = "BinaryNeuralAcidMemoryItem";
 }
 
-BNAMemory::BNAMemory(int nInputBits, int nOutputBits){
+BinaryNeuralAcidMemory::BinaryNeuralAcidMemory(int nInputBits, int nOutputBits){
     m_nInputBits = nInputBits;
     m_nOutputBits = nOutputBits;
-    TAG = "BNAMemory";
+    TAG = "BinaryNeuralAcidMemory";
 }
 
 // ----------------------------------------------------------------
 
-void BNAMemory::load(std::string filename){
+void BinaryNeuralAcidMemory::load(std::string filename){
     std::cout << "TODO load" << std::endl;
    /* QFile file(filename);
     if (!file.exists()) {
@@ -1232,7 +1232,7 @@ void BNAMemory::load(std::string filename){
     int nCount;
     stream >> nCount;
     for(int i = 0; i < nCount; i++){
-        BNAMemoryItem *pBNAMemoryItem = new BNAMemoryItem(nInputBits, nOutputBits);
+        BinaryNeuralAcidMemoryItem *pBNAMemoryItem = new BinaryNeuralAcidMemoryItem(nInputBits, nOutputBits);
         stream >> pBNAMemoryItem->input;
         stream >> pBNAMemoryItem->output;
         m_vNodes.push_back(pBNAMemoryItem);
@@ -1240,7 +1240,7 @@ void BNAMemory::load(std::string filename){
     */
 };
 
-void BNAMemory::save(std::string filename) {
+void BinaryNeuralAcidMemory::save(std::string filename) {
     std::cout << "TODO save" << std::endl;
     /*QFile file(filename);
     if (file.exists()) {
@@ -1258,24 +1258,24 @@ void BNAMemory::save(std::string filename) {
     file.close();*/
 };
 
-int BNAMemory::size(){
+int BinaryNeuralAcidMemory::size(){
     return m_vItems.size();
 }
 
-BNAMemoryItem* BNAMemory::at(int i){
+BinaryNeuralAcidMemoryItem* BinaryNeuralAcidMemory::at(int i){
     return m_vItems[i];
 }
 
-BNAMemoryItem * BNAMemory::createItem(){
-    return new BNAMemoryItem(m_nInputBits, m_nOutputBits);
+BinaryNeuralAcidMemoryItem * BinaryNeuralAcidMemory::createItem(){
+    return new BinaryNeuralAcidMemoryItem(m_nInputBits, m_nOutputBits);
 }
 
-void BNAMemory::append(BNAMemoryItem *pBNAMemoryItem){
+void BinaryNeuralAcidMemory::append(BinaryNeuralAcidMemoryItem *pBNAMemoryItem){
     m_vItems.push_back(pBNAMemoryItem);
 }
 
-void BNAMemory::printData(){
-    std::cerr <<  " --- BNA Memory --- \n";
+void BinaryNeuralAcidMemory::printData(){
+    std::cerr <<  " --- BinaryNeuralAcid Memory --- \n";
     for (int i = 0; i < m_vItems.size(); i++) {
         std::cerr << "TODO printData" << std::endl;
         // std::cerr << m_vItems[i]->input.toHex().toStdString() << " => " << m_vItems[i]->output.toHex().toStdString() << "\n";
@@ -1284,10 +1284,10 @@ void BNAMemory::printData(){
 
 // ----------------------------------------------------------------
 
-// void BNAMemory::generateData(int nCount){
+// void BinaryNeuralAcidMemory::generateData(int nCount){
 //     m_vItems.clear();
 //     for(int i = 0; i < nCount; i++){
-//         BNAMemoryItem memoryItem;
+//         BinaryNeuralAcidMemoryItem memoryItem;
 //         memoryItem.input.append(generateRandomString());
 //         memoryItem.output = QCryptographicHash::hash(memoryItem.input, QCryptographicHash::Md5);
 //         m_vItems.push_back(memoryItem);
@@ -1296,13 +1296,13 @@ void BNAMemory::printData(){
 
 // // ----------------------------------------------------------------
 
-// std::string BNAMemory::alphabet() {
+// std::string BinaryNeuralAcidMemory::alphabet() {
 //     return "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]{}:,.<>/?\"'\\*&^%$#!-+=";
 // }
 
 // // ----------------------------------------------------------------
 
-// std::string BNAMemory::generateRandomString(){
+// std::string BinaryNeuralAcidMemory::generateRandomString(){
 //     std::string sAlphabet = alphabet();
 //     int len = qrand() % (m_nInputBits) + 2;
 //     std::string str = "";
@@ -1313,50 +1313,50 @@ void BNAMemory::printData(){
 // }
 
 // ----------------------------------------------------------------
-// BNAProject
+// BinaryNeuralAcidProject
 
-BNAProject::BNAProject(){
+BinaryNeuralAcidProject::BinaryNeuralAcidProject(){
     m_nInputBits = 1;
     m_nOutputBits = 1;
     m_nDefaultCountNodes = 5;
-    TAG = "BNAProject";
+    TAG = "BinaryNeuralAcidProject";
 }
 
-void BNAProject::setInputBits(int nInputBits){
+void BinaryNeuralAcidProject::setInputBits(int nInputBits){
     m_nInputBits = nInputBits;
 }
 
-int BNAProject::getInputBits(){
+int BinaryNeuralAcidProject::getInputBits(){
     return m_nInputBits;
 }
 
-void BNAProject::setOutputBits(int nOutputBits){
+void BinaryNeuralAcidProject::setOutputBits(int nOutputBits){
     m_nOutputBits = nOutputBits;
 }
 
-int BNAProject::getOutputBits(){
+int BinaryNeuralAcidProject::getOutputBits(){
     return m_nOutputBits;
 }
 
-void BNAProject::setDefaultCountNodes(int nDefaultCountNodes){
+void BinaryNeuralAcidProject::setDefaultCountNodes(int nDefaultCountNodes){
     m_nDefaultCountNodes = nDefaultCountNodes;
 }
 
-bool BNAProject::open(std::string sDirPath){
-    if (!BNA::dirExists(sDirPath)) {
-        std::cerr << "[ERROR] BNA Project " << sDirPath << " does not exists in this folder.\n";
+bool BinaryNeuralAcidProject::open(std::string sDirPath){
+    if (!BinaryNeuralAcid::dirExists(sDirPath)) {
+        std::cerr << "[ERROR] BinaryNeuralAcid Project " << sDirPath << " does not exists in this folder.\n";
         return false;
     }
     m_sDirPath = sDirPath;
     loadProjFile();
-    m_pBNAMemory = new BNAMemory(m_nInputBits, m_nOutputBits);
+    m_pBNAMemory = new BinaryNeuralAcidMemory(m_nInputBits, m_nOutputBits);
     m_pBNAMemory->load(m_sDirPath + "/" + m_sMemoryFileName);
 
     for (int bitid = 0; bitid < m_nOutputBits; bitid++) {
         std::string m_sBitid = prepareName(bitid);
         std::string subdir = prepareSubdir(bitid);
         std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".bna";
-        BNA *pBNA = new BNA();
+        BinaryNeuralAcid *pBNA = new BinaryNeuralAcid();
         pBNA->load(m_sFilename);
         m_mBNA[bitid] = pBNA;
         m_mapResults[bitid] = loadResult(bitid);
@@ -1365,7 +1365,7 @@ bool BNAProject::open(std::string sDirPath){
     return true;
 }
 
-std::string BNAProject::prepareName(int nBitId) {
+std::string BinaryNeuralAcidProject::prepareName(int nBitId) {
     std::string sName = std::to_string(nBitId);
     while (sName.length() < 3) {
         sName = "0" + sName;
@@ -1375,7 +1375,7 @@ std::string BNAProject::prepareName(int nBitId) {
 
 // ----------------------------------------------------------------
 
-std::string BNAProject::prepareSubdir(int nBitId){
+std::string BinaryNeuralAcidProject::prepareSubdir(int nBitId){
     std::string m_sBitid = prepareName(nBitId);
     std::string sRet;
     sRet += m_sBitid[0];
@@ -1388,12 +1388,12 @@ std::string BNAProject::prepareSubdir(int nBitId){
 
 // ----------------------------------------------------------------
 
-bool BNAProject::create(std::string sDirPath){
+bool BinaryNeuralAcidProject::create(std::string sDirPath){
     std::cerr << "TODO create" << std::endl;
 
     /*QDir dir(sDirPath);
     if(dir.exists()){
-        std::cerr << "[ERROR] BNA Project " << sDirPath.toStdString() << " already exists.\n";
+        std::cerr << "[ERROR] BinaryNeuralAcid Project " << sDirPath.toStdString() << " already exists.\n";
         return false;
     }
     QDir curr(".");
@@ -1408,7 +1408,7 @@ bool BNAProject::create(std::string sDirPath){
 
         QFile file(m_sFilename);
         if(!file.exists()){
-            BNA *pBNA = new BNA();
+            BinaryNeuralAcid *pBNA = new BinaryNeuralAcid();
             pBNA->randomGenerate(m_nInputBits,1,m_nDefaultCountNodes);
             pBNA->save(m_sFilename);
             m_mBNA[bitid] = pBNA;
@@ -1416,7 +1416,7 @@ bool BNAProject::create(std::string sDirPath){
         m_mapResults[bitid] = 0;
         saveResult(bitid, 0);
     }
-    m_pBNAMemory = new BNAMemory(m_nInputBits, m_nOutputBits);
+    m_pBNAMemory = new BinaryNeuralAcidMemory(m_nInputBits, m_nOutputBits);
     m_sMemoryFileName = "data.bnamemory";
     m_pBNAMemory->save(m_sDirPath + "/" + m_sMemoryFileName);
     saveProjFile();
@@ -1426,7 +1426,7 @@ bool BNAProject::create(std::string sDirPath){
 
 // ----------------------------------------------------------------
 
-void BNAProject::saveProjFile(){
+void BinaryNeuralAcidProject::saveProjFile(){
     std::cerr << "TODO saveProjFile" << std::endl;
 
     /*QJsonObject proj;
@@ -1454,7 +1454,7 @@ void BNAProject::saveProjFile(){
 
 // ----------------------------------------------------------------
 
-void BNAProject::loadProjFile(){
+void BinaryNeuralAcidProject::loadProjFile(){
     std::cerr << "TODO loadProjFile" << std::endl;
     /*std::string sFilename = m_sDirPath + "/bnaproject.json";
     QFile file(sFilename);
@@ -1480,25 +1480,25 @@ void BNAProject::loadProjFile(){
 
 // ----------------------------------------------------------------
 
-BNAMemory *BNAProject::getBNAMemory(){
+BinaryNeuralAcidMemory *BinaryNeuralAcidProject::getBNAMemory(){
     return m_pBNAMemory;
 }
 
 // ----------------------------------------------------------------
 
-void BNAProject::saveBNAMemory(){
+void BinaryNeuralAcidProject::saveBNAMemory(){
     m_pBNAMemory->save(m_sDirPath + "/" + m_sMemoryFileName);
 }
 
 // ----------------------------------------------------------------
 
-int BNAProject::calculate(int nBitId, bool bEnableSleep){
+int BinaryNeuralAcidProject::calculate(int nBitId, bool bEnableSleep){
 
     if(nBitId > m_nOutputBits){
         std::cerr << "Invalid nBitId max possible" << (m_nOutputBits-1) << "\n";
         return 0;
     }
-    std::map<int,BNA *>::iterator it;
+    std::map<int,BinaryNeuralAcid *>::iterator it;
     it = m_mBNA.find(nBitId);
     if (it == m_mBNA.end()) {
         std::cerr << "Not found nBitId in array\n";
@@ -1506,10 +1506,10 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
     }
 
     int nResult = 0;
-    BNA *pBNA = m_mBNA[nBitId];
+    BinaryNeuralAcid *pBNA = m_mBNA[nBitId];
     int nMemorySize = m_pBNAMemory->size();
     for(int i = 0; i < nMemorySize; i++){
-        BNAMemoryItem *pBNAMemoryItem = m_pBNAMemory->at(i);
+        BinaryNeuralAcidMemoryItem *pBNAMemoryItem = m_pBNAMemory->at(i);
         BinaryNeuralAcidBit bResult; // = pBNA->calc(pBNAMemoryItem->inputToVectorBool(), 0);
         // if (pBNAMemoryItem->outputToVectorBool()[nBitId] == bResult) {
         //     nResult++;
@@ -1523,7 +1523,7 @@ int BNAProject::calculate(int nBitId, bool bEnableSleep){
     return nResult;
 }
 
-void BNAProject::saveResult(int bitid, int nResult){
+void BinaryNeuralAcidProject::saveResult(int bitid, int nResult){
     std::cerr << "TODO" << std::endl;
 
     /*std::string m_sBitid = prepareName(bitid);
@@ -1535,7 +1535,7 @@ void BNAProject::saveResult(int bitid, int nResult){
         file.remove();
     }
     if ( !file.open(QIODevice::WriteOnly) ) {
-        std::cout << "BNAProject/savePersent: Could not write file: " << m_sFilename.toStdString() << "\n";
+        std::cout << "BinaryNeuralAcidProject/savePersent: Could not write file: " << m_sFilename.toStdString() << "\n";
         return;
     }
     QDataStream stream( &file );
@@ -1544,7 +1544,7 @@ void BNAProject::saveResult(int bitid, int nResult){
     file.close();*/
 }
 
-int BNAProject::loadResult(int bitid){
+int BinaryNeuralAcidProject::loadResult(int bitid){
     /*std::string m_sBitid = prepareName(bitid);
     std::string subdir = prepareSubdir(bitid);
     std::string m_sFilename = m_sDirPath + "/" + subdir + "/" + m_sBitid + ".result";
@@ -1553,10 +1553,10 @@ int BNAProject::loadResult(int bitid){
     // load persent
     QFile file(m_sFilename);
     if (!file.exists()) {
-        std::cout << "BNAProject/loadPersent:  File did not exists: " << m_sFilename.toStdString() << "\n";
+        std::cout << "BinaryNeuralAcidProject/loadPersent:  File did not exists: " << m_sFilename.toStdString() << "\n";
     }else{
         if (!file.open(QIODevice::ReadOnly) ) {
-            std::cout << "BNAProject/loadPersent: Could not open file " << m_sFilename.toStdString() << "\n";
+            std::cout << "BinaryNeuralAcidProject/loadPersent: Could not open file " << m_sFilename.toStdString() << "\n";
         }else{
             QDataStream stream(&file);
             stream >> nResult;
@@ -1566,17 +1566,17 @@ int BNAProject::loadResult(int bitid){
     return nResult;*/
 }
 
-std::map<int,int> &BNAProject::getResults(){
+std::map<int,int> &BinaryNeuralAcidProject::getResults(){
     return m_mapResults;
 }
 
-BNA *BNAProject::getBNA(int nBitId){
+BinaryNeuralAcid *BinaryNeuralAcidProject::getBNA(int nBitId){
     if(nBitId > m_nOutputBits){
         std::cerr << "Invalid bitid max possible" << (m_nOutputBits-1) << "\n";
         return NULL;
     }
 
-    std::map<int, BNA *>::iterator it;
+    std::map<int, BinaryNeuralAcid *>::iterator it;
     it = m_mBNA.find(nBitId); 
     if (it == m_mBNA.end()) {
         std::cerr << "Not found nBitId in array\n";
@@ -1588,12 +1588,12 @@ BNA *BNAProject::getBNA(int nBitId){
 
 // ----------------------------------------------------------------
 
-void BNAProject::saveBNA(int nBitId){
+void BinaryNeuralAcidProject::saveBNA(int nBitId){
     if(nBitId > m_nOutputBits){
         std::cerr << "Invalid nBitId max possible" << (m_nOutputBits-1) << "\n";
         return;
     }
-    std::map<int, BNA *>::iterator it;
+    std::map<int, BinaryNeuralAcid *>::iterator it;
     it = m_mBNA.find(nBitId); 
     if(it == m_mBNA.end()){
         std::cerr << "Not found nBitId in array\n";

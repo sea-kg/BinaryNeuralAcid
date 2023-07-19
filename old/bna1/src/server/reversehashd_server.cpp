@@ -34,7 +34,7 @@ QString generateRandomString(){
 ReverseHashDServer::ReverseHashDServer(quint16 port, QObject *parent) : QObject(parent) {
 	m_pReverseHashDServer = new QWebSocketServer(QStringLiteral("reversehashd"), QWebSocketServer::NonSecureMode, this);
     QString sFolder = "tmp_server_md5";
-    m_pBnaProject = new BNAProject();
+    m_pBnaProject = new BinaryNeuralAcidProject();
 
 
     if(!m_pBnaProject->open(sFolder)){
@@ -45,9 +45,9 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, QObject *parent) : QObject(
         m_pBnaProject->create(sFolder);
 
         // fill memory for learning
-        BNAMemory *pBNAMemory = m_pBnaProject->getBNAMemory();
+        BinaryNeuralAcidMemory *pBNAMemory = m_pBnaProject->getBNAMemory();
         for(int i = 0; i < 10000; i++){
-            BNAMemoryItem *pBNAMemoryItem = pBNAMemory->createItem();
+            BinaryNeuralAcidMemoryItem *pBNAMemoryItem = pBNAMemory->createItem();
             pBNAMemoryItem->output.append(generateRandomString());
             pBNAMemoryItem->input = QCryptographicHash::hash(pBNAMemoryItem->output, QCryptographicHash::Md5);
             pBNAMemory->append(pBNAMemoryItem);
@@ -58,7 +58,7 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, QObject *parent) : QObject(
 	// init bna
 
     /*
-     * TODO move yto BNA project like export to cpp
+     * TODO move yto BinaryNeuralAcid project like export to cpp
 	QDir dir(".");
 	dir.mkpath(path);
 	
@@ -81,20 +81,20 @@ ReverseHashDServer::ReverseHashDServer(quint16 port, QObject *parent) : QObject(
 		
 		QFile file(filename_bna);
 		if(!file.exists()){
-			BNA bna;
+			BinaryNeuralAcid bna;
 			bna.randomGenerate(128,1,256);
 			bna.save(filename_bna);
 			qDebug() << filename_bna << " - created";
 		}
 		
 		if(QFile(filename_bna).exists()){
-			BNA bna;
+			BinaryNeuralAcid bna;
 			bna.load(filename_bna);
 			bna.exportToCpp(filename_cpp, "func" + name);
 		}
 		
 		if(QFile(filename_bna).exists()){
-			BNA bna;
+			BinaryNeuralAcid bna;
 			bna.load(filename_bna);
 			bna.exportToDot(filename_dot, "func" + name);
 		}
@@ -187,7 +187,7 @@ void ReverseHashDServer::extractFile(QString res_name, QString to_name){
 
 // ---------------------------------------------------------------------
 
-BNAProject * ReverseHashDServer::getBNAProject(){
+BinaryNeuralAcidProject * ReverseHashDServer::getBNAProject(){
     return m_pBnaProject;
 }
 

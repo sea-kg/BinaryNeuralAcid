@@ -27,25 +27,25 @@ template<class ValueType> class IBinaryNeuralAcidOperation {
         virtual ValueType calc(ValueType b1, ValueType b2) = 0;
 };
 
-class BinaryNeuralAcidOperXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
+class BinaryNeuralAcidOperationBitXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperNotXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
+class BinaryNeuralAcidOperationBitNotXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BNAOperAnd : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> {
+class BinaryNeuralAcidOperationBitAnd : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> {
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
-class BinaryNeuralAcidOperOr : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> {
+class BinaryNeuralAcidOperationBitOr : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> {
     public:
         virtual std::string type();
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
@@ -76,9 +76,9 @@ template<class ValueType> class BinaryNeuralAcidVar {
         std::string m_sName;
 };
 
-template<class ValueType> class BNAExpression {
+template<class ValueType> class BinaryNeuralAcidExpression {
     public:
-        BNAExpression() {
+        BinaryNeuralAcidExpression() {
             m_pVar1 = nullptr;
             m_pVar2 = nullptr;
             m_pVarOut = nullptr;
@@ -178,18 +178,18 @@ class BinaryNeuralAcidGraphNode {
         std::string m_sOperationType;
 };
 
-class BNANodeInput {
+class BinaryNeuralAcidGraphNodeInput {
     public:
-        BNANodeInput(unsigned short nIndex);
+        BinaryNeuralAcidGraphNodeInput(unsigned short nIndex);
         unsigned short getIndex();
 
     private:
         unsigned short m_nIndex;
 };
 
-class BNANodeOutput {
+class BinaryNeuralAcidGraphNodeOutput {
     public:
-        BNANodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex);
+        BinaryNeuralAcidGraphNodeOutput(unsigned short nOutputIndex, unsigned short nInputNodeIndex);
         unsigned short getOutputIndex();
         unsigned short getInputNodeIndex();
         void setInputNodeIndex(unsigned short nInputNodeIndex);
@@ -269,11 +269,11 @@ class BinaryNeuralAcidConfig {
         int m_nOutputSize;
 };
 
-class BNA {
+class BinaryNeuralAcid {
 	public:
-		BNA();
-        BNA(int nInput, int nOutput);
-        ~BNA();
+		BinaryNeuralAcid();
+        BinaryNeuralAcid(int nInput, int nOutput);
+        ~BinaryNeuralAcid();
 		bool load(const std::string &sFilename);
 		bool save(const std::string &sFilename);
 		void randomGenerate(const BinaryNeuralAcidConfig &config);
@@ -284,9 +284,9 @@ class BNA {
 		bool exportToDot(std::string filename, std::string graphname);
 		bool exportToCpp(std::string filename, std::string funcname);
 
-        const std::vector<BNANodeInput *> &getNodesInput();
+        const std::vector<BinaryNeuralAcidGraphNodeInput *> &getNodesInput();
         const std::vector<BinaryNeuralAcidGraphNode *> &getNodes();
-        const std::vector<BNANodeOutput *> &getNodesOutput();
+        const std::vector<BinaryNeuralAcidGraphNodeOutput *> &getNodesOutput();
         int calculateDepth(int n);
 
         // QByteArray exportToByteArray();
@@ -299,7 +299,7 @@ class BNA {
         unsigned int getInputSize();
         unsigned int getNodesSize();
         unsigned int getOutputSize();
-        void compare(BNA &bna);
+        void compare(BinaryNeuralAcid &bna);
 
         static bool fileExists(const std::string &sFilename);
         static bool removeFile(const std::string &sFilename);
@@ -320,22 +320,22 @@ class BNA {
         int m_nOperSize;
 
         void clearResources();
-        std::vector<BNANodeInput *> m_vNodesInput;
+        std::vector<BinaryNeuralAcidGraphNodeInput *> m_vNodesInput;
         std::vector<BinaryNeuralAcidGraphNode *> m_vNodes;
-        std::vector<BNANodeOutput *> m_vNodesOutput;
+        std::vector<BinaryNeuralAcidGraphNodeOutput *> m_vNodesOutput;
 
         void clearCalcExprsVars();
         void normalizeNodes();
         BinaryNeuralAcidVar<BinaryNeuralAcidBit> *getVarByIndex(int nIndex);
-        std::vector<BNAExpression<BinaryNeuralAcidBit> *> m_vCalcExprs;
+        std::vector<BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *> m_vCalcExprs;
         std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcInputVars;
         std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcVars;
         std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcOutVars;
 };
 
-class BNAMemoryItem {
+class BinaryNeuralAcidMemoryItem {
     public:
-        BNAMemoryItem(int nInputBits, int nOutputBits);
+        BinaryNeuralAcidMemoryItem(int nInputBits, int nOutputBits);
         char* input;
         char* output;
 
@@ -347,27 +347,27 @@ class BNAMemoryItem {
         std::vector<BinaryNeuralAcidBit> m_vOutput;
 };
 
-class BNAMemory {
+class BinaryNeuralAcidMemory {
     public:
-        BNAMemory(int nInputBits, int nOutputBits);
+        BinaryNeuralAcidMemory(int nInputBits, int nOutputBits);
         void load(std::string filename);
         void save(std::string filename);
         int size();
-        BNAMemoryItem *at(int i);
-        BNAMemoryItem *createItem();
-        void append(BNAMemoryItem *pItem);
+        BinaryNeuralAcidMemoryItem *at(int i);
+        BinaryNeuralAcidMemoryItem *createItem();
+        void append(BinaryNeuralAcidMemoryItem *pItem);
         void printData();
     private:
         std::string TAG;
         int m_nInputBits;
         int m_nOutputBits;
-        std::vector<BNAMemoryItem *> m_vItems;
+        std::vector<BinaryNeuralAcidMemoryItem *> m_vItems;
 };
 
-class BNAProject {
+class BinaryNeuralAcidProject {
 
     public:
-        BNAProject();
+        BinaryNeuralAcidProject();
         bool open(std::string sDirPath);
         void setInputBits(int nInputBits);
         int getInputBits();
@@ -375,13 +375,13 @@ class BNAProject {
         int getOutputBits();
         void setDefaultCountNodes(int nDefaultCountNodes);
         bool create(std::string sDirPath);
-        BNAMemory *getBNAMemory();
+        BinaryNeuralAcidMemory *getBNAMemory();
         void saveBNAMemory();
         int calculate(int bitid, bool bEnableSleep = false);
         void saveResult(int bitid, int nSuccess);
         int loadResult(int bitid);
         std::map<int,int> &getResults();
-        BNA *getBNA(int bitid);
+        BinaryNeuralAcid *getBNA(int bitid);
         void saveBNA(int bitid);
 
     private:
@@ -392,12 +392,12 @@ class BNAProject {
         void loadProjFile();
 
         std::string m_sDirPath;
-        BNAMemory *m_pBNAMemory;
+        BinaryNeuralAcidMemory *m_pBNAMemory;
         int m_nInputBits;
         int m_nOutputBits;
         int m_nDefaultCountNodes;
         std::string m_sMemoryFileName;
-        std::map<int,BNA *> m_mBNA;
+        std::map<int,BinaryNeuralAcid *> m_mBNA;
         std::map<int,int> m_mapResults;
 };
 

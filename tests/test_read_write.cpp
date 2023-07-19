@@ -13,7 +13,7 @@ int main() {
         .setOutputSize(1)
     ;
 
-    BNA bna;
+    BinaryNeuralAcid bna;
     bna.randomGenerate(config);
 
     // fill the input vector
