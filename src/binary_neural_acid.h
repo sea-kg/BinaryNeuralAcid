@@ -286,7 +286,7 @@ class BinaryNeuralAcid {
         int addNodeOutput(int nIn);
         bool compile();
 
-		bool exportToDot(std::string filename, std::string graphname);
+		bool exportToDot(const std::string &sFilename);
 		bool exportToCpp(std::string filename, std::string funcname);
 
         const std::vector<BinaryNeuralAcidGraphNodeInput *> &getNodesInput();

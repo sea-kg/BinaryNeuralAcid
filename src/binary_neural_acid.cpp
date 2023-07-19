@@ -568,12 +568,7 @@ bool BinaryNeuralAcid::save(const std::string &sFilename){
         std::cerr << "save: could not open file to write: '" << sFilename0 << "'" << std::endl;
         return false;
     }
-    // update ids
 
-    for (int i = 0; i < m_vNodes.size(); i++) {
-        int nIndex = i + m_vNodesInput.size();
-        m_vNodes[i]->setId(nIndex);
-    }
     m_nBnaRevision++;
     bool bResult = writeToFileBna(file);
     file.close(); // TODO file will be automaticly closed on return of scope?
@@ -754,33 +749,58 @@ bool BinaryNeuralAcid::dirExists(const std::string &sDirname) {
     return false;
 }
 
-bool BinaryNeuralAcid::exportToDot(std::string filename, std::string graphname){
-    std::cerr << "TODO exportToCpp" << std::endl;
-
-    /*QFile file(filename);
-    if (file.exists()) {
-        file.remove();
-    }
-    if ( !file.open(QIODevice::WriteOnly) ) {
-        std::cerr << "Could not write file: " << filename.toStdString() << "\n";
-        return false;
-    }
-    QTextStream stream( &file );
-    stream << "digraph " << graphname << " {\n";
-
-    int nExprsSize = m_vCalcExprs.size();
-    for(int i = 0; i < m_vCalcExprs.size(); i++){
-        BNAExpr *pExpr = m_vCalcExprs[i];
-        stream << "\t" << pExpr->out()->name() << " [label=\"" << pExpr->oper()->type() << "\"];\n";
-        stream << "\t" << pExpr->op1()->name() << " -> " << pExpr->out()->name() << ";\n";
-        stream << "\t" << pExpr->op2()->name() << " -> " << pExpr->out()->name() << ";\n";
-        if(nExprsSize - i <= (int)m_nOutput){
-            stream << "\t" << pExpr->out()->name() << " -> out" << std::string::number(nExprsSize - i) << ";\n";
+bool BinaryNeuralAcid::exportToDot(const std::string &sFilename) {
+    std::string sFilename0 = sFilename + ".dot";
+    if (BinaryNeuralAcid::fileExists(sFilename0)) {
+        if (!BinaryNeuralAcid::removeFile(sFilename0)) {
+            std::cerr << "exportToDot: could not remove file: '" << sFilename0 << "'" << std::endl;
+            return false;
         }
     }
+    std::ofstream file;
+    file.open(sFilename0, std::ios::out | std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "exportToDot: could not open file to write: '" << sFilename0 << "'" << std::endl;
+        return false;
+    }
 
-    stream << "}\n";
-    file.close();*/
+    file << "digraph BinaryNeuralAcid {" << "\n";
+    for (int i = 0; i < m_vNodesInput.size(); i++) {
+        file
+            << "    " << i << " [label=\"IN_" << i << "\"]"
+            << ";\n";
+    }
+
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        if (m_vNodes[i]->getOperationType() != "") {
+            file
+                << "    " << m_vNodes[i]->getId() << " [label=\"" << m_vNodes[i]->getId() << ":" << m_vNodes[i]->getOperationType() << "\"]"
+                << ";\n";
+        }
+
+        file
+            << "    " << m_vNodes[i]->getX()
+            << " -> " << m_vNodes[i]->getId()
+            << ";\n"
+        ;
+        file
+            << "    " << m_vNodes[i]->getY()
+            << " -> " << m_vNodes[i]->getId()
+            << ";\n"
+        ;
+
+    }
+    for (int i = 0; i < m_vNodesOutput.size(); i++) {
+        file
+            << "    " << "out" << m_vNodesOutput[i]->getOutputIndex() << " [label=\"OUT_" << m_vNodesOutput[i]->getOutputIndex() << "\"]"
+            << ";\n";
+        file
+            << "    " << m_vNodesOutput[i]->getInputNodeIndex()
+            << " -> " << "out" << m_vNodesOutput[i]->getOutputIndex()
+            << ";\n"
+        ;
+    }
+    file << "}" << "\n";
     return true;
 }
 
@@ -1070,6 +1090,7 @@ void BinaryNeuralAcid::normalizeNodes() {
     for (int i = 0; i < m_vNodes.size(); i++) {
         m_vNodes[i]->setX(m_vNodes[i]->getX() % nNodesSize);
         m_vNodes[i]->setY(m_vNodes[i]->getY() % nNodesSize);
+        m_vNodes[i]->setId(i + nNodesSize);
         nNodesSize++;
     }
     // normalize nodes output
@@ -1092,7 +1113,7 @@ void BinaryNeuralAcid::normalizeNodes() {
             }
         }
         if (nLinks == 0) {
-            std::cout << "nNodeIndex= " << nNodeIndex << std::endl;
+            // std::cout << "nNodeIndex= " << nNodeIndex << std::endl;
             vToRemoving.push_back(nNodeIndex);
         }
     }
