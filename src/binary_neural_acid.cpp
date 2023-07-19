@@ -6,19 +6,147 @@
 #include <sys/types.h>
 
 // -----------------------------------------------------------------
-// BNABit4
+// BinaryNeuralAcidBit4
 
-BNABit4::BNABit4(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3, BinaryNeuralAcidBit b4) : b1(b1), b2(b2), b3(b3), b4(b4) {
+BinaryNeuralAcidBit4::BinaryNeuralAcidBit4(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3, BinaryNeuralAcidBit b4) : b1(b1), b2(b2), b3(b3), b4(b4) {
 
 }
 
-void BNABit4::appendToVector(std::vector<BinaryNeuralAcidBit> &vars){
+void BinaryNeuralAcidBit4::appendToVector(std::vector<BinaryNeuralAcidBit> &vars){
     vars.push_back(b1);
     vars.push_back(b2);
     vars.push_back(b3);
     vars.push_back(b4);
 }
 
+// -----------------------------------------------------------------
+// BinaryNeuralAcidBitConvertor
+
+std::string BinaryNeuralAcidBitConvertor::toBinString(const BinaryNeuralAcidBit& bit) {
+    if (bit == B_0) {
+        return std::string("0");
+    } else if (bit == B_1) {
+        return std::string("1");
+    }
+    return std::string("?");
+}
+
+std::string BinaryNeuralAcidBitConvertor::toBinString(const BinaryNeuralAcidBit4& bit4) {
+    std::string sResult;
+    if (bit4.b1 == B_0) sResult += "0"; else if (bit4.b1 == B_1) sResult += "1"; else sResult += "?";
+    if (bit4.b2 == B_0) sResult += "0"; else if (bit4.b2 == B_1) sResult += "1"; else sResult += "?";
+    if (bit4.b3 == B_0) sResult += "0"; else if (bit4.b3 == B_1) sResult += "1"; else sResult += "?";
+    if (bit4.b4 == B_0) sResult += "0"; else if (bit4.b4 == B_1) sResult += "1"; else sResult += "?";
+    return sResult;
+}
+
+std::string BinaryNeuralAcidBitConvertor::toBinStringFromHexString(const std::string& sHex) {
+    const std::string sAlphabetLower = "0123456789abcdef";
+    const std::string sAlphabetUpper = "0123456789ABCDEF";
+
+    // initMapHEX2BIN();
+    std::string sResult = "";
+    for (int i = 0; i < sHex.length(); i++){
+        char ch = sHex.at(i);
+        size_t index = sAlphabetLower.find(ch);
+        if (index == -1) {
+            index = sAlphabetUpper.find(ch);
+        }
+
+        if (index == -1) {
+            sResult += "????";
+        } else {
+            sResult += ((index >> 3) & 0x01) == 0x01 ? "1" : "0";
+            sResult += ((index >> 2) & 0x01) == 0x01 ? "1" : "0";
+            sResult += ((index >> 1) & 0x01) == 0x01 ? "1" : "0";
+            sResult += ((index >> 0) & 0x01) == 0x01 ? "1" : "0";
+        }
+    }
+    return sResult;
+}
+
+std::string BinaryNeuralAcidBitConvertor::toBinStringFromBits(const std::vector<BinaryNeuralAcidBit>& bits) {
+    std::string sResult;
+    for (int i = 0; i < bits.size(); i++) {
+        BinaryNeuralAcidBit bit = bits[i];
+        if (bit == B_1) {
+            sResult += '1';
+        } else if (bit == B_0) {
+            sResult += '0';
+        } else {
+            std::cerr << "Skip bit '" << (int)bit << "', because expected 'B_0' or 'B_1'" << std::endl;
+        }
+    }
+    return sResult;
+}
+
+std::string BinaryNeuralAcidBitConvertor::toHexString(const BinaryNeuralAcidBit4& bit4) {
+    const std::string sAlphabet = "0123456789abcdef";
+    short index = 0x00;
+    index |= (bit4.b4 << 0) & 0x01;
+    index |= (bit4.b3 << 1) & 0x02;
+    index |= (bit4.b2 << 2) & 0x04;
+    index |= (bit4.b1 << 3) & 0x08;
+    if (index < 0 || index > 15) {
+        return "?";
+    }
+    return std::string(1, sAlphabet[index]);
+}
+
+std::string BinaryNeuralAcidBitConvertor::toHexStringFromBinString(const std::string& sBin) {
+    std::string sResult = "";
+    const std::string sAlpabet = "0123456789abcdef";
+    unsigned char c = 0;
+    int i = 0;
+    int sum = 0;
+    for (i = 0; i < sBin.length(); i++) {
+        char ch = sBin.at(i);
+        if (ch != '1' && ch != '0') {
+            // skip to next
+            i += 4 - (i % 4) - 1; // in next lopp will be +1
+            if (i < sBin.length()) {
+                sResult += '?';
+            }
+            c = 0x00;
+            continue;
+        }
+        c = (c << 1) | (ch == '1' ? 0x01 : 0x00);
+        if ((i+1) % 4 == 0) {
+            sResult += sAlpabet[c];
+            c = 0x00;
+        }
+    }
+    i++;
+    if (i % 4 == 0 && i < sBin.length()) {
+        sResult += sAlpabet[c];
+    }
+    return sResult;
+}
+
+std::string BinaryNeuralAcidBitConvertor::toHexStringFromBits(const std::vector<BinaryNeuralAcidBit>& bits) {
+    std::string sBin = BinaryNeuralAcidBitConvertor::toBinStringFromBits(bits);
+    return BinaryNeuralAcidBitConvertor::toHexStringFromBinString(sBin);
+}
+
+std::vector<BinaryNeuralAcidBit> BinaryNeuralAcidBitConvertor::toBitsFromBinString(const std::string& sBin) {
+    std::vector<BinaryNeuralAcidBit> vResult;
+    for (int i = 0; i < sBin.length(); i++) {
+        char ch = sBin.at(i);
+        if (ch == '1') {
+            vResult.push_back(B_1);
+        } else if (ch == '0') {
+            vResult.push_back(B_0);
+        } else {
+            std::cerr << "Skip character '" << ch << "', because expected '0' or '1'" << std::endl;
+        }
+    }
+    return vResult;
+}
+
+std::vector<BinaryNeuralAcidBit> BinaryNeuralAcidBitConvertor::toBitsFromHexString(const std::string& sHex) {
+    std::string sBin = BinaryNeuralAcidBitConvertor::toBinStringFromHexString(sHex);
+    return BinaryNeuralAcidBitConvertor::toBitsFromBinString(sBin);
+}
 
 // -----------------------------------------------------------------
 // BinaryNeuralAcidOperationBitXor
@@ -183,168 +311,6 @@ void BinaryNeuralAcidGraphNodeOutput::setInputNodeIndex(unsigned short nInputNod
 
 void BinaryNeuralAcidGraphNodeOutput::writeToFile(std::ofstream &file) {
     file << "output " << m_nInputNodeIndex << "\n";
-}
-
-// -----------------------------------------------------------------
-// function for convert hex string to array bna bit
-
-static std::map<char, BNABit4 *> gMapHEX;
-
-void initMapHEX(){
-    if (gMapHEX.size() == 0) {
-        gMapHEX['0'] = new BNABit4(B_0, B_0, B_0, B_0);
-        gMapHEX['1'] = new BNABit4(B_0, B_0, B_0, B_1);
-        gMapHEX['2'] = new BNABit4(B_0, B_0, B_1, B_0);
-        gMapHEX['3'] = new BNABit4(B_0, B_0, B_1, B_1);
-        gMapHEX['4'] = new BNABit4(B_0, B_1, B_0, B_0);
-        gMapHEX['5'] = new BNABit4(B_0, B_1, B_0, B_1);
-        gMapHEX['6'] = new BNABit4(B_0, B_1, B_1, B_0);
-        gMapHEX['7'] = new BNABit4(B_0, B_1, B_1, B_1);
-        gMapHEX['8'] = new BNABit4(B_1, B_0, B_0, B_0);
-        gMapHEX['9'] = new BNABit4(B_1, B_0, B_0, B_1);
-        gMapHEX['A'] = new BNABit4(B_1, B_0, B_1, B_0);
-        gMapHEX['B'] = new BNABit4(B_1, B_0, B_1, B_1);
-        gMapHEX['C'] = new BNABit4(B_1, B_1, B_0, B_0);
-        gMapHEX['D'] = new BNABit4(B_1, B_1, B_0, B_1);
-        gMapHEX['E'] = new BNABit4(B_1, B_1, B_1, B_0);
-        gMapHEX['F'] = new BNABit4(B_1, B_1, B_1, B_1);
-        gMapHEX['a'] = gMapHEX['A'];
-        gMapHEX['b'] = gMapHEX['B'];
-        gMapHEX['c'] = gMapHEX['C'];
-        gMapHEX['d'] = gMapHEX['D'];
-        gMapHEX['e'] = gMapHEX['E'];
-        gMapHEX['f'] = gMapHEX['F'];
-    }
-}
-
-void BNAConvertHEXStringToVBool(std::string &in, std::vector<BinaryNeuralAcidBit> &vars, int size){
-    if (size % 8 != 0) {
-        std::cerr << "[ERROR] Size must be % 8 == 0";
-    }
-    initMapHEX();
-    vars.clear();
-    for (int i = 0; i < in.length(); i++){
-        char ch = in.at(i);
-        std::map<char, BNABit4 *>::iterator it;
-        it = gMapHEX.find(ch);
-        if(it != gMapHEX.end()){
-            gMapHEX[ch]->appendToVector(vars);
-        }else{
-            std::cerr << "[ERROR] Unknown hex char\n";
-            vars.push_back(B_0);
-            vars.push_back(B_0);
-            vars.push_back(B_0);
-            vars.push_back(B_0);
-        }
-    }
-
-    while (vars.size() < size) {
-        vars.push_back(B_0);
-    }
-}
-
-// ----------------------------------------------------------------
-
-std::string BNAConvertCharToHexCode(unsigned char c) {
-    if(c == 0) return "0";
-    if(c == 1) return "1";
-    if(c == 2) return "2";
-    if(c == 3) return "3";
-    if(c == 4) return "4";
-    if(c == 5) return "5";
-    if(c == 6) return "6";
-    if(c == 7) return "7";
-    if(c == 8) return "8";
-    if(c == 9) return "9";
-    if(c == 10) return "a";
-    if(c == 11) return "b";
-    if(c == 12) return "c";
-    if(c == 13) return "d";
-    if(c == 14) return "e";
-    if(c == 15) return "f";
-    return "x";
-}
-
-// ----------------------------------------------------------------
-
-static std::map<char, std::string> gMapHEX2BIN;
-
-void initMapHEX2BIN(){
-    if (gMapHEX2BIN.size() == 0) {
-        gMapHEX2BIN['0'] = "0000";
-        gMapHEX2BIN['1'] = "0001";
-        gMapHEX2BIN['2'] = "0010";
-        gMapHEX2BIN['3'] = "0011";
-        gMapHEX2BIN['4'] = "0100";
-        gMapHEX2BIN['5'] = "0101";
-        gMapHEX2BIN['6'] = "0110";
-        gMapHEX2BIN['7'] = "0111";
-        gMapHEX2BIN['8'] = "1000";
-        gMapHEX2BIN['9'] = "1001";
-        gMapHEX2BIN['A'] = "1010";
-        gMapHEX2BIN['B'] = "1011";
-        gMapHEX2BIN['C'] = "1100";
-        gMapHEX2BIN['D'] = "1101";
-        gMapHEX2BIN['E'] = "1110";
-        gMapHEX2BIN['F'] = "1111";
-        gMapHEX2BIN['a'] = gMapHEX2BIN['A'];
-        gMapHEX2BIN['b'] = gMapHEX2BIN['B'];
-        gMapHEX2BIN['c'] = gMapHEX2BIN['C'];
-        gMapHEX2BIN['d'] = gMapHEX2BIN['D'];
-        gMapHEX2BIN['e'] = gMapHEX2BIN['E'];
-        gMapHEX2BIN['f'] = gMapHEX2BIN['F'];
-    }
-}
-
-// ----------------------------------------------------------------
-
-std::string BNAConvertHexToBin(std::string sHex){
-    initMapHEX2BIN();
-    std::string sResult = "";
-    for (int i = 0; i < sHex.length(); i++){
-        char ch = sHex.at(i);
-        std::map<char, BNABit4 *>::iterator it;
-        it = gMapHEX.find(ch);
-        if (it != gMapHEX.end()) {
-            sResult += gMapHEX2BIN[ch];
-        } else {
-            std::cerr << "[ERROR] Unknown hex char\n";
-        }
-    }
-    return sResult;
-}
-
-// ----------------------------------------------------------------
-
-std::string BNAConvertBinToHex(std::string sBin) {
-    std::string result = "";
-    unsigned char c = 0;
-    for(int i = 0; i < sBin.length(); i++){
-        char ch = sBin.at(i);
-        if(i % 4 == 0 && i != 0){
-            result += BNAConvertCharToHexCode(c);
-            c = 0x00;
-        }
-        c = (c << 1) | (ch == '1' ? 0x01 : 0x00);
-    }
-    result += BNAConvertCharToHexCode(c);
-    return result;
-}
-
-// ----------------------------------------------------------------
-
-std::string BNAConvertVBoolHEXString(std::vector<BinaryNeuralAcidBit> &vars) {
-    std::string result = "";
-    unsigned char c = 0;
-    for(int i = 0; i < vars.size(); i++){
-        if(i % 4 == 0 && i != 0){
-            result += BNAConvertCharToHexCode(c);
-            c = 0x00;
-        }
-        c = (c << 1) | (vars[i] ? 0x01 : 0x00);
-    }
-    result += BNAConvertCharToHexCode(c);
-    return result;
 }
 
 // -----------------------------------------------------------------

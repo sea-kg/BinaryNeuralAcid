@@ -11,14 +11,27 @@ enum BinaryNeuralAcidBit : char {
     B_1 = 0x01
 };
 
-class BNABit4 {
+class BinaryNeuralAcidBit4 {
     public:
-        BNABit4(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3, BinaryNeuralAcidBit b4);
+        BinaryNeuralAcidBit4(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2, BinaryNeuralAcidBit b3, BinaryNeuralAcidBit b4);
         void appendToVector(std::vector<BinaryNeuralAcidBit> &vars);
         BinaryNeuralAcidBit b1;
         BinaryNeuralAcidBit b2;
         BinaryNeuralAcidBit b3;
         BinaryNeuralAcidBit b4;
+};
+
+class BinaryNeuralAcidBitConvertor {
+    public:
+        static std::string toBinString(const BinaryNeuralAcidBit& bit);
+        static std::string toBinString(const BinaryNeuralAcidBit4& bit4);
+        static std::string toBinStringFromHexString(const std::string& sHex);
+        static std::string toBinStringFromBits(const std::vector<BinaryNeuralAcidBit>& bits);
+        static std::string toHexString(const BinaryNeuralAcidBit4& bit4);
+        static std::string toHexStringFromBinString(const std::string& sBin);
+        static std::string toHexStringFromBits(const std::vector<BinaryNeuralAcidBit>& bits);
+        static std::vector<BinaryNeuralAcidBit> toBitsFromBinString(const std::string& sBin);
+        static std::vector<BinaryNeuralAcidBit> toBitsFromHexString(const std::string& sHex);
 };
 
 template<class ValueType> class IBinaryNeuralAcidOperation {
@@ -199,14 +212,6 @@ class BinaryNeuralAcidGraphNodeOutput {
         unsigned short m_nOutputIndex;
         unsigned short m_nInputNodeIndex;
 };
-
-
-void BNAConvertHEXStringToVBool(std::string &in, std::vector<BinaryNeuralAcidBit> &vars, int size);
-std::string BNAConvertVBoolHEXString(std::vector<BinaryNeuralAcidBit> &vars);
-std::string BNAConvertCharToHexCode(unsigned char c);
-std::string BNAConvertHexToBin(std::string sHex);
-std::string BNAConvertBinToHex(std::string sBin);
-
 
 class BinaryNeuralAcidStatCalcResults {
     public:
