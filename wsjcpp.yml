@@ -70,8 +70,6 @@ unit-tests:
       description: "Learning test"
     - name: "RandomMutation"
       description: "Random Mutation test"
-    - name: "ReadWrite"
-      description: "ReadWrite test"
     - name: "ReverseTest"
       description: "Reverse test"
 
