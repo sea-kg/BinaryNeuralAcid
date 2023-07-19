@@ -33,7 +33,7 @@ class ICallbacksRenderBNA {
         virtual void doMutation() = 0;
         virtual void doTestAndRevert() = 0;
         virtual BNAGroup<ValueType>* getBNA() = 0;
-        virtual const BNAStatCalcResults *getResults() = 0;
+        virtual const BinaryNeuralAcidStatCalcResults *getResults() = 0;
 };
 
 struct BNAItemPosition {
@@ -500,7 +500,7 @@ class RenderBNA {
             }
 
             // update current results
-            const BNAStatCalcResults *pResults = m_pCallbacksRenderBNA->getResults();
+            const BinaryNeuralAcidStatCalcResults *pResults = m_pCallbacksRenderBNA->getResults();
             const std::vector<int> &vPrevCountersPercents = pResults->getPrevCountersPercents();
             const std::vector<int> &vCurrentCountersPercents = pResults->getCurrentCountersPercents();
 

@@ -208,9 +208,9 @@ std::string BNAConvertHexToBin(std::string sHex);
 std::string BNAConvertBinToHex(std::string sBin);
 
 
-class BNAStatCalcResults {
+class BinaryNeuralAcidStatCalcResults {
     public:
-        BNAStatCalcResults(int nOutputSize);
+        BinaryNeuralAcidStatCalcResults(int nOutputSize);
         const std::vector<int> &getPrevCounters() const;
         const std::vector<int> &getPrevCountersPercents() const;
         int getAllPrevCountersPercents() const;
@@ -237,10 +237,10 @@ class BNAStatCalcResults {
         int m_nSummaryDiff;
 };
 
-class BNAModificationModel {
+class BinaryNeuralAcidModificationModel {
     public:
-        BNAModificationModel();
-        BNAModificationModel(int nMutationCicles, int nAddCicles, int nRemoveCicles);
+        BinaryNeuralAcidModificationModel();
+        BinaryNeuralAcidModificationModel(int nMutationCicles, int nAddCicles, int nRemoveCicles);
         void update(int nMutationCicles, int nAddCicles, int nRemoveCicles);
         void reset();
         int getMutationCicles() const;
@@ -252,6 +252,19 @@ class BNAModificationModel {
         int m_nMutationCicles;
         int m_nAddCicles;
         int m_nRemoveCicles;
+};
+
+class BinaryNeuralAcidConfig {
+    public:
+        BinaryNeuralAcidConfig();
+        BinaryNeuralAcidConfig &setInput(int nInput);
+        BinaryNeuralAcidConfig &setOutput(int nOutput);
+        BinaryNeuralAcidConfig &setSize(int nSize);
+
+    private:
+        int m_nInput;
+        int m_nOutput;
+        int m_nSize;
 };
 
 class BNA {
@@ -277,7 +290,7 @@ class BNA {
         // QByteArray exportToByteArray();
         // void importFromByteArray(QByteArray data);
 		nlohmann::json toJson();
-        void randomModify(const BNAModificationModel *pModel);
+        void randomModify(const BinaryNeuralAcidModificationModel *pModel);
         BinaryNeuralAcidBit calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
         BinaryNeuralAcidBit compute(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
 

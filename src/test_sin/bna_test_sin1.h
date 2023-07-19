@@ -34,7 +34,7 @@ class BNATestSin1 : public ICallbacksRenderBNA<BinaryNeuralAcidBit> {
         virtual void doMutation() override;
         virtual void doTestAndRevert() override;
         virtual BNAGroup<BinaryNeuralAcidBit>* getBNA() override;
-        virtual const BNAStatCalcResults *getResults() override;
+        virtual const BinaryNeuralAcidStatCalcResults *getResults() override;
 
     private:
         // void floatToByteArray(const float &f, unsigned char *pResult4);
@@ -55,8 +55,8 @@ class BNATestSin1 : public ICallbacksRenderBNA<BinaryNeuralAcidBit> {
         int m_nDataTestsSize;
         std::vector<BNATestSin1Item> m_vDataTests;
         
-        BNAStatCalcResults *m_pResults;
-        std::vector<BNAModificationModel *> m_vModificationModels;
+        BinaryNeuralAcidStatCalcResults *m_pResults;
+        std::vector<BinaryNeuralAcidModificationModel *> m_vModificationModels;
         int m_nCurrentModificationModel;
         int m_nModificationModelCounter;
         int m_nSizeInput;

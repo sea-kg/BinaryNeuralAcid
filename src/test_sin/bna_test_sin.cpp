@@ -51,12 +51,12 @@ BNATestSin::BNATestSin() {
     m_pBNA = new BNAGroup<BinaryNeuralAcidBit>(32,32);
     m_sDataTestsFilename = "testsin.bnadatatest";
     m_nDataTestsSize = 2000;
-    m_pResults = new BNAStatCalcResults(32);
+    m_pResults = new BinaryNeuralAcidStatCalcResults(32);
 
-    m_vModificationModels.push_back(new BNAModificationModel(rand() % 15, rand() % 15, rand() % 15));
-    m_vModificationModels.push_back(new BNAModificationModel(1,0,0));
-    m_vModificationModels.push_back(new BNAModificationModel(0,10,0));
-    m_vModificationModels.push_back(new BNAModificationModel(0,0,1));
+    m_vModificationModels.push_back(new BinaryNeuralAcidModificationModel(rand() % 15, rand() % 15, rand() % 15));
+    m_vModificationModels.push_back(new BinaryNeuralAcidModificationModel(1,0,0));
+    m_vModificationModels.push_back(new BinaryNeuralAcidModificationModel(0,10,0));
+    m_vModificationModels.push_back(new BinaryNeuralAcidModificationModel(0,0,1));
     m_nCurrentModificationModel = 0;
     m_nModificationModelCounter = 0;
 
@@ -124,7 +124,7 @@ BNAGroup<BinaryNeuralAcidBit>* BNATestSin::getBNA() {
     return m_pBNA;
 }
 
-const BNAStatCalcResults *BNATestSin::getResults() {
+const BinaryNeuralAcidStatCalcResults *BNATestSin::getResults() {
     return m_pResults;
 }
 

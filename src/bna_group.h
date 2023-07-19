@@ -201,7 +201,7 @@ template<class ValueType> class BNAGroup {
             return -1000;
         }
 
-        void randomModify(const BNAModificationModel *pModel) {
+        void randomModify(const BinaryNeuralAcidModificationModel *pModel) {
             for (int i = 0; i < pModel->getRemoveCicles(); i++) {
                 if (m_vNodes.size() == 0) {
                     break;

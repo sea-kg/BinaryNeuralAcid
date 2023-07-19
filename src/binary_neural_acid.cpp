@@ -348,10 +348,10 @@ std::string BNAConvertVBoolHEXString(std::vector<BinaryNeuralAcidBit> &vars) {
 }
 
 // -----------------------------------------------------------------
-// BNAStatCalcResults
+// BinaryNeuralAcidStatCalcResults
 
-BNAStatCalcResults::BNAStatCalcResults(int nOutputSize) {
-    TAG = "BNAStatCalcResults";
+BinaryNeuralAcidStatCalcResults::BinaryNeuralAcidStatCalcResults(int nOutputSize) {
+    TAG = "BinaryNeuralAcidStatCalcResults";
     m_nOutputSize = nOutputSize;
     // init counters
     m_vPrevCounters.resize(m_nOutputSize);
@@ -366,55 +366,55 @@ BNAStatCalcResults::BNAStatCalcResults(int nOutputSize) {
     }
 }
 
-const std::vector<int> &BNAStatCalcResults::getPrevCounters() const {
+const std::vector<int> &BinaryNeuralAcidStatCalcResults::getPrevCounters() const {
     return m_vPrevCounters;
 }
 
-const std::vector<int> &BNAStatCalcResults::getPrevCountersPercents() const {
+const std::vector<int> &BinaryNeuralAcidStatCalcResults::getPrevCountersPercents() const {
     return m_vPrevCountersPercents;
 }
 
-int BNAStatCalcResults::getAllPrevCountersPercents() const {
+int BinaryNeuralAcidStatCalcResults::getAllPrevCountersPercents() const {
     return m_nAllPrevCountersPercents;
 }
 
-void BNAStatCalcResults::setPrevCounters(const std::vector<int> &vValues) {
+void BinaryNeuralAcidStatCalcResults::setPrevCounters(const std::vector<int> &vValues) {
     if (m_nOutputSize != vValues.size()) {
         throw std::runtime_error("Wrong size");
     }
     m_vPrevCounters = vValues;
 }
 
-const std::vector<int> &BNAStatCalcResults::getCurrentCounters() const {
+const std::vector<int> &BinaryNeuralAcidStatCalcResults::getCurrentCounters() const {
     return m_vCurrentCounters;
 }
 
-const std::vector<int> &BNAStatCalcResults::getCurrentCountersPercents() const {
+const std::vector<int> &BinaryNeuralAcidStatCalcResults::getCurrentCountersPercents() const {
     return m_vCurrentCountersPercents;
 }
 
-int BNAStatCalcResults::getAllCurrentCountersPercents() const {
+int BinaryNeuralAcidStatCalcResults::getAllCurrentCountersPercents() const {
     return m_nAllCurrentCountersPercents;
 }
 
-void BNAStatCalcResults::setCurrentCounters(const std::vector<int> &vValues) {
+void BinaryNeuralAcidStatCalcResults::setCurrentCounters(const std::vector<int> &vValues) {
     if (m_nOutputSize != vValues.size()) {
         throw std::runtime_error("Wrong size");
     }
     m_vCurrentCounters = vValues;
 }
 
-void BNAStatCalcResults::resetCurrentCounters() {
+void BinaryNeuralAcidStatCalcResults::resetCurrentCounters() {
     for (int i = 0; i < m_nOutputSize; i++) {
         m_vCurrentCounters[i] = 0;
     }
 }
 
-void BNAStatCalcResults::incrementCurrentCounter(int nIndex) {
+void BinaryNeuralAcidStatCalcResults::incrementCurrentCounter(int nIndex) {
     m_vCurrentCounters[nIndex] += 1;
 }
 
-void BNAStatCalcResults::calcPercents(int nDataTestsSize) {
+void BinaryNeuralAcidStatCalcResults::calcPercents(int nDataTestsSize) {
     m_nDataTestsSize = nDataTestsSize;
     m_nSummaryDiff = 0;
     int nAllPrev = 0;
@@ -438,51 +438,76 @@ void BNAStatCalcResults::calcPercents(int nDataTestsSize) {
     // std::cout << "summary diff: " << m_nSummaryDiff << std::endl;
 }
 
-int BNAStatCalcResults::getSummaryDiff() {
+int BinaryNeuralAcidStatCalcResults::getSummaryDiff() {
     return m_nSummaryDiff;
 }
 
 // -----------------------------------------------------------------
-// BNAModificationModel
+// BinaryNeuralAcidModificationModel
 
-BNAModificationModel::BNAModificationModel() {
+BinaryNeuralAcidModificationModel::BinaryNeuralAcidModificationModel() {
     this->reset();
 }
 
-BNAModificationModel::BNAModificationModel(int nMutationCicles, int nAddCicles, int nRemoveCicles) {
-    this->reset();
-    m_nMutationCicles = nMutationCicles;
-    m_nAddCicles = nAddCicles;
-    m_nRemoveCicles = nRemoveCicles;
-}
-
-void BNAModificationModel::update(int nMutationCicles, int nAddCicles, int nRemoveCicles) {
+BinaryNeuralAcidModificationModel::BinaryNeuralAcidModificationModel(int nMutationCicles, int nAddCicles, int nRemoveCicles) {
     this->reset();
     m_nMutationCicles = nMutationCicles;
     m_nAddCicles = nAddCicles;
     m_nRemoveCicles = nRemoveCicles;
 }
 
-void BNAModificationModel::reset() {
+void BinaryNeuralAcidModificationModel::update(int nMutationCicles, int nAddCicles, int nRemoveCicles) {
+    this->reset();
+    m_nMutationCicles = nMutationCicles;
+    m_nAddCicles = nAddCicles;
+    m_nRemoveCicles = nRemoveCicles;
+}
+
+void BinaryNeuralAcidModificationModel::reset() {
     m_nMutationCicles = 0;
     m_nAddCicles = 0;
     m_nRemoveCicles = 0;
 }
 
-int BNAModificationModel::getMutationCicles() const {
+int BinaryNeuralAcidModificationModel::getMutationCicles() const {
     return m_nMutationCicles;
 }
 
-int BNAModificationModel::getAddCicles() const {
+int BinaryNeuralAcidModificationModel::getAddCicles() const {
     return m_nAddCicles;
 }
 
-int BNAModificationModel::getRemoveCicles() const {
+int BinaryNeuralAcidModificationModel::getRemoveCicles() const {
     return m_nRemoveCicles;
 }
 
-void BNAModificationModel::print() const {
+void BinaryNeuralAcidModificationModel::print() const {
     std::cout << m_nMutationCicles << ";" << m_nAddCicles << ";" << m_nRemoveCicles << ";" << std::endl;
+}
+
+// -----------------------------------------------------------------
+// BinaryNeuralAcidConfig
+
+BinaryNeuralAcidConfig::BinaryNeuralAcidConfig() {
+    // default
+    m_nInput = 1;
+    m_nOutput = 1;
+    m_nSize = 10;
+}
+
+BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setInput(int nInput) {
+    m_nInput = nInput;
+    return *this;
+}
+
+BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setOutput(int nOutput) {
+    m_nOutput = nOutput;
+    return *this;
+}
+
+BinaryNeuralAcidConfig &BinaryNeuralAcidConfig::setSize(int nSize) {
+    m_nSize = nSize;
+    return *this;
 }
 
 // -----------------------------------------------------------------
@@ -682,8 +707,6 @@ bool BNA::compile() {
     // std::cout << "Compiled!" << std::endl;
     return true;
 }
-
-// ----------------------------------------------------------------
 
 void BNA::compare(BNA &bna){
     if(bna.getInputSize() != m_vNodesInput.size()){
@@ -969,7 +992,7 @@ bool BNA::registryOperationType(IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> 
     return true;
 }
 
-void BNA::randomModify(const BNAModificationModel *pModel) {
+void BNA::randomModify(const BinaryNeuralAcidModificationModel *pModel) {
     for (int i = 0; i < pModel->getRemoveCicles(); i++) {
         if (m_vNodes.size() == 0) {
             break;
