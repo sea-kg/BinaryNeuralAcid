@@ -151,7 +151,9 @@ std::vector<BinaryNeuralAcidBit> BinaryNeuralAcidBitConvertor::toBitsFromHexStri
 // -----------------------------------------------------------------
 // BinaryNeuralAcidOperationBitXor
 
-std::string BinaryNeuralAcidOperationBitXor::type(){ return std::string("XOR"); }
+std::string BinaryNeuralAcidOperationBitXor::type() {
+    return std::string("XOR");
+}
 
 BinaryNeuralAcidBit BinaryNeuralAcidOperationBitXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
@@ -163,7 +165,9 @@ BinaryNeuralAcidBit BinaryNeuralAcidOperationBitXor::calc(BinaryNeuralAcidBit b1
 // -----------------------------------------------------------------
 // BinaryNeuralAcidOperationBitNotXor
 
-std::string BinaryNeuralAcidOperationBitNotXor::type(){ return std::string("NXOR"); }
+std::string BinaryNeuralAcidOperationBitNotXor::type(){
+    return std::string("NXOR");
+}
 
 BinaryNeuralAcidBit BinaryNeuralAcidOperationBitNotXor::calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2){
     unsigned char c1 = b1;
@@ -551,6 +555,9 @@ bool BinaryNeuralAcid::load(const std::string &sFilename){
     }
     bool bResult = readFromFileBna(file);
     file.close(); // TODO file will be automaticly closed on return of scope?
+
+    m_bCompiled = false;
+    compile();
     return bResult;
 }
 
@@ -642,6 +649,8 @@ bool BinaryNeuralAcid::compile() {
 
     clearCalcExprsVars();
 
+    normalizeNodes();
+
     // prepare input nodes
     for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
         BinaryNeuralAcidVar<BinaryNeuralAcidBit> *pVar = new BinaryNeuralAcidVar<BinaryNeuralAcidBit>();
@@ -650,10 +659,11 @@ bool BinaryNeuralAcid::compile() {
         m_vCalcInputVars.push_back(pVar);
     }
 
-    normalizeNodes();
-
     int nItemsSize = m_vNodes.size();
     for (int i = 0; i < m_vNodes.size(); i++) {
+        // std::cout << "node" << std::to_string(i) << std::endl;
+        // std::cout << "    x: " << m_vNodes[i]->getX() << std::endl;
+        // std::cout << "    y: " << m_vNodes[i]->getY() << std::endl;
         BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *pExpr = new BinaryNeuralAcidExpression<BinaryNeuralAcidBit>();
         pExpr->setOperandLeft(getVarByIndex(m_vNodes[i]->getX()));
         pExpr->setOperandRight(getVarByIndex(m_vNodes[i]->getY()));
@@ -663,13 +673,14 @@ bool BinaryNeuralAcid::compile() {
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
-        if (nItemsSize - i <= (int)m_vNodesOutput.size()) {
-            m_vCalcOutVars.push_back(pVar);
-        }
+        // if (nItemsSize - i <= (int)m_vNodesOutput.size()) {
+        //     m_vCalcOutVars.push_back(pVar);
+        // }
     }
 
     for (int i = 0; i < m_vNodesOutput.size(); i++) {
         int nIndex = m_vNodesOutput[i]->getInputNodeIndex();
+        std::cout << "nIndex = " << nIndex << std::endl;
         m_vCalcOutVars.push_back(getVarByIndex(nIndex));
     }
 
@@ -1090,14 +1101,25 @@ void BinaryNeuralAcid::normalizeNodes() {
     for (int i = 0; i < m_vNodes.size(); i++) {
         m_vNodes[i]->setX(m_vNodes[i]->getX() % nNodesSize);
         m_vNodes[i]->setY(m_vNodes[i]->getY() % nNodesSize);
-        m_vNodes[i]->setId(i + nNodesSize);
+        m_vNodes[i]->setId(m_vNodesInput.size() + i);
         nNodesSize++;
     }
+    int nNodesSize0 = m_vNodesInput.size() + m_vNodes.size();
+
     // normalize nodes output
     for (int i = 0; i < m_vNodesOutput.size(); i++) {
-        m_vNodesOutput[i]->setInputNodeIndex( m_vNodesOutput[i]->getInputNodeIndex() % nNodesSize);
+        // std::cout << "m_vNodesOutput[i]->getInputNodeIndex() 1: " << m_vNodesOutput[i]->getInputNodeIndex() << std::endl;
+        // std::cout << "nNodesSize0 1: " << nNodesSize0 << std::endl;
+        m_vNodesOutput[i]->setInputNodeIndex(m_vNodesOutput[i]->getInputNodeIndex() % nNodesSize0);
+        // std::cout << "m_vNodesOutput[i]->getInputNodeIndex() 2: " << m_vNodesOutput[i]->getInputNodeIndex() << std::endl;
     }
-    // TODO remove nodes to noway
+    removeDeadlockNodes();
+}
+
+void BinaryNeuralAcid::removeDeadlockNodes() {
+    // clearCalcExprsVars();
+
+    // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() (start) nNodesSize: " << m_vNodes.size() << std::endl;
     std::vector<int> vToRemoving;
     for (int i = 0; i < m_vNodes.size(); i++) {
         int nNodeIndex = i + m_vNodesInput.size();
@@ -1113,20 +1135,20 @@ void BinaryNeuralAcid::normalizeNodes() {
             }
         }
         if (nLinks == 0) {
-            // std::cout << "nNodeIndex= " << nNodeIndex << std::endl;
+            // std::cout << "No links to node: nNodeIndex= " << nNodeIndex << std::endl;
             vToRemoving.push_back(nNodeIndex);
         }
     }
-    // std::cout << "TODO removing all size: " << vToRemoving.size() << std::endl;
     for (int i = vToRemoving.size() - 1; i >= 0; i--) {
         int nNodeIndex = vToRemoving[i];
         int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
-        // std::cout << "Will be removed [" << nNodeIndex << "] in array = " << nArrayIndex << std::endl;
         if (nNodeIndex > m_vNodes.size() + m_vNodesInput.size()) {
             throw std::runtime_error("Node Index very big much");
         }
     }
 
+    // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() removing: " << vToRemoving.size() << std::endl;
+    int nRemoved = 0;
     for (int i = vToRemoving.size() - 1; i >= 0; i--) {
         int nNodeIndex = vToRemoving[i];
         int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
@@ -1135,23 +1157,38 @@ void BinaryNeuralAcid::normalizeNodes() {
         if (nArrayIndex < 0) {
             continue;
         }
-
+        BinaryNeuralAcidGraphNode *pNode = *(m_vNodes.begin() + nArrayIndex);
+        // std::cout << "    " << pNode->getId() << ":" << pNode->getOperationType() << std::endl;
         m_vNodes.erase(m_vNodes.begin() + nArrayIndex);
+        // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() removed, m_vNodes.size() = " << m_vNodes.size() << std::endl;
+
         for (int x = 0; x < m_vNodes.size(); x++) {
             if (m_vNodes[x]->getX() >= nNodeIndex) {
+                // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() change m_vNodes[" << x <<  "]->getX() " << m_vNodes[x]->getX() << " to " << (m_vNodes[x]->getX() - 1) << std::endl;
                 m_vNodes[x]->setX(m_vNodes[x]->getX() - 1);
             }
             if (m_vNodes[x]->getY() >= nNodeIndex) {
+                // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() change m_vNodes[" << x <<  "]->getY() " << m_vNodes[x]->getY() << " to " << (m_vNodes[x]->getY() - 1) << std::endl;
                 m_vNodes[x]->setY(m_vNodes[x]->getY() - 1);
             }
         }
 
         for (int x = 0; x < m_vNodesOutput.size(); x++) {
             if (m_vNodesOutput[x]->getInputNodeIndex() >= nNodeIndex) {
+                // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() change output m_vNodesOutput[" << x <<  "]->getInputNodeIndex(): " << m_vNodesOutput[x]->getInputNodeIndex() << " to " << (m_vNodesOutput[x]->getInputNodeIndex() - 1) << std::endl;
                 m_vNodesOutput[x]->setInputNodeIndex(m_vNodesOutput[x]->getInputNodeIndex() - 1);
             }
         }
+        nRemoved++;
+        if (nRemoved >= 1) {
+            break;
+        }
     }
+    // fix ids
+    for (int i = 0; i < m_vNodes.size(); i++) {
+        m_vNodes[i]->setId(m_vNodesInput.size() + i);
+    }
+    // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() (end) m_vNodes.size(): " << m_vNodes.size() << std::endl << std::endl;
 }
 
 BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BinaryNeuralAcid::getVarByIndex(int nIndex) {
@@ -1164,8 +1201,9 @@ BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BinaryNeuralAcid::getVarByIndex(int nI
     }
     // std::cout << "nIndex = " << nIndex << std::endl;
     // std::cout << "m_vCalcVars.size() = " << m_vCalcVars.size() << std::endl;
-    throw std::runtime_error("getVarByIndex: out of range index of var");
+    throw std::runtime_error("getVarByIndex: out of range index of var " + std::to_string(nIndex));
     nIndex = nIndex - m_vCalcVars.size();
+    // if (nIndex > m_vCalcVars.size()) {
     return m_vCalcOutVars[nIndex];
 }
 

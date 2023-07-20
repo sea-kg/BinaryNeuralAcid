@@ -41,10 +41,15 @@ int main() {
         BinaryNeuralAcidBit m_bExpected;
 
         int check(BinaryNeuralAcid &bna, std::string sCheckName) {
-            if (bna.compute({m_b1, m_b2, m_b3}, 0) != m_bExpected) {
+            BinaryNeuralAcidBit result = bna.compute({m_b1, m_b2, m_b3}, 0);
+            if (result != m_bExpected) {
                 std::cerr
                     << "failed: callout "
-                    << std::to_string(int(m_b1)) << "_" << std::to_string(int(m_b2)) << "_" << std::to_string(int(m_b3)) << std::endl;
+                    << std::to_string(int(m_b1)) << "_" << std::to_string(int(m_b2)) << "_" << std::to_string(int(m_b3))
+                    << std::endl
+                    << "   Expected " << BinaryNeuralAcidBitConvertor::toBinString(m_bExpected)
+                    << ", but got: " << BinaryNeuralAcidBitConvertor::toBinString(result)
+                    << std::endl;
                 return 1;
             }
             return 0;
@@ -66,7 +71,7 @@ int main() {
     // bna.compile();
 
     for (int i = 0; i < vTests.size(); i++) {
-        if (vTests[i].check(bna, "callout") != 0) {
+        if (vTests[i].check(bna, "callout_first") != 0) {
             return 1;
         }
     }

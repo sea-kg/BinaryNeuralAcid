@@ -2,6 +2,16 @@
 
 #include <vector>
 
+
+std::string test_calculate(BinaryNeuralAcid &bna, std::vector<BinaryNeuralAcidBit> &vInputs) {
+    std::vector<BinaryNeuralAcidBit> vOutputs;
+    for (int i = 0; i < bna.getOutputSize(); i++) {
+        vOutputs.push_back(bna.calc(vInputs, i));
+    }
+    std::string sResult = BinaryNeuralAcidBitConvertor::toBinStringFromBits(vOutputs);
+    return sResult;
+}
+
 int main() {
     const std::string sPath0 = "./read-write-test0";
     const std::string sPath1 = "./read-write-test1";
@@ -9,7 +19,7 @@ int main() {
     BinaryNeuralAcidConfig config;
     config
         .setInputSize(4)
-        .setNodesSize(100)
+        .setNodesSize(257)
         .setOutputSize(4)
     ;
 
@@ -21,34 +31,31 @@ int main() {
     for (int i = 0; i < config.getInputSize(); i++) {
         vInputs.push_back(B_1);
     }
-    std::vector<BinaryNeuralAcidBit> vOutputs;
-    for (int i = 0; i < config.getOutputSize(); i++) {
-        vOutputs.push_back(bna.calc(vInputs, i));
-    }
-    std::string sOutputsExpected = BinaryNeuralAcidBitConvertor::toBinStringFromBits(vOutputs);
-
+    std::string sOutputsExpected = test_calculate(bna, vInputs);
+    // std::cout << "sOutputsExpected: " << sOutputsExpected << std::endl;
+    // std::cout << "1 test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
+    // std::cout << "2 test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
     if (!bna.save(sPath0)) {
         std::cerr << "Could not save to file: " << sPath0 << std::endl;
         return 1;
     }
+    // std::cout << "after save (1)... test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
     bna.exportToDot(sPath0);
 
     if (!bna.load(sPath0)) {
         std::cerr << "Could not load from file: " << sPath0 << std::endl;
         return 1;
     }
-    bna.save(sPath1);
-    bna.exportToDot(sPath1);
+    // std::cout << "after load (1)... test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
+    // bna.save(sPath1);
+    // std::cout << "after save (2)... test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
+    // bna.exportToDot(sPath1);
 
-    bna.load(sPath1);
-    bna.save(sPath2);
-    bna.exportToDot(sPath2);
+    std::string sOutputsGot0 = test_calculate(bna, vInputs);
 
-    std::vector<BinaryNeuralAcidBit> vOutputs0;
-    for (int i = 0; i < config.getOutputSize(); i++) {
-        vOutputs0.push_back(bna.calc(vInputs, i));
-    }
-    std::string sOutputsGot0 = BinaryNeuralAcidBitConvertor::toBinStringFromBits(vOutputs0);
+    // bna.load(sPath1);
+    // bna.save(sPath2);
+    // bna.exportToDot(sPath2);
 
     if (sOutputsExpected != sOutputsGot0) {
         std::cerr << "Different result for " << sPath0 << std::endl;
@@ -68,12 +75,7 @@ int main() {
         std::cerr << "Could not load from file: " << sPath1 << std::endl;
         return 1;
     }
-
-    std::vector<BinaryNeuralAcidBit> vOutputs1;
-    for (int i = 0; i < config.getOutputSize(); i++) {
-        vOutputs1.push_back(bna.calc(vInputs, i));
-    }
-    std::string sOutputsGot1 = BinaryNeuralAcidBitConvertor::toBinStringFromBits(vOutputs1);
+    std::string sOutputsGot1 = test_calculate(bna, vInputs);
 
     if (sOutputsExpected != sOutputsGot1) {
         std::cerr << "(path1) Different result for " << sPath1 << std::endl;

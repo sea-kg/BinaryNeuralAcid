@@ -310,6 +310,8 @@ class BinaryNeuralAcid {
         static bool removeFile(const std::string &sFilename);
         static bool dirExists(const std::string &sDirname);
 
+        void removeDeadlockNodes();
+
 	private:
         std::string TAG;
         bool m_bCompiled;
