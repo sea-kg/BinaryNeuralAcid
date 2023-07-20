@@ -10,7 +10,7 @@ foreach(_TEST ${ALL_TESTS})
       ${TESTNAME}
       ${_TEST}
       "../src/binary_neural_acid.cpp"
-      "../src.wsjcpp/wsjcpp_core/wsjcpp_core.cpp"
+      // "../src.wsjcpp/wsjcpp_core/wsjcpp_core.cpp"
     )
     # target_include_directories(${TESTNAME} PUBLIC
     #   "../src/"
