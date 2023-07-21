@@ -1180,9 +1180,9 @@ void BinaryNeuralAcid::removeDeadlockNodes() {
             }
         }
         nRemoved++;
-        if (nRemoved >= 1) {
-            break;
-        }
+        // if (nRemoved >= 1) {
+        //     break;
+        // }
     }
     // fix ids
     for (int i = 0; i < m_vNodes.size(); i++) {
