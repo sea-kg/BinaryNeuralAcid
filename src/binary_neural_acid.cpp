@@ -455,6 +455,45 @@ void BinaryNeuralAcidModificationModel::print() const {
     std::cout << m_nMutationCicles << ";" << m_nAddCicles << ";" << m_nRemoveCicles << ";" << std::endl;
 }
 
+// ---------------------------------------------------------------------
+// BinaryNeuralAcidPseudoRandomStd
+
+BinaryNeuralAcidPseudoRandomStd::BinaryNeuralAcidPseudoRandomStd() {
+    // set seed
+    std::srand(std::time(0));
+}
+
+unsigned int BinaryNeuralAcidPseudoRandomStd::getNextRandom() {
+    // IBinaryNeuralAcidPseudoRandom
+    return rand();
+}
+
+// ---------------------------------------------------------------------
+// BinaryNeuralAcidPseudoRandomSin
+
+BinaryNeuralAcidPseudoRandomSin::BinaryNeuralAcidPseudoRandomSin() {
+    this->setInitSeed(1);
+}
+
+void BinaryNeuralAcidPseudoRandomSin::setInitSeed(unsigned int nSeed) {
+    m_nSeed = nSeed;
+    m_nInitSeed = nSeed;
+}
+
+unsigned int BinaryNeuralAcidPseudoRandomSin::getNextRandom() {
+    // IBinaryNeuralAcidPseudoRandom
+    m_nSeed = std::sin(m_nSeed + 1) * float(m_nSeed + 6947504120) + 144;
+    return m_nSeed;
+}
+
+unsigned int BinaryNeuralAcidPseudoRandomSin::getInitSeed() {
+    return m_nInitSeed;
+}
+
+unsigned int BinaryNeuralAcidPseudoRandomSin::getSeed() {
+    return m_nSeed;
+}
+
 // -----------------------------------------------------------------
 // BinaryNeuralAcidConfig
 
@@ -492,7 +531,6 @@ int BinaryNeuralAcidConfig::getOutputSize() const {
     return m_nOutputSize;
 }
 
-
 // -----------------------------------------------------------------
 // BinaryNeuralAcid
 
@@ -507,6 +545,7 @@ BinaryNeuralAcid::BinaryNeuralAcid() {
     TAG = "BinaryNeuralAcid";
     m_nBnaVersion = 4;
     m_nBnaRevision = 0;
+    m_pRandom = new BinaryNeuralAcidPseudoRandomStd();
 }
 
 BinaryNeuralAcid::BinaryNeuralAcid(int nInputSize, int nOutputSize) : BinaryNeuralAcid() {
@@ -518,6 +557,14 @@ BinaryNeuralAcid::BinaryNeuralAcid(int nInputSize, int nOutputSize) : BinaryNeur
     //     m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, i));
     // }
     m_bCompiled = false;
+}
+
+BinaryNeuralAcid::~BinaryNeuralAcid() {
+    m_vOperations.clear();
+    m_vOperationList.clear();
+    m_vNodes.clear();
+    delete m_pRandom;
+    clearResources();
 }
 
 unsigned int BinaryNeuralAcid::getInputSize() {
@@ -532,11 +579,9 @@ unsigned int BinaryNeuralAcid::getOutputSize() {
     return m_vNodesOutput.size();
 }
 
-BinaryNeuralAcid::~BinaryNeuralAcid() {
-    m_vOperations.clear();
-    m_vOperationList.clear();
-    m_vNodes.clear();
-    clearResources();
+void BinaryNeuralAcid::setPseudoRandom(IBinaryNeuralAcidPseudoRandom *pRandom) {
+    delete m_pRandom;
+    m_pRandom = pRandom;
 }
 
 bool BinaryNeuralAcid::load(const std::string &sFilename){
@@ -590,14 +635,14 @@ void BinaryNeuralAcid::randomGenerate(const BinaryNeuralAcidConfig &config){
     }
     for (int i = 0; i < config.getNodesSize(); i++) {
         BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
-        pItem->setX(rand());
-        pItem->setY(rand());
-        int nOper = rand() % m_nOperSize;
+        pItem->setX(m_pRandom->getNextRandom());
+        pItem->setY(m_pRandom->getNextRandom());
+        int nOper = m_pRandom->getNextRandom() % m_nOperSize;
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vNodes.push_back(pItem);
     }
     for (int i = 0; i < config.getOutputSize(); i++) {
-        m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, rand()));
+        m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(i, m_pRandom->getNextRandom()));
     }
     compile();
 }
@@ -1007,28 +1052,28 @@ void BinaryNeuralAcid::randomModify(const BinaryNeuralAcidModificationModel *pMo
         if (m_vNodes.size() == 0) {
             break;
         }
-        int nIndex = rand() % m_vNodes.size();
+        int nIndex = m_pRandom->getNextRandom() % m_vNodes.size();
         BinaryNeuralAcidGraphNode *pItem = m_vNodes[nIndex];
         m_vNodes.erase(m_vNodes.begin() + nIndex);
         delete pItem;
     }
     for (int i = 0; i < pModel->getMutationCicles(); i++) {
-        int nItemIndex = rand() % (m_vNodes.size() + m_vNodesOutput.size());
+        int nItemIndex = m_pRandom->getNextRandom() % (m_vNodes.size() + m_vNodesOutput.size());
         if (nItemIndex < m_vNodes.size()) {
-            m_vNodes[nItemIndex]->setX(rand());
-            m_vNodes[nItemIndex]->setY(rand());
-            int nOper = rand() % m_nOperSize;
+            m_vNodes[nItemIndex]->setX(m_pRandom->getNextRandom());
+            m_vNodes[nItemIndex]->setY(m_pRandom->getNextRandom());
+            int nOper = m_pRandom->getNextRandom() % m_nOperSize;
             m_vNodes[nItemIndex]->setOperationType(m_vOperationList[nOper]->type());
         } else {
             nItemIndex = nItemIndex - m_vNodes.size();
-            m_vNodesOutput[nItemIndex]->setInputNodeIndex(rand());
+            m_vNodesOutput[nItemIndex]->setInputNodeIndex(m_pRandom->getNextRandom());
         }
     }
     for (int i = 0; i < pModel->getAddCicles(); i++) {
         BinaryNeuralAcidGraphNode *pItem = new BinaryNeuralAcidGraphNode();
-        pItem->setX(rand());
-        pItem->setY(rand());
-        int nOper = rand() % m_nOperSize;
+        pItem->setX(m_pRandom->getNextRandom());
+        pItem->setY(m_pRandom->getNextRandom());
+        int nOper = m_pRandom->getNextRandom() % m_nOperSize;
         pItem->setOperationType(m_vOperationList[nOper]->type());
         m_vNodes.push_back(pItem);
     }
@@ -1329,10 +1374,10 @@ void BinaryNeuralAcidMemory::printData(){
 
 // std::string BinaryNeuralAcidMemory::generateRandomString(){
 //     std::string sAlphabet = alphabet();
-//     int len = qrand() % (m_nInputBits) + 2;
+//     int len = m_pRandom->getNextRandom() % (m_nInputBits) + 2;
 //     std::string str = "";
 //     for (int i = 0; i < len; i++) {
-//         str += sAlphabet[qrand() % sAlphabet.length()];
+//         str += sAlphabet[m_pRandom->getNextRandom() % sAlphabet.length()];
 //     }
 //     return str;
 // }

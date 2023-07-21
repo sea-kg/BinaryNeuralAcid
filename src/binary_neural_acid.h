@@ -259,6 +259,33 @@ class BinaryNeuralAcidModificationModel {
         int m_nRemoveCicles;
 };
 
+class IBinaryNeuralAcidPseudoRandom {
+    public:
+        virtual unsigned int getNextRandom() = 0;
+};
+
+class BinaryNeuralAcidPseudoRandomStd : public IBinaryNeuralAcidPseudoRandom {
+    public:
+        BinaryNeuralAcidPseudoRandomStd();
+
+        // IBinaryNeuralAcidPseudoRandom
+        virtual unsigned int getNextRandom() override;
+ };
+
+class BinaryNeuralAcidPseudoRandomSin : public IBinaryNeuralAcidPseudoRandom {
+    public:
+        BinaryNeuralAcidPseudoRandomSin();
+        void setInitSeed(unsigned int nSeed);
+        unsigned int getInitSeed();
+        unsigned int getSeed();
+
+        // IBinaryNeuralAcidPseudoRandom
+        virtual unsigned int getNextRandom() override;
+    private:
+        unsigned int m_nSeed;
+        unsigned int m_nInitSeed;
+};
+
 class BinaryNeuralAcidConfig {
     public:
         BinaryNeuralAcidConfig();
@@ -279,6 +306,10 @@ class BinaryNeuralAcid {
 		BinaryNeuralAcid();
         BinaryNeuralAcid(int nInput, int nOutput);
         ~BinaryNeuralAcid();
+        unsigned int getInputSize();
+        unsigned int getNodesSize();
+        unsigned int getOutputSize();
+        void setPseudoRandom(IBinaryNeuralAcidPseudoRandom *pRandom);
 		bool load(const std::string &sFilename);
 		bool save(const std::string &sFilename);
 		void randomGenerate(const BinaryNeuralAcidConfig &config);
@@ -301,9 +332,6 @@ class BinaryNeuralAcid {
         BinaryNeuralAcidBit calc(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
         BinaryNeuralAcidBit compute(const std::vector<BinaryNeuralAcidBit> &vInputs, int nOutput);
 
-        unsigned int getInputSize();
-        unsigned int getNodesSize();
-        unsigned int getOutputSize();
         void compare(BinaryNeuralAcid &bna);
 
         static bool fileExists(const std::string &sFilename);
@@ -314,6 +342,7 @@ class BinaryNeuralAcid {
 
 	private:
         std::string TAG;
+        IBinaryNeuralAcidPseudoRandom *m_pRandom;
         bool m_bCompiled;
         int m_nBnaVersion;
         int m_nBnaRevision;

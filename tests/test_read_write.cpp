@@ -24,6 +24,7 @@ int main() {
     ;
 
     BinaryNeuralAcid bna;
+    bna.setPseudoRandom(new BinaryNeuralAcidPseudoRandomSin());
     bna.randomGenerate(config);
 
     // fill the input vector
