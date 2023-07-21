@@ -44,7 +44,7 @@ template<class ValueType> class BNAGroup {
         bool load(const std::string &sFilename) {
             clearResources();
             std::string sFilename0 = sFilename + ".bna";
-            if (!BinaryNeuralAcid::fileExists(sFilename0)) {
+            if (!BinaryNeuralAcidHelpers::fileExists(sFilename0)) {
                 WsjcppLog::err(TAG, "load: file not exists '" + sFilename0 + "'");
                 return false;
             }
@@ -61,8 +61,8 @@ template<class ValueType> class BNAGroup {
 
         bool save(const std::string &sFilename) {
             std::string sFilename0 = sFilename + ".bna";
-            if (BinaryNeuralAcid::fileExists(sFilename0)) {
-                if (!BinaryNeuralAcid::removeFile(sFilename0)) {
+            if (BinaryNeuralAcidHelpers::fileExists(sFilename0)) {
+                if (!BinaryNeuralAcidHelpers::removeFile(sFilename0)) {
                     WsjcppLog::err(TAG, "save: could not remove file '" + sFilename0 + "'");
                     return false;
                 }

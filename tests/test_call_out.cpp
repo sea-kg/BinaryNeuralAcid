@@ -5,7 +5,7 @@
 
 
 int main() {
-    BinaryNeuralAcid bna(3,1);
+    BinaryNeuralAcid<BinaryNeuralAcidBit> bna(3,1);
 
     int nodeN1 = bna.addNode(0, 1, "AND");
     if (nodeN1 != 3) {
@@ -40,7 +40,7 @@ int main() {
         BinaryNeuralAcidBit m_b3;
         BinaryNeuralAcidBit m_bExpected;
 
-        int check(BinaryNeuralAcid &bna, std::string sCheckName) {
+        int check(BinaryNeuralAcid<BinaryNeuralAcidBit> &bna, std::string sCheckName) {
             BinaryNeuralAcidBit result = bna.compute({m_b1, m_b2, m_b3}, 0);
             if (result != m_bExpected) {
                 std::cerr
@@ -102,7 +102,7 @@ int main() {
         }
     }
 
-    BinaryNeuralAcid bna2(2,4);
+    BinaryNeuralAcid<BinaryNeuralAcidBit> bna2(2,4);
     if (!bna2.load("./callout-test0")) {
         std::cerr << "failed: load_bna2" << std::endl;
         return 1;
@@ -115,7 +115,7 @@ int main() {
         }
     }
 
-    BinaryNeuralAcid bna3;
+    BinaryNeuralAcid<BinaryNeuralAcidBit> bna3;
     if (!bna3.load("./callout-test0")) {
         std::cerr << "failed: load_bna3" << std::endl;
         return 1;

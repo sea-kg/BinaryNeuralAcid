@@ -3,10 +3,10 @@
 #include <vector>
 
 
-std::string test_calculate(BinaryNeuralAcid &bna, std::vector<BinaryNeuralAcidBit> &vInputs) {
+std::string test_calculate(BinaryNeuralAcid<BinaryNeuralAcidBit> &bna, std::vector<BinaryNeuralAcidBit> &vInputs) {
     std::vector<BinaryNeuralAcidBit> vOutputs;
     for (int i = 0; i < bna.getOutputSize(); i++) {
-        vOutputs.push_back(bna.calc(vInputs, i));
+        vOutputs.push_back(bna.compute(vInputs, i));
     }
     std::string sResult = BinaryNeuralAcidBitConvertor::toBinStringFromBits(vOutputs);
     return sResult;
@@ -25,7 +25,7 @@ int main() {
         .setOutputSize(8)
     ;
 
-    BinaryNeuralAcid bna;
+    BinaryNeuralAcid<BinaryNeuralAcidBit> bna;
     bna.setPseudoRandom(new BinaryNeuralAcidPseudoRandomSin());
     bna.randomGenerate(config);
     bna.removeAllDeadlockNodes();
