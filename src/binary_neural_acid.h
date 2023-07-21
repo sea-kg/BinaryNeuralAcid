@@ -423,6 +423,7 @@ template<class ValueType> class BinaryNeuralAcid {
         }
 
 		bool save(const std::string &sFilename) {
+            compile();
             std::string sFilename0 = sFilename + ".bna";
             if (BinaryNeuralAcidHelpers::fileExists(sFilename0)) {
                 if (!BinaryNeuralAcidHelpers::removeFile(sFilename0)) {

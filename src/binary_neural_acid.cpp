@@ -245,7 +245,7 @@ std::string BinaryNeuralAcidOperationCharShiftLeft::type() {
 char BinaryNeuralAcidOperationCharShiftLeft::calc(char b1, char b2) {
     int shift = b2 % 8;
     char res = (b1 << shift) | (b1 >> (8 - shift));
-    return b1 & b2;
+    return res;
 }
 
 // -----------------------------------------------------------------
@@ -258,7 +258,7 @@ std::string BinaryNeuralAcidOperationCharShiftRight::type() {
 char BinaryNeuralAcidOperationCharShiftRight::calc(char b1, char b2) {
     int shift = b2 % 8;
     char res = (b1 >> shift) | (b1 << (8 - shift));
-    return b1 & b2;
+    return res;
 }
 
 // -----------------------------------------------------------------
