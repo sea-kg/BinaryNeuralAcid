@@ -452,7 +452,7 @@ template<class ValueType> class BinaryNeuralAcid {
 
             // prepare input nodes
             for (unsigned int i  = 0; i < m_vNodesInput.size(); i++) {
-                BinaryNeuralAcidVar<BinaryNeuralAcidBit> *pVar = new BinaryNeuralAcidVar<BinaryNeuralAcidBit>();
+                BinaryNeuralAcidVar<ValueType> *pVar = new BinaryNeuralAcidVar<ValueType>();
                 pVar->setValue(B_0);
                 pVar->setName("in" + std::to_string(i));
                 m_vCalcInputVars.push_back(pVar);
@@ -460,11 +460,14 @@ template<class ValueType> class BinaryNeuralAcid {
 
             int nItemsSize = m_vNodes.size();
             for (int i = 0; i < m_vNodes.size(); i++) {
-                BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *pExpr = new BinaryNeuralAcidExpression<BinaryNeuralAcidBit>();
+                BinaryNeuralAcidExpression<ValueType> *pExpr = new BinaryNeuralAcidExpression<ValueType>();
                 pExpr->setOperandLeft(getVarByIndex(m_vNodes[i]->getX()));
                 pExpr->setOperandRight(getVarByIndex(m_vNodes[i]->getY()));
+                if (m_vOperations.count(m_vNodes[i]->getOperationType()) == 0) {
+                    throw std::runtime_error("Not found operation: " + m_vNodes[i]->getOperationType());
+                }
                 pExpr->oper(m_vOperations[m_vNodes[i]->getOperationType()]);
-                BinaryNeuralAcidVar<BinaryNeuralAcidBit> *pVar = new BinaryNeuralAcidVar<BinaryNeuralAcidBit>();
+                BinaryNeuralAcidVar<ValueType> *pVar = new BinaryNeuralAcidVar<ValueType>();
                 pVar->setName("node" + std::to_string(i));
                 m_vCalcVars.push_back(pVar);
                 pExpr->out(pVar);
@@ -608,7 +611,7 @@ template<class ValueType> class BinaryNeuralAcid {
                 nodes++;
             }
             int out_nodes = nodes-m_nOutput;
-            
+
             for(int i = out_nodes; i < nodes; i++){
                 std::string sOut = "out" + std::to_string(i-out_nodes);
                 std::string sNode = "node" + std::to_string(i);
@@ -830,6 +833,9 @@ template<class ValueType> class BinaryNeuralAcid {
 
         bool registryOperationType(IBinaryNeuralAcidOperation<ValueType> *pOper) {
             // TODO check aready registered
+            if (m_vOperations.count(pOper->type()) > 0) {
+                throw std::runtime_error("Operation already registred");
+            }
             m_vOperations[pOper->type()] = pOper;
             m_vOperationList.push_back(pOper);
             return true;
@@ -841,19 +847,14 @@ template<class ValueType> class BinaryNeuralAcid {
 
         void clearResources() {
             clearCalcExprsVars();
-            // clear input nodes
             for (int i = 0; i < m_vNodesInput.size(); i++) {
                 delete m_vNodesInput[i];
             }
             m_vNodesInput.clear();
-
-            // clear nodes
             for(int i = 0; i < m_vNodes.size(); i++){
                 delete m_vNodes[i];
             }
             m_vNodes.clear();
-
-            // clear output nodes
             for(int i = 0; i < m_vNodesOutput.size(); i++){
                 delete m_vNodesOutput[i];
             }
@@ -892,10 +893,7 @@ template<class ValueType> class BinaryNeuralAcid {
             int nNodesSize0 = m_vNodesInput.size() + m_vNodes.size();
             // normalize nodes output
             for (int i = 0; i < m_vNodesOutput.size(); i++) {
-                // std::cout << "m_vNodesOutput[i]->getInputNodeIndex() 1: " << m_vNodesOutput[i]->getInputNodeIndex() << std::endl;
-                // std::cout << "nNodesSize0 1: " << nNodesSize0 << std::endl;
                 m_vNodesOutput[i]->setInputNodeIndex(m_vNodesOutput[i]->getInputNodeIndex() % nNodesSize0);
-                // std::cout << "m_vNodesOutput[i]->getInputNodeIndex() 2: " << m_vNodesOutput[i]->getInputNodeIndex() << std::endl;
             }
             removeDeadlockNodes();
         }
@@ -968,18 +966,15 @@ template<class ValueType> class BinaryNeuralAcid {
             if (nIndex < m_vCalcVars.size()) {
                 return m_vCalcVars[nIndex];
             }
-            // std::cout << "nIndex = " << nIndex << std::endl;
-            // std::cout << "m_vCalcVars.size() = " << m_vCalcVars.size() << std::endl;
             throw std::runtime_error("getVarByIndex: out of range index of var " + std::to_string(nIndex));
             nIndex = nIndex - m_vCalcVars.size();
-            // if (nIndex > m_vCalcVars.size()) {
             return m_vCalcOutVars[nIndex];
         }
 
-        std::vector<BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *> m_vCalcExpressions;
-        std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcInputVars;
-        std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcVars;
-        std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcOutVars;
+        std::vector<BinaryNeuralAcidExpression<ValueType> *> m_vCalcExpressions;
+        std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcInputVars;
+        std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcVars;
+        std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcOutVars;
 };
 
 class BinaryNeuralAcidMemoryItem {

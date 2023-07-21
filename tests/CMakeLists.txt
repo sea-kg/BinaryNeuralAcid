@@ -20,6 +20,6 @@ foreach(_TEST ${ALL_TESTS})
       NAME ${TESTNAME}
       COMMAND $<TARGET_FILE:${TESTNAME}>
     )
-    message(${CMAKE_CURRENT_BINARY_DIR}/tests)
+    message(STATUS "Found test file: ${TESTNAME}")
     set_target_properties (${TESTNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY tests)
 endforeach()
