@@ -40,6 +40,8 @@ template<class ValueType> class IBinaryNeuralAcidOperation {
         virtual ValueType calc(ValueType b1, ValueType b2) = 0;
 };
 
+// BinaryNeuralAcidOperationBit
+
 class BinaryNeuralAcidOperationBitXor : public IBinaryNeuralAcidOperation<BinaryNeuralAcidBit>{
     public:
         virtual std::string type();
@@ -64,6 +66,37 @@ class BinaryNeuralAcidOperationBitOr : public IBinaryNeuralAcidOperation<BinaryN
         virtual BinaryNeuralAcidBit calc(BinaryNeuralAcidBit b1, BinaryNeuralAcidBit b2);
 };
 
+// BinaryNeuralAcidOperationChar
+
+class BinaryNeuralAcidOperationCharXor : public IBinaryNeuralAcidOperation<char>{
+    public:
+        virtual std::string type();
+        virtual char calc(char b1, char b2);
+};
+
+class BinaryNeuralAcidOperationCharOr : public IBinaryNeuralAcidOperation<char>{
+    public:
+        virtual std::string type();
+        virtual char calc(char b1, char b2);
+};
+
+class BinaryNeuralAcidOperationCharAnd : public IBinaryNeuralAcidOperation<char>{
+    public:
+        virtual std::string type();
+        virtual char calc(char b1, char b2);
+};
+
+class BinaryNeuralAcidOperationCharShiftLeft : public IBinaryNeuralAcidOperation<char>{
+    public:
+        virtual std::string type();
+        virtual char calc(char b1, char b2);
+};
+
+class BinaryNeuralAcidOperationCharShiftRight : public IBinaryNeuralAcidOperation<char>{
+    public:
+        virtual std::string type();
+        virtual char calc(char b1, char b2);
+};
 
 template<class ValueType> class BinaryNeuralAcidVar {
     public:
@@ -308,15 +341,23 @@ class BinaryNeuralAcidConfig {
         int m_nOutputSize;
 };
 
+
+template<class ValueType> class BinaryNeuralAcidFabricOperations {
+    public:
+        static void test();
+        static std::vector<IBinaryNeuralAcidOperation<ValueType> *> createOperations();
+};
+
 template<class ValueType> class BinaryNeuralAcid {
 	public:
 		BinaryNeuralAcid() {
             m_vNodesInput.push_back(new BinaryNeuralAcidGraphNodeInput(0));
             m_vNodesOutput.push_back(new BinaryNeuralAcidGraphNodeOutput(0, 0));
-            registryOperationType(new BinaryNeuralAcidOperationBitXor());
-            registryOperationType(new BinaryNeuralAcidOperationBitNotXor());
-            registryOperationType(new BinaryNeuralAcidOperationBitAnd());
-            registryOperationType(new BinaryNeuralAcidOperationBitOr());
+
+            auto vOperations = BinaryNeuralAcidFabricOperations<ValueType>::createOperations();
+            for (int i = 0; i < vOperations.size(); i++) {
+                registryOperationType(vOperations[i]);
+            }
             m_nOperSize = m_vOperationList.size();
             TAG = "BinaryNeuralAcid";
             m_nBnaVersion = 4;

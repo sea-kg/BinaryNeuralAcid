@@ -202,9 +202,67 @@ BinaryNeuralAcidBit BinaryNeuralAcidOperationBitOr::calc(BinaryNeuralAcidBit b1,
     return c1 == 0 ? B_0 : B_1;
 }
 
+// -----------------------------------------------------------------
+// BinaryNeuralAcidOperationCharXor
+
+std::string BinaryNeuralAcidOperationCharXor::type() {
+    return "XOR";
+}
+
+char BinaryNeuralAcidOperationCharXor::calc(char b1, char b2) {
+    return b1 ^ b2;
+}
 
 // -----------------------------------------------------------------
-// BinaryNeuralAcidGraphNode 
+// BinaryNeuralAcidOperationCharOr
+
+std::string BinaryNeuralAcidOperationCharOr::type() {
+    return "OR";
+}
+
+char BinaryNeuralAcidOperationCharOr::calc(char b1, char b2) {
+    return b1 | b2;
+}
+
+// -----------------------------------------------------------------
+// BinaryNeuralAcidOperationCharAnd
+
+std::string BinaryNeuralAcidOperationCharAnd::type() {
+    return "AND";
+}
+
+char BinaryNeuralAcidOperationCharAnd::calc(char b1, char b2) {
+    return b1 & b2;
+}
+
+// -----------------------------------------------------------------
+// BinaryNeuralAcidOperationCharShiftLeft
+
+std::string BinaryNeuralAcidOperationCharShiftLeft::type() {
+    return "SHL";
+}
+
+char BinaryNeuralAcidOperationCharShiftLeft::calc(char b1, char b2) {
+    int shift = b2 % 8;
+    char res = (b1 << shift) | (b1 >> (8 - shift));
+    return b1 & b2;
+}
+
+// -----------------------------------------------------------------
+// BinaryNeuralAcidOperationCharShiftRight
+
+std::string BinaryNeuralAcidOperationCharShiftRight::type() {
+    return "SHR";
+}
+
+char BinaryNeuralAcidOperationCharShiftRight::calc(char b1, char b2) {
+    int shift = b2 % 8;
+    char res = (b1 >> shift) | (b1 << (8 - shift));
+    return b1 & b2;
+}
+
+// -----------------------------------------------------------------
+// BinaryNeuralAcidGraphNode
 
 BinaryNeuralAcidGraphNode::BinaryNeuralAcidGraphNode(unsigned short x, unsigned short y, const std::string &sOperationType){
     TAG = "BinaryNeuralAcidGraphNode";
@@ -554,6 +612,27 @@ int BinaryNeuralAcidConfig::getNodesSize() const {
 
 int BinaryNeuralAcidConfig::getOutputSize() const {
     return m_nOutputSize;
+}
+
+template <>
+std::vector<IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *> BinaryNeuralAcidFabricOperations<BinaryNeuralAcidBit>::createOperations() {
+    std::vector<IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *> vOperations;
+    vOperations.push_back(new BinaryNeuralAcidOperationBitXor());
+    vOperations.push_back(new BinaryNeuralAcidOperationBitNotXor());
+    vOperations.push_back(new BinaryNeuralAcidOperationBitAnd());
+    vOperations.push_back(new BinaryNeuralAcidOperationBitOr());
+    return vOperations;
+}
+
+template <>
+std::vector<IBinaryNeuralAcidOperation<char> *> BinaryNeuralAcidFabricOperations<char>::createOperations() {
+    std::vector<IBinaryNeuralAcidOperation<char> *> vOperations;
+    vOperations.push_back(new BinaryNeuralAcidOperationCharXor());
+    vOperations.push_back(new BinaryNeuralAcidOperationCharOr());
+    vOperations.push_back(new BinaryNeuralAcidOperationCharAnd());
+    vOperations.push_back(new BinaryNeuralAcidOperationCharShiftLeft());
+    vOperations.push_back(new BinaryNeuralAcidOperationCharShiftRight());
+    return vOperations;
 }
 
 // ----------------------------------------------------------------
