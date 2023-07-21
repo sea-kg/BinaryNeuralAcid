@@ -33,30 +33,17 @@ int main() {
         vInputs.push_back(B_1);
     }
     std::string sOutputsExpected = test_calculate(bna, vInputs);
-    // std::cout << "sOutputsExpected: " << sOutputsExpected << std::endl;
-    // std::cout << "1 test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
-    // std::cout << "2 test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
     if (!bna.save(sPath0)) {
         std::cerr << "Could not save to file: " << sPath0 << std::endl;
         return 1;
     }
-    // std::cout << "after save (1)... test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
     bna.exportToDot(sPath0);
 
     if (!bna.load(sPath0)) {
         std::cerr << "Could not load from file: " << sPath0 << std::endl;
         return 1;
     }
-    // std::cout << "after load (1)... test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
-    // bna.save(sPath1);
-    // std::cout << "after save (2)... test_calculate(bna, vInputs): " << test_calculate(bna, vInputs) << std::endl;
-    // bna.exportToDot(sPath1);
-
     std::string sOutputsGot0 = test_calculate(bna, vInputs);
-
-    // bna.load(sPath1);
-    // bna.save(sPath2);
-    // bna.exportToDot(sPath2);
 
     if (sOutputsExpected != sOutputsGot0) {
         std::cerr << "Different result for " << sPath0 << std::endl;
