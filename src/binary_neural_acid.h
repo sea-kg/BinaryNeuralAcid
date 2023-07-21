@@ -316,6 +316,7 @@ class BinaryNeuralAcid {
         int addNode(int nInX, int nInY, const std::string &sOperType);
         int addNodeOutput(int nIn);
         bool compile();
+        void removeAllDeadlockNodes();
 
 		bool exportToDot(const std::string &sFilename);
 		bool exportToCpp(std::string filename, std::string funcname);
@@ -337,8 +338,6 @@ class BinaryNeuralAcid {
         static bool fileExists(const std::string &sFilename);
         static bool removeFile(const std::string &sFilename);
         static bool dirExists(const std::string &sDirname);
-
-        void removeDeadlockNodes();
 
 	private:
         std::string TAG;
@@ -362,6 +361,7 @@ class BinaryNeuralAcid {
 
         void clearCalcExprsVars();
         void normalizeNodes();
+        int removeDeadlockNodes();
         BinaryNeuralAcidVar<BinaryNeuralAcidBit> *getVarByIndex(int nIndex);
         std::vector<BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *> m_vCalcExprs;
         std::vector<BinaryNeuralAcidVar<BinaryNeuralAcidBit> *> m_vCalcInputVars;

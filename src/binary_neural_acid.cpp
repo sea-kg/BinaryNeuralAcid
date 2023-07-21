@@ -706,9 +706,6 @@ bool BinaryNeuralAcid::compile() {
 
     int nItemsSize = m_vNodes.size();
     for (int i = 0; i < m_vNodes.size(); i++) {
-        // std::cout << "node" << std::to_string(i) << std::endl;
-        // std::cout << "    x: " << m_vNodes[i]->getX() << std::endl;
-        // std::cout << "    y: " << m_vNodes[i]->getY() << std::endl;
         BinaryNeuralAcidExpression<BinaryNeuralAcidBit> *pExpr = new BinaryNeuralAcidExpression<BinaryNeuralAcidBit>();
         pExpr->setOperandLeft(getVarByIndex(m_vNodes[i]->getX()));
         pExpr->setOperandRight(getVarByIndex(m_vNodes[i]->getY()));
@@ -718,24 +715,23 @@ bool BinaryNeuralAcid::compile() {
         m_vCalcVars.push_back(pVar);
         pExpr->out(pVar);
         m_vCalcExprs.push_back(pExpr);
-        // if (nItemsSize - i <= (int)m_vNodesOutput.size()) {
-        //     m_vCalcOutVars.push_back(pVar);
-        // }
     }
 
     for (int i = 0; i < m_vNodesOutput.size(); i++) {
         int nIndex = m_vNodesOutput[i]->getInputNodeIndex();
-        std::cout << "nIndex = " << nIndex << std::endl;
         m_vCalcOutVars.push_back(getVarByIndex(nIndex));
     }
-
-    // std::cout << "m_vCalcOutVars.size() = " << m_vCalcOutVars.size() << std::endl;
-    // std::cout << "m_vNodes.size() = " << m_vNodes.size() << std::endl;
-    // std::cout << "m_vCalcExprs.size() = " << m_vCalcExprs.size() << std::endl;
-
     m_bCompiled = true;
-    // std::cout << "Compiled!" << std::endl;
     return true;
+}
+
+void BinaryNeuralAcid::removeAllDeadlockNodes() {
+    clearCalcExprsVars();
+    int nRemoved = removeDeadlockNodes();
+    while (nRemoved > 0) {
+        nRemoved = removeDeadlockNodes();
+    }
+    compile();
 }
 
 void BinaryNeuralAcid::compare(BinaryNeuralAcid &bna){
@@ -1161,10 +1157,8 @@ void BinaryNeuralAcid::normalizeNodes() {
     removeDeadlockNodes();
 }
 
-void BinaryNeuralAcid::removeDeadlockNodes() {
+int BinaryNeuralAcid::removeDeadlockNodes() {
     // clearCalcExprsVars();
-
-    // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() (start) nNodesSize: " << m_vNodes.size() << std::endl;
     std::vector<int> vToRemoving;
     for (int i = 0; i < m_vNodes.size(); i++) {
         int nNodeIndex = i + m_vNodesInput.size();
@@ -1192,48 +1186,38 @@ void BinaryNeuralAcid::removeDeadlockNodes() {
         }
     }
 
-    // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() removing: " << vToRemoving.size() << std::endl;
     int nRemoved = 0;
     for (int i = vToRemoving.size() - 1; i >= 0; i--) {
         int nNodeIndex = vToRemoving[i];
         int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
-        // std::cout << "TODO removing nNodeIndex = " << nNodeIndex << " in array = " << nArrayIndex << std::endl;
-        // std::cout << "TODO removing m_vNodes.size() = " << m_vNodes.size() << std::endl;
         if (nArrayIndex < 0) {
             continue;
         }
         BinaryNeuralAcidGraphNode *pNode = *(m_vNodes.begin() + nArrayIndex);
-        // std::cout << "    " << pNode->getId() << ":" << pNode->getOperationType() << std::endl;
         m_vNodes.erase(m_vNodes.begin() + nArrayIndex);
-        // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() removed, m_vNodes.size() = " << m_vNodes.size() << std::endl;
+        // delete pNode;
 
         for (int x = 0; x < m_vNodes.size(); x++) {
             if (m_vNodes[x]->getX() >= nNodeIndex) {
-                // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() change m_vNodes[" << x <<  "]->getX() " << m_vNodes[x]->getX() << " to " << (m_vNodes[x]->getX() - 1) << std::endl;
                 m_vNodes[x]->setX(m_vNodes[x]->getX() - 1);
             }
             if (m_vNodes[x]->getY() >= nNodeIndex) {
-                // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() change m_vNodes[" << x <<  "]->getY() " << m_vNodes[x]->getY() << " to " << (m_vNodes[x]->getY() - 1) << std::endl;
                 m_vNodes[x]->setY(m_vNodes[x]->getY() - 1);
             }
         }
 
         for (int x = 0; x < m_vNodesOutput.size(); x++) {
             if (m_vNodesOutput[x]->getInputNodeIndex() >= nNodeIndex) {
-                // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() change output m_vNodesOutput[" << x <<  "]->getInputNodeIndex(): " << m_vNodesOutput[x]->getInputNodeIndex() << " to " << (m_vNodesOutput[x]->getInputNodeIndex() - 1) << std::endl;
                 m_vNodesOutput[x]->setInputNodeIndex(m_vNodesOutput[x]->getInputNodeIndex() - 1);
             }
         }
         nRemoved++;
-        // if (nRemoved >= 1) {
-        //     break;
-        // }
     }
     // fix ids
     for (int i = 0; i < m_vNodes.size(); i++) {
         m_vNodes[i]->setId(m_vNodesInput.size() + i);
     }
-    // std::cout << "BinaryNeuralAcid::removeDeadlockNodes() (end) m_vNodes.size(): " << m_vNodes.size() << std::endl << std::endl;
+    return vToRemoving.size();
 }
 
 BinaryNeuralAcidVar<BinaryNeuralAcidBit> *BinaryNeuralAcid::getVarByIndex(int nIndex) {
