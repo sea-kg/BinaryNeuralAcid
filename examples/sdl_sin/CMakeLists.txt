@@ -11,18 +11,18 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../src.wsjcpp/CMakeLists.txt)
 set(CMAKE_CXX_STANDARD 17)
 
 list (APPEND SDL_SIN1_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src")
+list (APPEND SDL_SIN1_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/render/")
 list (APPEND SDL_SIN1_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/../../src")
 list (APPEND SDL_SIN1_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/../../src.wsjcpp/nlohmann_json/")
-list (APPEND SDL_SIN1_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/../../src/render/")
 
 add_executable(
     ${PROJECT_NAME}
     "${PROJECT_SOURCE_DIR}/src/main.cpp"
+    "${PROJECT_SOURCE_DIR}/src/render/app_state.cpp"
+    "${PROJECT_SOURCE_DIR}/src/render/render.cpp"
+    "${PROJECT_SOURCE_DIR}/src/render/render_window.cpp"
     "${PROJECT_SOURCE_DIR}/src/bna_test_sin1.cpp"
     "${PROJECT_SOURCE_DIR}/../../src/binary_neural_acid.cpp"
-    "${PROJECT_SOURCE_DIR}/../../src/render/app_state.cpp"
-    "${PROJECT_SOURCE_DIR}/../../src/render/render.cpp"
-    "${PROJECT_SOURCE_DIR}/../../src/render/render_window.cpp"
     "${WSJCPP_SOURCES}"
 )
 
