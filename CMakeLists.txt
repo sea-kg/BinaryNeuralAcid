@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.14)
 
 project(bna C CXX)
 
@@ -20,7 +20,6 @@ list (APPEND WSJCPP_SOURCES "src/binary_neural_acid.cpp")
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/test_sin/bna_test_sin.cpp")
-list (APPEND WSJCPP_SOURCES "src/test_sin/bna_test_sin1.cpp")
 
 list (APPEND WSJCPP_SOURCES "src/render/app_state.cpp")
 list (APPEND WSJCPP_SOURCES "src/render/render.cpp")
@@ -70,3 +69,5 @@ install(
 )
 
 
+# examples
+add_subdirectory(examples/sin1)

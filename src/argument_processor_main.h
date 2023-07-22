@@ -12,25 +12,9 @@ class ArgumentProcessorMain : public WsjcppArgumentProcessor {
         virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
 };
 
-class ArgumentProcessorStartServer : public WsjcppArgumentProcessor {
-    public:
-        ArgumentProcessorStartServer();
-
-        virtual bool applyParameterArgument(const std::string &sProgramName, const std::string &sArgumentName, const std::string &sValue);
-        virtual bool applySingleArgument(const std::string &sProgramName, const std::string &sArgumentName);
-        virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
-};
-
-
 class ArgumentProcessorTestSin : public WsjcppArgumentProcessor {
     public:
         ArgumentProcessorTestSin();
-        virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
-};
-
-class ArgumentProcessorTestSin1 : public WsjcppArgumentProcessor {
-    public:
-        ArgumentProcessorTestSin1();
         virtual int exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams);
 };
 

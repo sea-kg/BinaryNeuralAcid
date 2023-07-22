@@ -53,3 +53,4 @@ build-bna-Desktop-Debug
 tmp
 
 bna/bna
+/example_*

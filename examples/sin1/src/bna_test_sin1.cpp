@@ -46,7 +46,7 @@ void BNATestSin1Item::floatToBNABits(const float &f, std::vector<BinaryNeuralAci
 BNATestSin1::BNATestSin1() {
     TAG = "BNATestSin1";
 
-    m_nSizeInput = 32; // input bits 
+    m_nSizeInput = 32; // input bits
     m_nSizeOutput = 1; // output bits
     m_sBNAFilename = "testsin1";
     m_pBNA = new BNAGroup<BinaryNeuralAcidBit>(m_nSizeInput, m_nSizeOutput);
@@ -151,7 +151,7 @@ void BNATestSin1::print(BinaryNeuralAcidBit pResult[1]) {
 
 void BNATestSin1::regenDataTests() {
     m_vDataTests.clear();
-    
+
     float HI = 1.0f;
     float LO = -1.0f;
     for (int i = 0; i < m_nDataTestsSize; i++) {
@@ -174,7 +174,7 @@ bool BNATestSin1::loadDataTests() {
         WsjcppLog::err(TAG, "load: could not open file to read '" + sFilename + "'");
         return false;
     }
-    
+
     float nIn;
     float nOut;
     for (int i = 0; i < m_nDataTestsSize; i++) {
