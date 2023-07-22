@@ -969,7 +969,7 @@ template<class ValueType> class BinaryNeuralAcid {
                 }
             }
             int nRemoved = 0;
-            for (int i = vToRemoving.size() - 1; i >= 0; i--) {
+            for (size_t i = vToRemoving.size() - 1; i >= 0; i--) {
                 int nNodeIndex = vToRemoving[i];
                 int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
                 if (nArrayIndex < 0) {
@@ -994,7 +994,7 @@ template<class ValueType> class BinaryNeuralAcid {
                 nRemoved++;
             }
             // fix ids
-            for (int i = 0; i < m_vNodes.size(); i++) {
+            for (size_t i = 0; i < m_vNodes.size(); i++) {
                 m_vNodes[i]->setId(m_vNodesInput.size() + i);
             }
             return vToRemoving.size();

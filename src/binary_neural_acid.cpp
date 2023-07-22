@@ -1,7 +1,15 @@
 #include "binary_neural_acid.h"
 #include <iostream>
 #include <cstring>
-#include <dirent.h>
+#ifndef _MSC_VER
+    #include <dirent.h>
+    #include <sys/time.h>
+    #include <unistd.h>
+    #include <arpa/inet.h>
+#else 
+    #include <direct.h>
+    #define PATH_MAX 256
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -1017,6 +1025,7 @@ int BinaryNeuralAcidProject::loadResult(int bitid){
     }
     m_mapResults[bitid] = nResult;
     return nResult;*/
+    return 0;
 }
 
 std::map<int,int> &BinaryNeuralAcidProject::getResults(){

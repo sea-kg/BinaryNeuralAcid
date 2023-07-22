@@ -47,7 +47,7 @@ class BNATestSin : public ICallbacksRenderBNA<BinaryNeuralAcidBit> {
         bool loadDataTests();
         bool saveDataTests();
         void calculateCurrentCounters();
-        
+
         std::string TAG;
 
         std::string m_sBNAFilename;
@@ -56,7 +56,7 @@ class BNATestSin : public ICallbacksRenderBNA<BinaryNeuralAcidBit> {
         std::string m_sDataTestsFilename;
         int m_nDataTestsSize;
         std::vector<BNATestSinItem> m_vDataTests;
-        
+
         BinaryNeuralAcidStatCalcResults *m_pResults;
         std::vector<BinaryNeuralAcidModificationModel *> m_vModificationModels;
         int m_nCurrentModificationModel;

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(PROJECT_NAME example_sin1)
+set(PROJECT_NAME example_sdl_sin)
 
 project(${PROJECT_NAME})
 set(EXECUTABLE_OUTPUT_PATH ${${PROJECT_NAME}_SOURCE_DIR}/../../)

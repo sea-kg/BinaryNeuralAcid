@@ -1,7 +1,6 @@
 
 #include "argument_processor_main.h"
 #include <wsjcpp_core.h>
-#include "bna_test_sin.h"
 
 // ---------------------------------------------------------------------
 // ArgumentProcessorMain
@@ -14,7 +13,6 @@ ArgumentProcessorMain::ArgumentProcessorMain()
     // registrySingleArgument("--single", "What exactly do this single param?");
     // registryParameterArgument("-param", "N", "What need this param?");
     // registryExample("here example of command");
-    registryProcessor(new ArgumentProcessorTestSin());
 }
 
 // ---------------------------------------------------------------------
@@ -42,24 +40,3 @@ int ArgumentProcessorMain::exec(const std::vector<std::string> &vRoutes, const s
     return -1;
 }
 
-// ---------------------------------------------------------------------
-// ArgumentProcessorTestSin
-
-ArgumentProcessorTestSin::ArgumentProcessorTestSin()
-: WsjcppArgumentProcessor({"test-sin"},
-    "test-sin",
-    "test-sin") {
-    TAG = "ArgumentProcessorTestSin";
-    // registrySingleArgument("--single", "What exactly do this single param?");
-    // registryParameterArgument("-param", "N", "What need this param?");
-    // registryExample("here example of command");
-    // registryProcessor(new ArgumentProcessorOtherProcessor());
-}
-
-int ArgumentProcessorTestSin::exec(const std::vector<std::string> &vRoutes, const std::vector<std::string> &vSubParams) {
-
-    BNATestSin testsin;
-    testsin.run();
-
-    return -1;
-}
