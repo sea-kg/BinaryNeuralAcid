@@ -21,44 +21,38 @@ list (APPEND WSJCPP_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 # wsjcpp-core:v0.2.1
 list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/wsjcpp_core/")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_core.cpp")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_core.h")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests.cpp")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests.h")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests_main.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_core/wsjcpp_core.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_core/wsjcpp_core.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_core/wsjcpp_unit_tests_main.cpp")
 
 # nlohmann/json:v3.10.5
 list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/nlohmann_json/")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/nlohmann_json/json.hpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/nlohmann_json/json.hpp")
 
 # wsjcpp-arguments:v0.2.1
 list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/wsjcpp_arguments/")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_arguments/wsjcpp_arguments.cpp")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_arguments/wsjcpp_arguments.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_arguments/wsjcpp_arguments.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_arguments/wsjcpp_arguments.h")
 
 # wsjcpp-hashes:v0.1.3
 list (APPEND WSJCPP_INCLUDE_DIRS "../src.wsjcpp/wsjcpp_hashes/")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/md5.cpp")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/md5.h")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/smallsha1.h")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/smallsha1.cpp")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.cpp")
-list (APPEND WSJCPP_SOURCES "../src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_hashes/md5.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_hashes/md5.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_hashes/smallsha1.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_hashes/smallsha1.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src.wsjcpp/wsjcpp_hashes/wsjcpp_hashes.h")
 
 # bna:v0.0.1
-list (APPEND WSJCPP_INCLUDE_DIRS "../src")
-list (APPEND WSJCPP_SOURCES "../src/bna.h")
-list (APPEND WSJCPP_SOURCES "../src/bna.cpp")
-list (APPEND WSJCPP_SOURCES "../src/bna_types.h")
-list (APPEND WSJCPP_SOURCES "../src/bna_types.cpp")
-list (APPEND WSJCPP_SOURCES "../src/bna_operations.h")
-list (APPEND WSJCPP_SOURCES "../src/bna_operations.cpp")
-list (APPEND WSJCPP_SOURCES "../src/bna_expression.h")
-list (APPEND WSJCPP_SOURCES "../src/bna_expression.cpp")
+list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/../src")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src/binary_neural_acid.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../src/binary_neural_acid.cpp")
 
 # unit-tests
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_learning.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/../unit-tests.wsjcpp/src/unit_test_learning.cpp")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.user-custom.txt)
 
