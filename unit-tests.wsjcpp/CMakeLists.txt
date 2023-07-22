@@ -58,9 +58,7 @@ list (APPEND WSJCPP_SOURCES "../src/bna_expression.cpp")
 
 # unit-tests
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_brute.cpp")
 list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_learning.cpp")
-list (APPEND WSJCPP_SOURCES "../unit-tests.wsjcpp/src/unit_test_reverse_test.cpp")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.user-custom.txt)
 

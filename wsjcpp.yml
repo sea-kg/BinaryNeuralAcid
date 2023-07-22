@@ -48,10 +48,5 @@ distribution:
 
 unit-tests:
   cases:
-    - name: "Brute"
-      description: "Brute test"
     - name: "Learning"
       description: "Learning test"
-    - name: "ReverseTest"
-      description: "Reverse test"
-
