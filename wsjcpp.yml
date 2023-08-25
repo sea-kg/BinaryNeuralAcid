@@ -48,5 +48,4 @@ distribution:
 
 unit-tests:
   cases:
-    - name: "Learning"
-      description: "Learning test"
+
