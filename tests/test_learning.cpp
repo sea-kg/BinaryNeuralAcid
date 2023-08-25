@@ -55,7 +55,9 @@ int main() {
         res = check_xor_result(bna);
         if (res == 0) {
             std::cout << " Found on cicle: " << nSafeCicles << std::endl;
+            bna.save("xor");
             bna.exportToDot("xor");
+            bna.exportToCpp("xor");
             return 0;
         }
     }

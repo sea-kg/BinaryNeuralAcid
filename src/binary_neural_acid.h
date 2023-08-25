@@ -98,6 +98,37 @@ class BinaryNeuralAcidOperationCharShiftRight : public IBinaryNeuralAcidOperatio
         virtual char calc(char b1, char b2);
 };
 
+// exporters
+
+template<class ValueType> class BinaryNeuralAcidCppExporter {
+    public:
+        static std::string getCppType();
+        static std::string getCppOperation();
+};
+
+template<> class BinaryNeuralAcidCppExporter<BinaryNeuralAcidBit> {
+    public:
+        static std::string getCppType() { return "bool"; }
+        static std::string getCppOperation(
+            const std::string &sOperationName,
+            const std::string &sNameX,
+            const std::string &sNameY
+        ) {
+            if (sOperationName == "NXOR") {
+                return "!(" + sNameX + " ^ " + sNameY + ")";
+            } else if (sOperationName == "XOR") {
+                return sNameX + " ^ " + sNameY;
+            } else if (sOperationName == "AND") {
+                return sNameX + " && " + sNameY;
+            } else if (sOperationName == "OR") {
+                return sNameX + " || " + sNameY;
+            };
+            return "none";
+        };
+};
+
+// BinaryNeuralAcidVar
+
 template<class ValueType> class BinaryNeuralAcidVar {
     public:
         BinaryNeuralAcidVar() {
@@ -572,7 +603,6 @@ template<class ValueType> class BinaryNeuralAcid {
                     << " -> " << m_vNodes[i]->getId()
                     << ";\n"
                 ;
-
             }
             for (int i = 0; i < m_vNodesOutput.size(); i++) {
                 file
@@ -588,80 +618,47 @@ template<class ValueType> class BinaryNeuralAcid {
             return true;
         }
 
-		bool exportToCpp(std::string filename, std::string funcname) {
-            std::cerr << "TODO exportToCpp" << std::endl;
-            /*QFile file(filename);
-            QFileInfo fi(filename);
-            if(fi.suffix() != "cpp"){
-                std::cerr << "[ERROR]" << filename.toStdString() << " file must be have suffix 'cpp'\n";
-                return false;
-            }
-
-            std::string filename_h = filename.left(filename.length() - 3);
-            filename_h += "h";
-
-            if (file.exists()) {
-                file.remove();
-            }
-
-            QFile file_h(filename_h);
-            if (file_h.exists()) {
-                file_h.remove();
-            }
-
-            if ( !file.open(QIODevice::WriteOnly) ) {
-                std::cerr << "Could not write file: " << filename.toStdString() << "\n";
-                return false;
-            }
-
-            if ( !file_h.open(QIODevice::WriteOnly) ) {
-                std::cerr << "Could not write file: " << filename_h.toStdString() << "\n";
-                return false;
-            }
-
-            QTextStream stream_h( &file_h );
-            stream_h << "#ifndef BNA_MD5_" << funcname.toUpper() << "_H\r\n";
-            stream_h << "#define BNA_MD5_" << funcname.toUpper() << "_H\r\n\r\n";
-            stream_h << "void " << funcname << "(";
-
-            QTextStream stream( &file );
-            stream << "#include \"" << fi.baseName() << ".h\"\r\n";
-            stream << "void " << funcname << "(";
-            for(unsigned int i = 0; i < m_vNodesInput.size(); i++){
-                stream << "\r\n\tbool in" << i << ", ";
-                stream_h << "\r\n\tbool in" << i << ", ";
-            }
-
-            for(unsigned  int i = 0; i < m_nOutput; i++){
-                stream << "\r\n\tbool &out" << i;
-                stream_h << "\r\n\tbool &out" << i;
-                if(i < m_nOutput-1){
-                    stream << ", ";
-                    stream_h << ", ";
+		bool exportToCpp(std::string sFilename) {
+            std::string sFilename0 = sFilename + ".cpp";
+            if (BinaryNeuralAcidHelpers::fileExists(sFilename0)) {
+                if (!BinaryNeuralAcidHelpers::removeFile(sFilename0)) {
+                    std::cerr << "exportToCpp: could not remove file: '" << sFilename0 << "'" << std::endl;
+                    return false;
                 }
             }
-            stream << "\r\n) {\r\n";
-            stream_h << "\r\n);\r\n\r\n";
-            stream_h << "#endif //BNA_MD5_" << funcname.toUpper() << "_H\r\n";
-
-            int nodes = m_vNodesInput.size();
-            for(int i = 0; i < m_vNodes.size(); i++){
-                std::string sX = (m_vNodes[i]->getX() < m_vNodesInput.size() ? "in" : "node") + std::to_string(m_vNodes[i]->getX());
-                std::string sY = (m_vNodes[i]->getY() < m_vNodesInput.size() ? "in" : "node") + std::to_string(m_vNodes[i]->getY());
-                std::string sNode = "node" + std::string::number(nodes); 
-                stream << "\tbool " << sNode << " = " << sX << "|" << sY << ";\n";
-                nodes++;
+            std::ofstream file;
+            file.open(sFilename0, std::ios::out | std::ios::binary);
+            if (!file.is_open()) {
+                std::cerr << "exportToDot: could not open file to write: '" << sFilename0 << "'" << std::endl;
+                return false;
             }
-            int out_nodes = nodes-m_nOutput;
+            std::string sCppType = BinaryNeuralAcidCppExporter<ValueType>::getCppType();
 
-            for(int i = out_nodes; i < nodes; i++){
-                std::string sOut = "out" + std::to_string(i-out_nodes);
-                std::string sNode = "node" + std::to_string(i);
-                stream << "\t" << sOut << " = " << sNode << ";\n";
+            file << "std::vector<" + sCppType + "> calcBinaryNeuralAcid(const std::vector<" + sCppType + "> &vIn) {\n";
+            for (int i = 0; i < m_vNodesInput.size(); i++) {
+                file << "    " + sCppType + " node" << i << " = vIn[" << i << "]\n";
             }
 
-            stream << "}\n";
-            file.close();*/
+            for (int i = 0; i < m_vNodes.size(); i++) {
+                if (m_vNodes[i]->getOperationType() != "") {
+                    file
+                        << "    " + sCppType + " node" << m_vNodes[i]->getId() << " = "
+                        << BinaryNeuralAcidCppExporter<ValueType>::getCppOperation(
+                            m_vNodes[i]->getOperationType(),
+                            "node" + std::to_string(m_vNodes[i]->getX()),
+                            "node" + std::to_string(m_vNodes[i]->getY())
+                        )
+                        << ";\n"
+                    ;
+                }
+            }
+            file << "    std::vector<" + sCppType + "> vOut;\n";
+            for (int i = 0; i < m_vNodesOutput.size(); i++) {
+                file
+                    << "    vOut.push_back(node" << m_vNodesOutput[i]->getInputNodeIndex() << "); // out " << m_vNodesOutput[i]->getOutputIndex()
+                    << "\n";
+            }
+            file << "};\n";
             return true;
         }
 

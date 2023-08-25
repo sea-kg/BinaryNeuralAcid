@@ -6,7 +6,7 @@
     #include <sys/time.h>
     #include <unistd.h>
     #include <arpa/inet.h>
-#else 
+#else
     #include <direct.h>
     #define PATH_MAX 256
 #endif
