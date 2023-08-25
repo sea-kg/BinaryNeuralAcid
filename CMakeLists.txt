@@ -32,9 +32,15 @@ list (APPEND WSJCPP_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 include_directories(${WSJCPP_INCLUDE_DIRS})
 
+# examples
+if (UNIX)
+    add_subdirectory(examples/sdl_sin)
+endif (UNIX)
+add_subdirectory(examples/sin)
+
 # enable testing functionality
-# enable_testing()
-# add_subdirectory(tests)
+enable_testing()
+add_subdirectory(tests)
 
 add_executable (bna ${WSJCPP_SOURCES})
 
@@ -46,10 +52,3 @@ install(
     RUNTIME DESTINATION
         /usr/bin
 )
-
-
-# examples
-if (UNIX)
-    add_subdirectory(examples/sdl_sin)
-endif (UNIX)
-add_subdirectory(examples/sin)
