@@ -1,0 +1,78 @@
+<html>
+<head>
+<style>
+img {
+    border: 1px solid black;
+}
+canvas {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+<img id="image1" src='./img1.png'/>
+<img id="image2" src='./img2.png'/>
+<br><br>
+<button onclick="convert1()">process1</button>
+<br><br>
+<canvas id="canvas1" width=300px height=300px></canvas>
+<canvas id="canvas2" width=300px height=300px></canvas>
+
+<script>
+    const cnvs1 = document.getElementById('canvas1');
+    const ctx1 = cnvs1.getContext('2d');
+    window.addEventListener("load", (event) => {
+        console.log("page is fully loaded");
+        ctx1.drawImage(image1, 0, 0, 300, 300);
+
+        // setInterval(convert1, 100);
+        convert1();
+        // console.log(c.data);
+        // console.log(c.data[0]);
+        // console.log(c.data[1]);
+        // console.log(c.data[2]);
+        // console.log(c.data[3]);
+    });
+
+    function convert1() {
+        for (var x = 0; x < 300; x += 10) {
+            for (var y = 0; y < 300; y += 10) {
+                var imageData = ctx1.getImageData(x, y, 10, 10); // rgba
+                var d = calcBinaryNeuralAcid(imageData.data);
+                // var d = ;
+                for (var i = 0; i < imageData.data.length; i++) {
+                    imageData.data[i] = d[i];
+                }
+                if (x == 120 && y == 120) {
+                    console.log(imageData.data)
+                }
+                ctx1.putImageData(imageData, x, y);
+            }
+        }
+    }
+</script>
+
+<script>
+    function calcBinaryNeuralAcid(vin) {
+        var node0 = vin[0];
+        var node1 = vin[1];
+        var node2 = vin[2];
+        var node3 = vin[3];
+        var node4 = vin[4];
+
+        var out = [];
+        // out[0] = node0 & node1;
+        // out[1] = node2 + 200;
+        // out[2] = node3 + 11;
+        // out[3] = node4 + 200;
+        for (var i = 0; i < vin.length; i++) {
+            // out[i] = vin[Math.ceil(Math.random() * vin.length)];
+            out[i] = Math.random() * 256;
+            // out[i] = vin[i];
+        }
+        return out;
+    }
+</script>
+
+</body>
+</html>
