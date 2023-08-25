@@ -62,7 +62,7 @@ int main() {
 
     // bna.randomGenerate(config);
     // bna.removeAllDeadlockNodes();
-    
+
 
     // int nMutationCicles = 10;
     // int nAddCicles = 1000;

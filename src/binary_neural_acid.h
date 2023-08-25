@@ -961,17 +961,18 @@ template<class ValueType> class BinaryNeuralAcid {
                     vToRemoving.push_back(nNodeIndex);
                 }
             }
-            for (int i = vToRemoving.size() - 1; i >= 0; i--) {
+
+            int nToRemovingSize = (int)vToRemoving.size();
+            for (int i = nToRemovingSize - 1; i >= 0; i--) {
                 int nNodeIndex = vToRemoving[i];
-                int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
+                int nArrayIndex = nNodeIndex - m_vNodesInput.size();
                 if (nNodeIndex > m_vNodes.size() + m_vNodesInput.size()) {
-                    throw std::runtime_error("Node Index very big much");
+                    throw std::runtime_error("Node Index " + std::to_string(nNodeIndex) + " is very big much");
                 }
             }
-            int nRemoved = 0;
-            for (size_t i = vToRemoving.size() - 1; i >= 0; i--) {
+            for (int i = nToRemovingSize - 1; i >= 0; i--) {
                 int nNodeIndex = vToRemoving[i];
-                int nArrayIndex = vToRemoving[i] - m_vNodesInput.size();
+                int nArrayIndex = nNodeIndex - m_vNodesInput.size();
                 if (nArrayIndex < 0) {
                     continue;
                 }
@@ -991,8 +992,8 @@ template<class ValueType> class BinaryNeuralAcid {
                         m_vNodesOutput[x]->setInputNodeIndex(m_vNodesOutput[x]->getInputNodeIndex() - 1);
                     }
                 }
-                nRemoved++;
             }
+
             // fix ids
             for (size_t i = 0; i < m_vNodes.size(); i++) {
                 m_vNodes[i]->setId(m_vNodesInput.size() + i);
