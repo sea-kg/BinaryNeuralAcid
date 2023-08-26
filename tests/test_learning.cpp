@@ -24,8 +24,6 @@ int check_xor_result(BinaryNeuralAcid<BinaryNeuralAcidBit> &bna) {
 };
 
 int main() {
-
-    std::vector<std::pair<std::string, std::string>> vTestData;
     BinaryNeuralAcidConfig config;
     config
         .setInputSize(2)
