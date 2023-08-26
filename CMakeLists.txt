@@ -37,6 +37,7 @@ if (UNIX)
     add_subdirectory(examples/sdl_sin)
 endif (UNIX)
 add_subdirectory(examples/sin)
+add_subdirectory(examples/sum)
 
 # enable testing functionality
 enable_testing()
