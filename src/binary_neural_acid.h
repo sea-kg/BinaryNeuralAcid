@@ -975,7 +975,7 @@ template<class ValueType> class BinaryNeuralAcid {
                 }
                 BinaryNeuralAcidGraphNode *pNode = *(m_vNodes.begin() + nArrayIndex);
                 m_vNodes.erase(m_vNodes.begin() + nArrayIndex);
-                // delete pNode;
+                delete pNode;
                 for (int x = 0; x < m_vNodes.size(); x++) {
                     if (m_vNodes[x]->getX() >= nNodeIndex) {
                         m_vNodes[x]->setX(m_vNodes[x]->getX() - 1);
