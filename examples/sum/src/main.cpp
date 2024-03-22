@@ -8,19 +8,21 @@ struct ResultCheckSum {
     int nSuccessPercents;
 };
 
-void check_sum_result(BinaryNeuralAcid<char> &bna, ResultCheckSum &ret) {
+void check_sum_result(BinaryNeuralAcid<unsigned char> &bna, ResultCheckSum &ret) {
     ret.nAll = 0;
     ret.nSuccess = 0;
     ret.nSuccessPercents = 0;
     int nRet = 0;
     for (int  x = 0; x < 256; x++) {
         for (int  y = 0; y < 256; y++) {
-            char cX = x;
-            char cY = y;
-            char expected = x + y;
-            if (bna.compute({cX, cY}, 0) != expected) {
+            unsigned char cX = x;
+            unsigned char cY = y;
+            unsigned char expected = x + y;
+            if (bna.compute({cX, cY}, 0) == expected) {
                 ret.nSuccess++;
-            }
+            }/* else {
+                std::cout << "cX = " << int(cX) << "; cY = " << int(cY) << ";" << std::endl;
+            }*/
             ret.nAll++;
         }
     }
@@ -36,12 +38,12 @@ int main(int argc, const char* argv[]) {
         .setOutputSize(1)
     ;
 
-    BinaryNeuralAcid<char> bna;
+    BinaryNeuralAcid<unsigned char> bna;
     bna.setPseudoRandom(new BinaryNeuralAcidPseudoRandomSin());
     bna.randomGenerate(config);
 
-    if (BinaryNeuralAcidHelpers::fileExists("sum.bna")) {
-        bna.load("sum");
+    if (BinaryNeuralAcidHelpers::fileExists("example_sum.bna")) {
+        bna.load("example_sum");
     }
 
     int nMutationCicles = 10;
@@ -61,8 +63,9 @@ int main(int argc, const char* argv[]) {
     ResultCheckSum nextResult;
     check_sum_result(bna, res);
     std::cout << " res: " << res.nSuccess << " / " << res.nAll << " (" << res.nSuccessPercents << "%) on start " << std::endl;
-    bna.save("sum");
-    bna.exportToCpp("sum");
+    bna.save("example_sum");
+    bna.exportToCpp("example_sum");
+    bna.exportToJavaScript("example_sum");
     int nSafeCicles = 0;
     int nModModelNumber = 0;
     while (res.nSuccess != 0) {
@@ -79,14 +82,15 @@ int main(int argc, const char* argv[]) {
         bna.randomModify(m_vModificationModels[nModModelNumber]);
         bna.removeAllDeadlockNodes();
         check_sum_result(bna, nextResult);
-        if (nextResult.nSuccess < res.nSuccess) {
+        if (res.nSuccess < nextResult.nSuccess) {
             res = nextResult;
             std::cout << " res: " << res.nSuccess << " / " << res.nAll << " (" << res.nSuccessPercents << "%) on iter: " << nSafeCicles << std::endl;
-            bna.save("sum");
-            bna.exportToDot("sum");
-            bna.exportToCpp("sum");
+            bna.save("example_sum");
+            bna.exportToDot("example_sum");
+            bna.exportToCpp("example_sum");
+            bna.exportToJavaScript("example_sum");
         } else {
-            bna.load("sum");
+            bna.load("example_sum");
         }
         // std::cout << " res: " << res << std::endl;
 

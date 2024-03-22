@@ -12,7 +12,7 @@ int main() {
         .setOutputSize(1)
     ;
 
-    BinaryNeuralAcid<char> bna;
+    BinaryNeuralAcid<unsigned char> bna;
     // bna.setPseudoRandom(new BinaryNeuralAcidPseudoRandomSin());
     bna.addNode(0, 0, "XOR");
     bna.addNode(1, 1, "XOR");
@@ -93,7 +93,7 @@ int main() {
     // std::cout << "nCicles = " << nCicles << std::endl;
 
     for (int i = 0; i < 256; i++) {
-        char c0 = i;
+        unsigned char c0 = i;
         unsigned char c = bna.compute({c0}, 0);
         unsigned char cExpected = c0;
         // std::cout << (unsigned int)(unsigned char)c0 << " => " << (int)c << std::endl;

@@ -68,37 +68,37 @@ class BinaryNeuralAcidOperationBitOr : public IBinaryNeuralAcidOperation<BinaryN
 
 // BinaryNeuralAcidOperationChar
 
-class BinaryNeuralAcidOperationCharXor : public IBinaryNeuralAcidOperation<char>{
+class BinaryNeuralAcidOperationCharXor : public IBinaryNeuralAcidOperation<unsigned char>{
     public:
         virtual std::string type();
-        virtual char calc(char b1, char b2);
+        virtual unsigned char calc(unsigned char b1, unsigned char b2);
 };
 
-class BinaryNeuralAcidOperationCharOr : public IBinaryNeuralAcidOperation<char>{
+class BinaryNeuralAcidOperationCharOr : public IBinaryNeuralAcidOperation<unsigned char>{
     public:
         virtual std::string type();
-        virtual char calc(char b1, char b2);
+        virtual unsigned char calc(unsigned char b1, unsigned char b2);
 };
 
-class BinaryNeuralAcidOperationCharAnd : public IBinaryNeuralAcidOperation<char>{
+class BinaryNeuralAcidOperationCharAnd : public IBinaryNeuralAcidOperation<unsigned char>{
     public:
         virtual std::string type();
-        virtual char calc(char b1, char b2);
+        virtual unsigned char calc(unsigned char b1, unsigned char b2);
 };
 
-class BinaryNeuralAcidOperationCharShiftLeft : public IBinaryNeuralAcidOperation<char>{
+class BinaryNeuralAcidOperationCharShiftLeft : public IBinaryNeuralAcidOperation<unsigned char>{
     public:
         virtual std::string type();
-        virtual char calc(char b1, char b2);
+        virtual unsigned char calc(unsigned char b1, unsigned char b2);
 };
 
-class BinaryNeuralAcidOperationCharShiftRight : public IBinaryNeuralAcidOperation<char>{
+class BinaryNeuralAcidOperationCharShiftRight : public IBinaryNeuralAcidOperation<unsigned char>{
     public:
         virtual std::string type();
-        virtual char calc(char b1, char b2);
+        virtual unsigned char calc(unsigned char b1, unsigned char b2);
 };
 
-// exporters
+// exporters: c++
 
 template<class ValueType> class BinaryNeuralAcidCppExporter {
     public:
@@ -127,9 +127,9 @@ template<> class BinaryNeuralAcidCppExporter<BinaryNeuralAcidBit> {
         };
 };
 
-template<> class BinaryNeuralAcidCppExporter<char> {
+template<> class BinaryNeuralAcidCppExporter<unsigned char> {
     public:
-        static std::string getCppType() { return "bool"; }
+        static std::string getCppType() { return "unsigned"; }
         static std::string getCppOperation(
             const std::string &sOperationName,
             const std::string &sNameX,
@@ -140,9 +140,43 @@ template<> class BinaryNeuralAcidCppExporter<char> {
             } else if (sOperationName == "XOR") {
                 return sNameX + " ^ " + sNameY;
             } else if (sOperationName == "AND") {
-                return sNameX + " && " + sNameY;
+                return sNameX + " & " + sNameY;
             } else if (sOperationName == "OR") {
-                return sNameX + " || " + sNameY;
+                return sNameX + " | " + sNameY;
+            } else if (sOperationName == "SHL") {
+                return "(" + sNameX + " << int(" + sNameY + " % 8)) | (" + sNameX + " >> (8 - int(" + sNameY + " % 8)))";
+            } else if (sOperationName == "SHR") {
+                return "(" + sNameX + " >> int(" + sNameY + " % 8)) | (" + sNameX + " << (8 - int(" + sNameY + " % 8)))";
+            };
+            return "none";
+        };
+};
+
+// exporters: javascript
+
+template<class ValueType> class BinaryNeuralAcidJavaScriptExporter {
+    public:
+        static std::string getJavaScriptOperation();
+};
+
+
+template<> class BinaryNeuralAcidJavaScriptExporter<unsigned char> {
+    public:
+        static std::string getJavaScriptOperation(
+            const std::string &sOperationName,
+            const std::string &sNameX,
+            const std::string &sNameY
+        ) {
+            if (sOperationName == "XOR") {
+                return "(" + sNameX + " ^ " + sNameY + ") % 256";
+            } else if (sOperationName == "AND") {
+                return "(" + sNameX + " & " + sNameY + ") % 256";
+            } else if (sOperationName == "OR") {
+                return "(" + sNameX + " | " + sNameY + ") % 256";
+            } else if (sOperationName == "SHL") {
+                return "((" + sNameX + " << (" + sNameY + " % 8)) | (" + sNameX + " >> (8 - (" + sNameY + " % 8)))) % 256";
+            } else if (sOperationName == "SHR") {
+                return "((" + sNameX + " >> (" + sNameY + " % 8)) | (" + sNameX + " << (8 - (" + sNameY + " % 8)))) % 256";
             };
             return "none";
         };
@@ -650,14 +684,14 @@ template<class ValueType> class BinaryNeuralAcid {
             std::ofstream file;
             file.open(sFilename0, std::ios::out | std::ios::binary);
             if (!file.is_open()) {
-                std::cerr << "exportToDot: could not open file to write: '" << sFilename0 << "'" << std::endl;
+                std::cerr << "exportToCpp: could not open file to write: '" << sFilename0 << "'" << std::endl;
                 return false;
             }
             std::string sCppType = BinaryNeuralAcidCppExporter<ValueType>::getCppType();
 
             file << "std::vector<" + sCppType + "> calcBinaryNeuralAcid(const std::vector<" + sCppType + "> &vIn) {\n";
             for (int i = 0; i < m_vNodesInput.size(); i++) {
-                file << "    " + sCppType + " node" << i << " = vIn[" << i << "]\n";
+                file << "    " + sCppType + " node" << i << " = vIn[" << i << "];\n";
             }
 
             for (int i = 0; i < m_vNodes.size(); i++) {
@@ -679,6 +713,50 @@ template<class ValueType> class BinaryNeuralAcid {
                     << "    vOut.push_back(node" << m_vNodesOutput[i]->getInputNodeIndex() << "); // out " << m_vNodesOutput[i]->getOutputIndex()
                     << "\n";
             }
+            file << "};\n";
+            return true;
+        }
+
+        bool exportToJavaScript(std::string sFilename) {
+            std::string sFilename0 = sFilename + ".js";
+            if (BinaryNeuralAcidHelpers::fileExists(sFilename0)) {
+                if (!BinaryNeuralAcidHelpers::removeFile(sFilename0)) {
+                    std::cerr << "exportToJavaScript: could not remove file: '" << sFilename0 << "'" << std::endl;
+                    return false;
+                }
+            }
+            std::ofstream file;
+            file.open(sFilename0, std::ios::out | std::ios::binary);
+            if (!file.is_open()) {
+                std::cerr << "exportToJavaScript: could not open file to write: '" << sFilename0 << "'" << std::endl;
+                return false;
+            }
+
+            file << "function calcBinaryNeuralAcid(vIn) {\n";
+            for (int i = 0; i < m_vNodesInput.size(); i++) {
+                file << "    var node" << i << " = vIn[" << i << "];\n";
+            }
+
+            for (int i = 0; i < m_vNodes.size(); i++) {
+                if (m_vNodes[i]->getOperationType() != "") {
+                    file
+                        << "    var node" << m_vNodes[i]->getId() << " = "
+                        << BinaryNeuralAcidJavaScriptExporter<ValueType>::getJavaScriptOperation(
+                            m_vNodes[i]->getOperationType(),
+                            "node" + std::to_string(m_vNodes[i]->getX()),
+                            "node" + std::to_string(m_vNodes[i]->getY())
+                        )
+                        << ";\n"
+                    ;
+                }
+            }
+            file << "    var vOut = [];\n";
+            for (int i = 0; i < m_vNodesOutput.size(); i++) {
+                file
+                    << "    vOut.push(node" << m_vNodesOutput[i]->getInputNodeIndex() << "); // out " << m_vNodesOutput[i]->getOutputIndex()
+                    << "\n";
+            }
+            file << "    return vOut;\n";
             file << "};\n";
             return true;
         }

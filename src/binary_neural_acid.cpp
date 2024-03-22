@@ -217,7 +217,7 @@ std::string BinaryNeuralAcidOperationCharXor::type() {
     return "XOR";
 }
 
-char BinaryNeuralAcidOperationCharXor::calc(char b1, char b2) {
+unsigned char BinaryNeuralAcidOperationCharXor::calc(unsigned char b1, unsigned char b2) {
     return b1 ^ b2;
 }
 
@@ -228,7 +228,7 @@ std::string BinaryNeuralAcidOperationCharOr::type() {
     return "OR";
 }
 
-char BinaryNeuralAcidOperationCharOr::calc(char b1, char b2) {
+unsigned char BinaryNeuralAcidOperationCharOr::calc(unsigned char b1, unsigned char b2) {
     return b1 | b2;
 }
 
@@ -239,7 +239,7 @@ std::string BinaryNeuralAcidOperationCharAnd::type() {
     return "AND";
 }
 
-char BinaryNeuralAcidOperationCharAnd::calc(char b1, char b2) {
+unsigned char BinaryNeuralAcidOperationCharAnd::calc(unsigned char b1, unsigned char b2) {
     return b1 & b2;
 }
 
@@ -250,9 +250,9 @@ std::string BinaryNeuralAcidOperationCharShiftLeft::type() {
     return "SHL";
 }
 
-char BinaryNeuralAcidOperationCharShiftLeft::calc(char b1, char b2) {
+unsigned char BinaryNeuralAcidOperationCharShiftLeft::calc(unsigned char b1, unsigned char b2) {
     int shift = b2 % 8;
-    char res = (b1 << shift) | (b1 >> (8 - shift));
+    unsigned char res = (b1 << shift) | (b1 >> (8 - shift));
     return res;
 }
 
@@ -263,9 +263,9 @@ std::string BinaryNeuralAcidOperationCharShiftRight::type() {
     return "SHR";
 }
 
-char BinaryNeuralAcidOperationCharShiftRight::calc(char b1, char b2) {
+unsigned char BinaryNeuralAcidOperationCharShiftRight::calc(unsigned char b1, unsigned char b2) {
     int shift = b2 % 8;
-    char res = (b1 >> shift) | (b1 << (8 - shift));
+    unsigned char res = (b1 >> shift) | (b1 << (8 - shift));
     return res;
 }
 
@@ -633,8 +633,8 @@ std::vector<IBinaryNeuralAcidOperation<BinaryNeuralAcidBit> *> BinaryNeuralAcidF
 }
 
 template <>
-std::vector<IBinaryNeuralAcidOperation<char> *> BinaryNeuralAcidFabricOperations<char>::createOperations() {
-    std::vector<IBinaryNeuralAcidOperation<char> *> vOperations;
+std::vector<IBinaryNeuralAcidOperation<unsigned char> *> BinaryNeuralAcidFabricOperations<unsigned char>::createOperations() {
+    std::vector<IBinaryNeuralAcidOperation<unsigned char> *> vOperations;
     vOperations.push_back(new BinaryNeuralAcidOperationCharXor());
     vOperations.push_back(new BinaryNeuralAcidOperationCharOr());
     vOperations.push_back(new BinaryNeuralAcidOperationCharAnd());

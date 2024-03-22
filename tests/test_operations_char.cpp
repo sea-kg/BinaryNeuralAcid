@@ -6,7 +6,7 @@
 
 int main() {
     {
-        IBinaryNeuralAcidOperation<char> *pOperAnd = new BinaryNeuralAcidOperationCharAnd();
+        IBinaryNeuralAcidOperation<unsigned char> *pOperAnd = new BinaryNeuralAcidOperationCharAnd();
         if (pOperAnd->type() != "AND") {
             return 1;
         }
@@ -19,7 +19,7 @@ int main() {
     }
 
     {
-        IBinaryNeuralAcidOperation<char> *pOperOr = new BinaryNeuralAcidOperationCharOr();
+        IBinaryNeuralAcidOperation<unsigned char> *pOperOr = new BinaryNeuralAcidOperationCharOr();
         if (pOperOr->type() != "OR") {
             return 1;
         }
@@ -32,7 +32,7 @@ int main() {
     }
 
     {
-        IBinaryNeuralAcidOperation<char> *pOperXor = new BinaryNeuralAcidOperationCharXor();
+        IBinaryNeuralAcidOperation<unsigned char> *pOperXor = new BinaryNeuralAcidOperationCharXor();
         if (pOperXor->type() != "XOR") {
             return 1;
         }
@@ -50,7 +50,7 @@ int main() {
     }
 
     {
-        IBinaryNeuralAcidOperation<char> *pOperShiftLeft = new BinaryNeuralAcidOperationCharShiftLeft();
+        IBinaryNeuralAcidOperation<unsigned char> *pOperShiftLeft = new BinaryNeuralAcidOperationCharShiftLeft();
         if (pOperShiftLeft->type() != "SHL") {
             return 1;
         }
@@ -77,7 +77,7 @@ int main() {
     }
 
     {
-        IBinaryNeuralAcidOperation<char> *pOperShiftRight = new BinaryNeuralAcidOperationCharShiftRight();
+        IBinaryNeuralAcidOperation<unsigned char> *pOperShiftRight = new BinaryNeuralAcidOperationCharShiftRight();
         if (pOperShiftRight->type() != "SHR") {
             return 1;
         }
