@@ -129,7 +129,7 @@ template<> class BinaryNeuralAcidCppExporter<BinaryNeuralAcidBit> {
 
 template<> class BinaryNeuralAcidCppExporter<unsigned char> {
     public:
-        static std::string getCppType() { return "unsigned"; }
+        static std::string getCppType() { return "unsigned char"; }
         static std::string getCppOperation(
             const std::string &sOperationName,
             const std::string &sNameX,
@@ -713,6 +713,7 @@ template<class ValueType> class BinaryNeuralAcid {
                     << "    vOut.push_back(node" << m_vNodesOutput[i]->getInputNodeIndex() << "); // out " << m_vNodesOutput[i]->getOutputIndex()
                     << "\n";
             }
+            file << "    return vOut;\n";
             file << "};\n";
             return true;
         }
