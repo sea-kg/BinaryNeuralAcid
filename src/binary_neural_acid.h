@@ -127,6 +127,27 @@ template<> class BinaryNeuralAcidCppExporter<BinaryNeuralAcidBit> {
         };
 };
 
+template<> class BinaryNeuralAcidCppExporter<char> {
+    public:
+        static std::string getCppType() { return "bool"; }
+        static std::string getCppOperation(
+            const std::string &sOperationName,
+            const std::string &sNameX,
+            const std::string &sNameY
+        ) {
+            if (sOperationName == "NXOR") {
+                return "!(" + sNameX + " ^ " + sNameY + ")";
+            } else if (sOperationName == "XOR") {
+                return sNameX + " ^ " + sNameY;
+            } else if (sOperationName == "AND") {
+                return sNameX + " && " + sNameY;
+            } else if (sOperationName == "OR") {
+                return sNameX + " || " + sNameY;
+            };
+            return "none";
+        };
+};
+
 // BinaryNeuralAcidVar
 
 template<class ValueType> class BinaryNeuralAcidVar {

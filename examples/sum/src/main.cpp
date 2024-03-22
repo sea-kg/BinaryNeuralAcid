@@ -2,7 +2,16 @@
 #include <iostream>
 #include "binary_neural_acid.h"
 
-int check_sum_result(BinaryNeuralAcid<char> &bna) {
+struct ResultCheckSum {
+    int nAll;
+    int nSuccess;
+    int nSuccessPercents;
+};
+
+void check_sum_result(BinaryNeuralAcid<char> &bna, ResultCheckSum &ret) {
+    ret.nAll = 0;
+    ret.nSuccess = 0;
+    ret.nSuccessPercents = 0;
     int nRet = 0;
     for (int  x = 0; x < 256; x++) {
         for (int  y = 0; y < 256; y++) {
@@ -10,11 +19,12 @@ int check_sum_result(BinaryNeuralAcid<char> &bna) {
             char cY = y;
             char expected = x + y;
             if (bna.compute({cX, cY}, 0) != expected) {
-                nRet++;
+                ret.nSuccess++;
             }
+            ret.nAll++;
         }
     }
-    return nRet;
+    ret.nSuccessPercents = (ret.nSuccess * 100) / ret.nAll;
 }
 
 int main(int argc, const char* argv[]) {
@@ -47,16 +57,19 @@ int main(int argc, const char* argv[]) {
     m_vModificationModels.push_back(new BinaryNeuralAcidModificationModel(0,10,0));
     m_vModificationModels.push_back(new BinaryNeuralAcidModificationModel(0,0,1));
 
-    int res = check_sum_result(bna);
-    std::cout << " res: " << res << " on start " << std::endl;
+    ResultCheckSum res;
+    ResultCheckSum nextResult;
+    check_sum_result(bna, res);
+    std::cout << " res: " << res.nSuccess << " / " << res.nAll << " (" << res.nSuccessPercents << "%) on start " << std::endl;
     bna.save("sum");
+    bna.exportToCpp("sum");
     int nSafeCicles = 0;
     int nModModelNumber = 0;
-    while (res != 0) {
+    while (res.nSuccess != 0) {
         nSafeCicles++;
         nModModelNumber = (nModModelNumber + 1) % m_vModificationModels.size();
         if (nSafeCicles % 500 == 0) {
-            std::cout << " (+500) res: " << res << " on iter: " << nSafeCicles << std::endl;
+            std::cout << " (+500) res: " << res.nSuccess << " / " << res.nAll << " (" << res.nSuccessPercents << "%) on iter: " << nSafeCicles << std::endl;
             m_vModificationModels[0]->update(rand() % 1000, rand() % 1000, rand() % 1000);
         }
         // if (nSafeCicles > 10000) {
@@ -65,12 +78,13 @@ int main(int argc, const char* argv[]) {
 
         bna.randomModify(m_vModificationModels[nModModelNumber]);
         bna.removeAllDeadlockNodes();
-        int next_res = check_sum_result(bna);
-        if (next_res < res) {
-            res = next_res;
-            std::cout << " res: " << res << " on iter: " << nSafeCicles << std::endl;
+        check_sum_result(bna, nextResult);
+        if (nextResult.nSuccess < res.nSuccess) {
+            res = nextResult;
+            std::cout << " res: " << res.nSuccess << " / " << res.nAll << " (" << res.nSuccessPercents << "%) on iter: " << nSafeCicles << std::endl;
             bna.save("sum");
             bna.exportToDot("sum");
+            bna.exportToCpp("sum");
         } else {
             bna.load("sum");
         }

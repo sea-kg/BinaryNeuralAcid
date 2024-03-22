@@ -8,34 +8,19 @@
 
 ### Ubuntu/Debian
 
-Requirements:
-```
-$ sudo apt install g++ cmake libsdl2-dev libsdl2-ttf-dev
-```
+Requirements: `$ sudo apt install g++ cmake libsdl2-dev libsdl2-ttf-dev`
 
-Build
-```
-$ ./build_simple.sh
-```
-
-Run:
-```
-$ ./bna test-sin
-```
+Build: `$ ./build_simple.sh`
 
 ### MacOS
 
-Install requirements:
-```
-% brew install cmake sdl2 sdl2_mixer
-```
+Install requirements: `% brew install cmake sdl2 sdl2_mixer`
 
-Build:
-```
-% ./build_simple.sh
-```
+Build: `% ./build_simple.sh`
+
+## Run
 
 Run:
 ```
-% ./bna test-sin
+$ ./example_sum
 ```

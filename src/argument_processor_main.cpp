@@ -5,8 +5,8 @@
 // ---------------------------------------------------------------------
 // ArgumentProcessorMain
 
-ArgumentProcessorMain::ArgumentProcessorMain() 
-: WsjcppArgumentProcessor({"main"}, 
+ArgumentProcessorMain::ArgumentProcessorMain()
+: WsjcppArgumentProcessor({"main"},
     "Experiment for reversing md5-hash function",
     "Experiment for reversing md5-hash function") {
     TAG = "ArgumentProcessorMain";
