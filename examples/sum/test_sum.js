@@ -1,16 +1,22 @@
 
 function calcBinaryNeuralAcid(vIn) {
+    // 16029 / 65536
     var node0 = vIn[0];
     var node1 = vIn[1];
-    var node2 = (node1 & node0) % 256;
-    var node3 = (node1 | node0) % 256;
-    var node4 = (node3 ^ node2) % 256;
-    var node5 = ((node2 >> (node3 % 8)) | (node2 << (8 - (node3 % 8)))) % 256;
-    var node6 = (node4 | node5) % 256;
+    var node2 = (node0 ^ node1) % 256;
+    var node3 = (node2 | node1) % 256;
+    var node4 = (node0 ^ node1) % 256;
+    var node5 = ((node3 << (node3 % 8)) | (node3 >> (8 - (node3 % 8)))) % 256;
+    var node6 = (node4 ^ node3) % 256;
+    var node7 = (node6 & node3) % 256;
+    var node8 = (node5 | node3) % 256;
+    var node9 = ((node7 >> (node8 % 8)) | (node7 << (8 - (node8 % 8)))) % 256;
+    var node10 = (node9 | node4) % 256;
     var vOut = [];
-    vOut.push(node6); // out 0
+    vOut.push(node10); // out 0
     return vOut;
 };
+
 
 var success = 0;
 var all = 0;
