@@ -448,6 +448,7 @@ template<class ValueType> class BinaryNeuralAcid {
             TAG = "BinaryNeuralAcid";
             m_nBnaVersion = 4;
             m_nBnaRevision = 0;
+            m_bRandomNative = true;
             m_pRandom = new BinaryNeuralAcidPseudoRandomStd();
         }
 
@@ -466,7 +467,10 @@ template<class ValueType> class BinaryNeuralAcid {
             m_vOperations.clear();
             m_vOperationList.clear();
             m_vNodes.clear();
-            delete m_pRandom;
+            if (m_bRandomNative) {
+                delete m_pRandom;
+                m_pRandom = nullptr;
+            }
             clearResources();
         }
 
@@ -483,7 +487,11 @@ template<class ValueType> class BinaryNeuralAcid {
         }
 
         void setPseudoRandom(IBinaryNeuralAcidPseudoRandom *pRandom) {
-            delete m_pRandom;
+            if (m_bRandomNative) {
+                delete m_pRandom;
+                m_pRandom = nullptr;
+            }
+            m_bRandomNative = false;
             m_pRandom = pRandom;
         }
 
@@ -900,6 +908,7 @@ template<class ValueType> class BinaryNeuralAcid {
 	private:
         std::string TAG;
         IBinaryNeuralAcidPseudoRandom *m_pRandom;
+        bool m_bRandomNative;
         bool m_bCompiled;
         int m_nBnaVersion;
         int m_nBnaRevision;
@@ -1116,6 +1125,83 @@ template<class ValueType> class BinaryNeuralAcid {
         std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcVars;
         std::vector<BinaryNeuralAcidVar<ValueType> *> m_vCalcOutVars;
 };
+
+template<class ValueType> class BinaryNeuralAcidGenom {
+    public:
+        explicit BinaryNeuralAcidGenom(const BinaryNeuralAcidConfig &config, float nRating) {
+            m_pBNA = new BinaryNeuralAcid<ValueType>(config.getInputSize(), config.getOutputSize());
+            // BinaryNeuralAcid<unsigned char> bna;
+            m_config = config;
+            // bna.setPseudoRandom(new BinaryNeuralAcidPseudoRandomSin());
+            // bna.randomGenerate(config);
+        }
+
+        ~BinaryNeuralAcidGenom() {
+            delete m_pBNA;
+        }
+
+        BinaryNeuralAcid<ValueType> *getBNA() const {
+            return m_pBNA;
+        }
+
+        float getRating() const {
+            return m_nRating;
+        }
+
+        void addRating(float nDiff) {
+            m_nRating += nDiff;
+        }
+
+        void setRating(float nRating) {
+            m_nRating = nRating;
+        }
+
+        // void calculateRating(SimpleNeuralNetwork *pNet, SimpleNeuralTrainingItemList *pTrainingData);
+
+    private:
+        float m_nRating;
+        BinaryNeuralAcidConfig m_config;
+        BinaryNeuralAcid<ValueType> *m_pBNA;
+};
+
+template<class ValueType> class BinaryNeuralAcidGenomList {
+    public:
+        BinaryNeuralAcidGenomList(int nBetter, int nMutate, int nMix);
+
+    private:
+        int m_nBetterGenoms;
+        int m_nMutateGenoms;
+        int m_nMixGenoms;
+        int m_nAllGenoms;
+
+        std::vector<BinaryNeuralAcidGenom<ValueType> *> m_vGenoms;
+};
+
+/*class BinaryNeuralAcidGenomList {
+    public:
+        SimpleNeuralGenomList(int nBetter, int nMutate, int nMix);
+        void fillRandom(SimpleNeuralNetwork *pNet);
+
+        const std::vector<SimpleNeuralGenom> &list() const;
+        float getBetterRating();
+        void sort();
+        void printFirstRatings(int nNumber);
+        void mutateAndMix(SimpleNeuralNetwork *pNet);
+
+        const SimpleNeuralGenom &getBetterGenom();
+
+        void calculateRatingForAll(SimpleNeuralNetwork *pNet, SimpleNeuralTrainingItemList *pTrainingData);
+        void calculateRatingForMutatedAndMixed(SimpleNeuralNetwork *pNet, SimpleNeuralTrainingItemList *pTrainingData);
+
+    private:
+        int m_nBetterGenoms;
+        int m_nMutateGenoms;
+        int m_nMixGenoms;
+        int m_nAllGenoms;
+
+        std::vector<SimpleNeuralGenom> m_vGenoms;
+};*/
+
 
 class BinaryNeuralAcidMemoryItem {
     public:
